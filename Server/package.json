@@ -1,0 +1,32 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "build" : "rimraf dist && tsc",
+    "prestart" : "npm run build",
+    "start" : "node ./dist/server.js",
+    "predev" : "npm run build",
+    "dev" : "concurrently \"tsc -w\" \"nodemon ./dist/server.js\""
+  },
+  "author": "AzyzHm",
+  "license": "ISC",
+  "dependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.9.0",
+    "bcrypt": "^5.1.1",
+    "concurrently": "^9.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "joi": "^17.13.3",
+    "mongoose": "^8.8.1",
+    "rimraf": "^6.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}

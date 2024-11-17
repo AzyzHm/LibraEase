@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+
+:root{
+  --background-primary : #eef0f2;
+  --background-secondary : #f3f3f3;
+  --text : #1c120c;
+  --text-secondary : #7a7978;
+  --primary : #3626a7;
+  --secondary : #0dab76;
+  --box-shadow : rgba(100,100,111,.2) 0px 7px 29px 0px;
+}
+
+html,body,#root {
+  width : 100%;
+  height : 100%;
+  font-family: "Inter", sans-serif;
+  background-color: var(--background-primary);
+  color: var(--text);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,picture,video,canvas,svg {
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select {
+  font: inherit;
+}
+
+h1,h2,h3,h4,h5,h6 {
+  overflow-wrap: break-word;
+}
+
+#root, #__next {
+  isolation: isolate;
+}
+
+h1{
+  font-size: 3rem;
+  font-weight: 900;
+}
+
+h2{
+  font-size: 2.5rem;
+  font-weight: 800;
+}
+
+h3{
+  font-size: 2.25rem;
+  font-weight: 700;
+}
+
+h4{
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+h5{
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+h6{
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+p{
+  font-size: 1.25rem;
+  font-weight: 400;
+}
+
+.page{
+  width : 100%;
+  height : fit-content;
+  display : flex;
+  flex-direction : column;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-container{
+  width : 75%;
+  height: 100%;
+  padding : 16px;
+  display : flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  background-color: var(--background-primary);
+  box-shadow: var(--box-shadow);
+}

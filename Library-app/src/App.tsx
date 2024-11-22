@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "./redux/ReduxStore";
 function App() {
 
-  const [displayLogin, setDisplayLogin] = useState<boolean>(true);
+  
   const loggedInUser = useSelector((state:RootState) => state.authentication.loggedInUser);
 
   useEffect(() => {
@@ -13,7 +13,7 @@ function App() {
 
   return (
     <div>
-      <HomePage displayLogin = {displayLogin} />
+      <HomePage  />
     </div>
   )
 }

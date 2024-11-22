@@ -1,0 +1,34 @@
+.modal-bg{
+    z-index : 1;
+    background-color: rgba(0, 0, 0, .2);
+    width : 100%;
+    height : 100%;
+    position : absolute;
+    top : 0;
+    left : 0;
+}
+
+.modal{
+    z-index : 5;
+    width: 30%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    border-radius: 16px;
+    box-shadow: var(--box-shadow);
+    background-color: var(--background-primary);
+    position: sticky;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 16px; 
+}
+
+.modal-exit{
+    align-self: flex-start;
+    cursor: pointer;
+}

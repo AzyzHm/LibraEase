@@ -1,0 +1,90 @@
+.register-form{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 16px;
+}
+
+.register-form-input-group{
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.register-form-error{
+    margin-bottom: 16px;
+    color: red;
+}
+
+.register-form-name-input-group {
+    margin : 0;
+    width : 45%;
+    margin-bottom: 16px;
+}
+
+.register-form-name-group{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.register-form-input{
+    width: 100%;
+    height: 2.5rem;
+    font-size: 1.25rem;
+    padding: 5px;
+}
+
+.register-form-input-name{
+    width : 100%;
+    height: 2.5rem;
+    font-size: 1.25rem;
+    padding: 5px;
+}
+
+.register-form-input::placeholder{
+    color: var(--text-secondary);
+}
+
+.register-form-input:focus{
+    outline: none;
+}
+
+.register-form-input-name:focus{
+    outline: none;
+}
+
+.register-form-input-name::placeholder{
+    color : var(--text-secondary);
+}
+
+.register-form-submit{
+    width: 100%;
+    height: 2.5rem;
+    border: none;
+    background-color: var(--secondary);
+    border-radius: 5px;
+    font-size: 1.25rem;
+    margin-bottom: 16px;
+}
+
+.register-form-submit:hover{
+    cursor: pointer;
+    background-color: var(--background-primary);
+    color : var(--primary);
+    border: 2px solid var(--primary);
+    box-shadow: var(--box-shadow);
+}
+
+.register-form-login{
+    color : var(--primary);
+    cursor: pointer;
+    margin-left: 4px;
+}
+
+.register-form-login:hover{
+    text-emphasis: none;
+}

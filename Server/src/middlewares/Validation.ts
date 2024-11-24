@@ -18,7 +18,6 @@ export function ValidateSchema(schema:ObjectSchema, property:string){
             }
             next();
         } catch (error:any) {
-            console.error('Validation Error:', error.details);
             res.status(422).json({ message: "Object Validation failed, please include a valid object"});
         }
     }

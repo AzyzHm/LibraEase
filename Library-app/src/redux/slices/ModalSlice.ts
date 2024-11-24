@@ -7,7 +7,7 @@ interface ModelSliceState {
 }
 
 const initialState : ModelSliceState = {
-    displayLogin : true,
+    displayLogin : false,
     displayLibraryCard : false,
     displayLoan : false,
 }

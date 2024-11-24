@@ -1,0 +1,76 @@
+.navbar{
+    width: 100%;
+    height : 100%;
+    background-color: var(--secondary);
+    color: var(--text);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 64px;
+    padding-right: 44px;
+}
+
+.navbar-logo-section{
+    width:25%;
+    height: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-decoration: none;
+    color: var(--text);
+}
+
+.navbar-option-section{
+    width:75%;
+    height: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.navbar-option{
+    height: 100%;
+    width: fit-content;
+    padding: 12px;
+    color: var(--text);
+    border-radius: 12px;
+    cursor: pointer;
+    margin-top:16px;
+}
+
+.navbar-option:hover{
+    background-color: var(--primary);
+    color: var(--text-secondary);
+}
+
+.navbar-link{
+    text-decoration: none;
+}
+
+.navbar-search-box{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px var(--text) solid;
+    border-radius: 22px;
+    padding: 4px;
+    margin-right: 16px;
+}
+
+.navbar-search-input{
+    height: 2.5rem;
+    background-color: transparent;
+    border: none;
+    padding-left: 16px;
+    font-size: 1.75rem;
+    font-weight: 400;
+}
+
+::placeholder{
+    color: var(--text);
+    opacity: 1;
+}
+
+.navbar-search-input:focus{
+    outline: none;
+}

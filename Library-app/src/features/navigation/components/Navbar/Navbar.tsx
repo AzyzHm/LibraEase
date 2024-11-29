@@ -1,4 +1,4 @@
-import React,{ useRef } from "react";
+import { useRef } from "react";
 import { Link,useNavigate } from "react-router-dom";
 
 import './Navbar.css';
@@ -29,7 +29,7 @@ export const Navbar:React.FC = () => {
 
     const navigateToProfile = () => {
         if(authState.loggedInUser){
-            navigate("/profile/${authState.loggedInUser._id}");
+            navigate(`/profile/${authState.loggedInUser._id}`);
         }
     }
 

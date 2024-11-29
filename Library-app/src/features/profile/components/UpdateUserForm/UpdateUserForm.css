@@ -1,0 +1,49 @@
+.update-user-form {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.update-user-input-group{
+    width: 100%;
+    height: fit-content;
+    margin-bottom: 16px;
+    position: relative;
+}
+
+.update-user-input {
+    height : 2rem;
+    width: 100%;
+    font-size: 1.5rem;
+    font-weight: 400;
+    background-color: var(--background-secondary);
+    border: none;
+}
+
+.update-user-input:disabled {
+    color: var(--text-primary);
+    background-color: var(--background-secondary);
+}
+
+.update-user-input:focus {
+    outline: none;
+}
+
+.profile-button {
+    width: 80%;
+    height: 2.5rem;
+    font-size: 1.25rem;
+    border-radius: 12px;
+    border: none;
+    background-color: var(--secondary);
+    margin-top: 16px;
+}
+
+.profile-button:hover {
+    cursor: pointer;
+    background-color: var(--background-secondary);
+    border: 2px solid var(--primary);
+}

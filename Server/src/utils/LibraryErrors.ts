@@ -15,3 +15,9 @@ export class UserDoesNotExistError extends Error {
         super(message);
     }
 }
+
+export class BookDoesNotExistError extends Error {
+    constructor(message: string) {
+        super(message);
+    }
+}

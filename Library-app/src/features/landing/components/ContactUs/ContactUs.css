@@ -1,0 +1,17 @@
+.contact-us {
+    width: 100%;
+    padding: 16px;
+    height: fit-content;
+    background-color: var(--background-secondary);
+    box-shadow: var(--box-shadow);
+    border-radius: 12px;
+    margin-top: 16px;
+}
+
+.contact-us-divider {
+    width: 100%;
+    height: 1px;
+    background-color: rgba(120,120,120,.2);
+    margin-top: 16px;
+    margin-bottom: 16px;
+}

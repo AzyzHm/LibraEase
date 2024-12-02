@@ -1,0 +1,8 @@
+.book-of-the-week{
+    width: 98%;
+    height: fit-content;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: var(--box-shadow);
+    background-color: (--background-secondary);
+}

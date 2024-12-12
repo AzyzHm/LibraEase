@@ -2,19 +2,19 @@
 
 
 :root{
-  --background-primary : #eef0f2;
-  --background-secondary : #f3f3f3;
-  --text : #1c120c;
-  --text-secondary : #7a7978;
-  --primary : #3626a7;
-  --secondary : #0dab76;
-  --box-shadow : rgba(100,100,111,.2) 0px 7px 29px 0px;
+  --background-primary : rgba(238, 240, 242, 1);
+  --background-secondary : rgba(243, 243, 243, 1);
+  --text : rgba(30, 20, 10, 1);
+  --text-secondary : rgba(120, 120, 120, 1);
+  --primary : rgba(55, 40, 170, 1);
+  --secondary : rgba(15, 170, 120, 1);
+  --box-shadow : rgba(100,100,111,.2) 0px 10px 25px 0px;
 }
 
 html,body,#root {
   width : 100%;
   height : 100%;
-  font-family: "Inter", sans-serif;
+  font-family: "Georgia", serif;
   background-color: var(--background-primary);
   color: var(--text);
 }
@@ -50,37 +50,37 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 h1{
-  font-size: 3rem;
+  
   font-weight: 900;
 }
 
 h2{
-  font-size: 2.5rem;
+  
   font-weight: 800;
 }
 
 h3{
-  font-size: 2.25rem;
+  
   font-weight: 700;
 }
 
 h4{
-  font-size: 2rem;
+  
   font-weight: 600;
 }
 
 h5{
-  font-size: 1.75rem;
+  
   font-weight: 600;
 }
 
 h6{
-  font-size: 1.5rem;
+  
   font-weight: 600;
 }
 
 p{
-  font-size: 1.25rem;
+  
   font-weight: 400;
 }
 

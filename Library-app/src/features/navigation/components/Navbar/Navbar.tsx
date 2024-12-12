@@ -54,7 +54,7 @@ export const Navbar:React.FC = () => {
                     <Search onClick={handleSearchIconClicked} 
                         sx={{
                             cursor: "pointer",
-                            fontSize: "2rem"
+                            fontSize: "1.5 rem"
                         }}
                     />
                 </div>
@@ -65,7 +65,7 @@ export const Navbar:React.FC = () => {
                     </div>
                     :
                     <div className="navbar-option" onClick={toggleLogin}>
-                        <h2>Login/Register</h2>
+                        <h2>Login</h2>
                     </div>
                 }
             </div>

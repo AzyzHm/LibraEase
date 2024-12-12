@@ -6,8 +6,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-left: 64px;
-    padding-right: 44px;
+    padding-left:45px;
+    padding-right: 20px;
 }
 
 .navbar-logo-section{
@@ -18,6 +18,10 @@
     justify-content: flex-start;
     text-decoration: none;
     color: var(--text);
+}
+
+.navbar-logo-section:hover{
+    color: var(--primary);
 }
 
 .navbar-option-section{
@@ -31,16 +35,15 @@
 .navbar-option{
     height: 100%;
     width: fit-content;
-    padding: 12px;
+    padding: 20px;
     color: var(--text);
     border-radius: 12px;
     cursor: pointer;
-    margin-top:16px;
+    margin-top: 2px;
 }
 
 .navbar-option:hover{
-    background-color: var(--primary);
-    color: var(--text-secondary);
+    color: var(--primary);
 }
 
 .navbar-link{
@@ -53,17 +56,17 @@
     justify-content: center;
     border: 2px var(--text) solid;
     border-radius: 22px;
-    padding: 4px;
-    margin-right: 16px;
+    padding: 6px;
 }
 
 .navbar-search-input{
-    height: 2.5rem;
+    height: 1.8rem;
     background-color: transparent;
     border: none;
-    padding-left: 16px;
-    font-size: 1.75rem;
+    padding-left: 10px;
+    font-size: 1rem;
     font-weight: 400;
+    margin-top: 4px;
 }
 
 ::placeholder{

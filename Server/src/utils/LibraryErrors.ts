@@ -21,3 +21,9 @@ export class BookDoesNotExistError extends Error {
         super(message);
     }
 }
+
+export class LibraryCardDoesNotExistError extends Error {
+    constructor(message: string) {
+        super(message);
+    }
+}

@@ -1,3 +1,3 @@
 import { CatalogOverview } from "./components/CatalogOverview/CatalogOverview";
-
-export { CatalogOverview };
+import { CatalogSearch } from "./components/CatalogSearch/CatalogSearch";
+export { CatalogOverview, CatalogSearch };

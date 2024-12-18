@@ -1,0 +1,37 @@
+.catalog-search{
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+}
+
+.catalog-search-advanced-search-section{
+    width: 98.75%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.catalog-search-item-area{
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    row-gap: 16px;
+}
+
+.catalog-search-pages {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+

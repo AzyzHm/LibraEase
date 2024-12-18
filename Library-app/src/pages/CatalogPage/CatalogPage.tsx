@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { CatalogOverview } from "../../features/catalog";
+import { CatalogOverview, CatalogSearch } from "../../features/catalog";
 
 export default function CatalogPage() {
     const location = useLocation();
@@ -11,7 +11,7 @@ export default function CatalogPage() {
                 {
                     location.search === "" ?
                     <CatalogOverview /> :
-                    <>Catalog Search</>
+                    <CatalogSearch />
                 }
             </div>
         </div>

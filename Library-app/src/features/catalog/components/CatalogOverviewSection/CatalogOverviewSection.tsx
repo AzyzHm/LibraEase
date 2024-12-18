@@ -18,7 +18,7 @@ export const CatalogOverviewSection: React.FC<CatalogOverviewSectionProps> = ({ 
     const navigate = useNavigate();
 
     const handleViewMore = () => {
-        navigate(`catalog?genre=${label}&subject=${label}`);
+        navigate(`?genre=${label}&subject=${label}`);
     }
 
     return(

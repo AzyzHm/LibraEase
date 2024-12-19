@@ -4,7 +4,6 @@ import { AppDispatch, RootState } from '../../../../redux/ReduxStore';
 import { useDispatch } from 'react-redux';
 import { setDisplayLibraryCard } from '../../../../redux/slices/ModalSlice';
 import { Modal } from '../../../../components';
-import './LibraryCardModal.css';
 import { RegisterLibraryCardForm } from '../RegisterLibraryCardForm/RegisterLibraryCardForm';
 
 export const LibraryCardModal: React.FC = () => {

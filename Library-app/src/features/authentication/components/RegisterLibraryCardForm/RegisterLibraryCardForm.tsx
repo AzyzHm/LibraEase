@@ -15,9 +15,7 @@ export const RegisterLibraryCardForm: React.FC = () => {
 
     const handleCreateLibraryCard = () => {
         if(userState.loggedInUser){
-            dispatch(getLibraryCard(userState.loggedInUser._id));
-        }else{
-            console.log("User not logged in");
+            dispatch(getLibraryCard(userState.loggedInUser?._id));
         }
     }
 

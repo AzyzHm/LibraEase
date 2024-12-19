@@ -7,6 +7,8 @@ import { IBookModel } from '../daos/BookDao';
 import { create } from 'domain';
 import { ILibraryCard } from '../models/LibraryCard';
 import { get } from 'http';
+import { ILoanRecord } from '../models/LoanRecord';
+import { ILoanRecordModel } from '../daos/LoanRecordDao';
 
 export function ValidateSchema(schema:ObjectSchema, property:string){
     return async function(req:Request,res:Response,next:NextFunction){
@@ -88,6 +90,33 @@ export const Schemas = {
         }),
         get: Joi.object<{cardId:string}>({
             cardId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+        })
+    },
+    loan: {
+        create: Joi.object<ILoanRecord>({
+            status: Joi.string().valid('AVAILABLE','LOANED').required(),
+            loanedDate: Joi.date().required(),
+            dueDate: Joi.date().required(),
+            returnedDate: Joi.date(),
+            patron: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+            employeeOut: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+            employeeIn: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+            item: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+        }),
+        update: Joi.object<ILoanRecordModel>({
+            _id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+            status: Joi.string().valid('AVAILABLE','LOANED').required(),
+            loanedDate: Joi.date().required(),
+            dueDate: Joi.date().required(),
+            returnedDate: Joi.date(),
+            patron: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+            employeeOut: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+            employeeIn: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+            item: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+        }),
+        query: Joi.object<{property:string,value:string|Date}>({
+            property: Joi.string().valid('_id','status','loanedDate','dueDate','returnedDate','patron','employeeOut','employeeIn','item').required(),
+            value: Joi.alternatives(Joi.string(),Joi.date()).required()
         })
     }
 };

@@ -1,6 +1,6 @@
 import bycrypt from 'bcrypt';
 import {config} from '../config';
-
+import nodemailer from 'nodemailer';
 import UserDao,{IUserModel} from '../daos/UserDao';
 import {IUser} from '../models/User';
 import { UnableToSaveUserError,UnableToFetchUserError, UserDoesNotExistError } from '../utils/LibraryErrors';
@@ -12,11 +12,23 @@ export async function register(user:IUser):Promise<IUserModel>{
     try {
         const hashedPassword = await bycrypt.hash(user.password, ROUNDS);
         const saved = new UserDao({...user, password: hashedPassword});
+
+        await sendWelcomeEmail(user.email);
         return await saved.save();
     } catch (error:any) {
         throw new UnableToSaveUserError(error.message);
     }
 }
+
+async function sendWelcomeEmail(email: string) { 
+    const transporter = nodemailer.createTransport({ 
+    service: 'gmail', 
+    auth: { user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,  }, }); 
+    const mailOptions = { from: process.env.EMAIL_USER,
+                            to: email, subject: 'Welcome to LibraEase!',
+                                text: 'Welcome to LibraEase, Please verify your mail here..', }; 
+    return transporter.sendMail(mailOptions); }
 
 export async function login(credentials:{email:string,password:string}):Promise<IUserModel>{
     const {email,password} = credentials;

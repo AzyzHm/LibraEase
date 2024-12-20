@@ -15,8 +15,9 @@
 .register-library-modal-button {
     width: 58%;
     height: 3rem;
-    font-size: 1.5rem;
+    font-size: medium;
     border: 2px solid var(--primary);
+    border-radius: 15px;
     cursor: pointer;
     background-color: var(--background-secondary);
 }

@@ -3,6 +3,7 @@
     height: 100%;
     padding: 16px;
     display: flex;
+    border-radius: 20px;
     justify-content: space-between;
     align-items: flex-start;
     background-color: var(--background-primary);

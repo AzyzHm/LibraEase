@@ -34,11 +34,11 @@ export const LoginForm:React.FC<LoginFormProps> = ({toggleRegister}) => {
             {auth.error ? <p className="login-form-error">Invalid email or password</p> : <></>}
             <div className="login-form-input-group">
                 <h6>Email</h6>
-                <input className="login-form-input" placeholder="email" name="email" required ref={emailRef} />
+                <input className="login-form-input" placeholder="Type in you e-mail" name="email" required ref={emailRef} />
             </div>
             <div className="login-form-input-group">
                 <h6>Password</h6>
-                <input className="login-form-input" placeholder="password" name="password" type="password" required ref={passwordRef} />
+                <input className="login-form-input" placeholder="Type in your Password" name="password" type="password" required ref={passwordRef} />
             </div>
             <button className="login-form-submit" onClick={handleLoginUser}>Login</button>
             <p>Don't have an account?</p>

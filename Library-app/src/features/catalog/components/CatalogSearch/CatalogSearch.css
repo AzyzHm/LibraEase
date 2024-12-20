@@ -24,7 +24,8 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    row-gap: 16px;
+    row-gap: 30px;
+    margin-left: 10%;
 }
 
 .catalog-search-pages {

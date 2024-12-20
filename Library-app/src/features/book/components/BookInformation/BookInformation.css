@@ -15,4 +15,12 @@
 .book-info-cover{
     width: 320px;
     margin-right: 24px;
+    border-radius: 12px;
+}
+
+#title{
+    color: brown;
+}
+#author{
+    color: blue;
 }

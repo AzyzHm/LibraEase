@@ -52,25 +52,25 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({toggleLogin}) => {
             <div className="register-form-name-group">
                 <div className="register-form-name-input-group">
                     <h6>First Name</h6>
-                    <input className="register-form-input-name" placeholder="first" name="first" required ref={firstRef} />
+                    <input className="register-form-input-name" placeholder="Type in your firstname" name="first" required ref={firstRef} />
                 </div>
                 <div className="register-form-name-input-group">
                     <h6>Last Name</h6>
-                    <input className="register-form-input-name" placeholder="last" name="last" required ref={lastRef} />
+                    <input className="register-form-input-name" placeholder="Type in your lastname" name="last" required ref={lastRef} />
                 </div>
             </div>
             <div className="register-form-input-group">
                 <h6>Email</h6>
-                <input className="register-form-input" placeholder="email" name="email" required ref={emailRef} />
+                <input className="register-form-input" placeholder="Type in your email" name="email" required ref={emailRef} />
             </div>
             <div className="register-form-input-group">
                 <h6>Password</h6>
-                <input className="register-form-input" placeholder="password" name="password" type="password" required ref={passwordRef} />
+                <input className="register-form-input" placeholder="Type in your password" name="password" type="password" required ref={passwordRef} />
             </div>
             <button className="register-form-submit" onClick={handleRegisterUser}>Register</button>
             {
                 authState.registerSuccess ? 
-                <p>Registered Successfully.
+                <p id = "success">Registered Successfully, Don't Forget to Verify Your E-mail.
                     <span className="register-form-login" onClick={toggleLogin}>Login here.</span>
                 </p> : <></>
             }

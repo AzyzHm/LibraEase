@@ -4,8 +4,8 @@
     display:flex;
     justify-content: space-evenly;
     align-items: center;
-    background-color: var(--primary);
-    color: var(--text-secondary);
+    background-color: inherit;
+    color: black;
 }
 
 .footer-text{

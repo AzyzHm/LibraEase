@@ -16,12 +16,14 @@
 
 .book-card-cover{
     height: 45%;
+    border-radius: 12px;
 }
 
 .book-card-info{
     height: 50%;
     width: 100%;
     margin: 0;
+    font-size: small;
 }
 
 .book-card-title{
@@ -29,7 +31,8 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 1.2rem;
+    font-size: large;
+    color: brown;
 }
 
 .book-card-author{
@@ -37,7 +40,8 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 1.2rem;
+    font-size: medium;
+    color: blue;
 }
 
 .book-card-description{

@@ -1,0 +1,17 @@
+.book-history{
+    width: 100%;
+    height: fit-content;
+    overflow: hidden;
+    background-color: var(--background-secondary);
+    padding : 16px;
+    margin-top: 16px;
+    border-radius: 12px;
+    box-shadow: var(--box-shadow);
+}
+
+.book-history-box {
+    width: 100%;
+    height: 200px;
+    overflow-y: scroll;
+    padding-top: 16px;
+}

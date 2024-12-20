@@ -99,6 +99,22 @@ export const checkinBook = createAsyncThunk(
       }
     }
 );
+
+export const loadBookByBarcode = createAsyncThunk(
+    'book/id',
+    async (payload: string, thunkAPI) => {
+      try {
+        let res = await axios.get(`http://localhost:8000/book/query?barcode=${payload}`);
+        let book = res.data.page.items[0];
+        if (!book || book.barcode !== payload) {
+          throw new Error();
+        }
+        return book;
+      } catch (e) {
+        return thunkAPI.rejectWithValue(e);
+      }
+    }
+  );  
   
 
 export const BookSlice = createSlice({
@@ -144,6 +160,16 @@ export const BookSlice = createSlice({
             }
             return state;
         })
+        builder.addCase(loadBookByBarcode.pending, (state,action) => {
+            state = {
+                ...state,
+                loading: true
+            }
+            return state;
+        })
+
+
+
         builder.addCase(fetchAllBooks.fulfilled, (state,action) => {
             state = {
                 ...state,
@@ -200,7 +226,27 @@ export const BookSlice = createSlice({
                 books: bookList
             }
             return state;
-        });      
+        });
+        builder.addCase(loadBookByBarcode.fulfilled, (state, action) => {
+            state = {
+                ...state,
+                loading: false,
+                currentBook: action.payload
+            }
+            return state;
+        });
+        
+        
+        builder.addCase(loadBookByBarcode.rejected, (state, action) => {
+            state = {
+                ...state,
+                loading: false,
+                error: true
+            }
+            return state;
+        });
+
+
     }
 })
 

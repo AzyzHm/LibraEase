@@ -27,7 +27,7 @@ async function sendWelcomeEmail(email: string) {
     pass: process.env.EMAIL_PASS,  }, }); 
     const mailOptions = { from: process.env.EMAIL_USER,
                             to: email, subject: 'Welcome to LibraEase!',
-                                text: 'Welcome to LibraEase, Please verify your mail here..', }; 
+                                text: 'Welcome to LibraEase, Please verify your mail here..', }; // you can upgrade the logic here ... 
     return transporter.sendMail(mailOptions); }
 
 export async function login(credentials:{email:string,password:string}):Promise<IUserModel>{

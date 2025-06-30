@@ -81,7 +81,7 @@ LibraEase is a comprehensive library management system built with React, TypeScr
 ## Project Structure
 
 ### Frontend
-\```
+```markdown
 Library-app/
 ├── .gitignore
 ├── eslint.config.js
@@ -109,11 +109,11 @@ Library-app/
 ├── vite.config.ts
 ├── LICENSE
 └── Readme.md
-\```
+```
 
 
 ### Backend
-\```
+```
 Server/
 ├── .env
 ├── .gitignore
@@ -129,7 +129,7 @@ Server/
 │   ├── services/
 │   └── utils/
 ├── tsconfig.json
-\```
+```
 
 
 ## Contributing

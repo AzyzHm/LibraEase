@@ -10,6 +10,12 @@ export class UnableToFetchUserError extends Error {
     }
 }
 
+export class AccountPendingApprovalError extends Error {
+    constructor(message: string) {
+        super(message);
+    }
+}
+
 export class UserDoesNotExistError extends Error {
     constructor(message: string) {
         super(message);

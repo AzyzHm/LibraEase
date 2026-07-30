@@ -1,45 +1,41 @@
-import bycrypt from 'bcrypt';
+import bycrypt from 'bcryptjs';
 import {config} from '../config';
-import nodemailer from 'nodemailer';
-import UserDao,{IUserModel} from '../daos/UserDao';
+import * as UserDao from '../daos/UserDao';
+import {IUserModel} from '../daos/UserDao';
 import {IUser} from '../models/User';
-import { UnableToSaveUserError,UnableToFetchUserError, UserDoesNotExistError } from '../utils/LibraryErrors';
-import { Error } from 'mongoose';
+import { UnableToSaveUserError,UnableToFetchUserError, UserDoesNotExistError, AccountPendingApprovalError } from '../utils/LibraryErrors';
 
 export async function register(user:IUser):Promise<IUserModel>{
     const ROUNDS = config.server.rounds;
 
     try {
         const hashedPassword = await bycrypt.hash(user.password, ROUNDS);
-        const saved = new UserDao({...user, password: hashedPassword});
-
-        await sendWelcomeEmail(user.email);
-        return await saved.save();
+        // New accounts always start PENDING, regardless of what the client sends,
+        // and only become usable once an admin approves them.
+        const created = await UserDao.insert({...user, password: hashedPassword, status: 'PENDING'});
+        return created;
     } catch (error:any) {
+        // Postgres unique-violation error code, replacing Mongo's E11000
+        if (error.code === '23505') {
+            throw new UnableToSaveUserError("User with email already exists!");
+        }
         throw new UnableToSaveUserError(error.message);
     }
 }
 
-async function sendWelcomeEmail(email: string) { 
-    const transporter = nodemailer.createTransport({ 
-    service: 'gmail', 
-    auth: { user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,  }, }); 
-    const mailOptions = { from: process.env.EMAIL_USER,
-                            to: email, subject: 'Welcome to LibraEase!',
-                                text: 'Welcome to LibraEase, Please verify your mail here..', }; // you can upgrade the logic here ... 
-    return transporter.sendMail(mailOptions); }
-
 export async function login(credentials:{email:string,password:string}):Promise<IUserModel>{
     const {email,password} = credentials;
     try {
-        const user = await UserDao.findOne({email});
+        const user = await UserDao.findByEmail(email);
         if(!user) throw new UnableToFetchUserError("User not found");
-        else{
-            const isMatch = await bycrypt.compare(password,user.password);
-            if(!isMatch) throw new UnableToFetchUserError("Invalid password");
-            else return user;
-        }
+
+        const isMatch = await bycrypt.compare(password,user.password);
+        if(!isMatch) throw new UnableToFetchUserError("Invalid password");
+
+        if(user.status === 'PENDING') throw new AccountPendingApprovalError("Your account is awaiting admin approval");
+        if(user.status === 'REJECTED') throw new AccountPendingApprovalError("Your account request was not approved");
+
+        return user;
     }catch (error:any) {
         throw error;
     }
@@ -51,6 +47,11 @@ export async function findAllUsers():Promise<IUserModel[]>{
     } catch (error) {
         return [];
     }
+}
+
+export async function findPendingUsers():Promise<IUserModel[]>{
+    const all = await UserDao.find();
+    return all.filter(u => u.status === 'PENDING');
 }
 
 export async function findUserById(id:string):Promise<IUserModel|null>{
@@ -66,17 +67,29 @@ export async function findUserById(id:string):Promise<IUserModel|null>{
 
 export async function modifyUser(user:IUserModel):Promise<IUserModel>{
     try {
-        let id = await UserDao.findByIdAndUpdate(user._id,user,{new:true});
-        if (!id) throw new UserDoesNotExistError("No user exists with the given id");
-        return user;
+        let updated = await UserDao.updateById(user.id,user);
+        if (!updated) throw new UserDoesNotExistError("No user exists with the given id");
+        return updated;
     }catch(error:any){
         throw error;
     }
 }
 
+export async function approveUser(userId:string):Promise<IUserModel>{
+    const updated = await UserDao.updateById(userId, { status: 'APPROVED' });
+    if(!updated) throw new UserDoesNotExistError("No user exists with the given id");
+    return updated;
+}
+
+export async function rejectUser(userId:string):Promise<IUserModel>{
+    const updated = await UserDao.updateById(userId, { status: 'REJECTED' });
+    if(!updated) throw new UserDoesNotExistError("No user exists with the given id");
+    return updated;
+}
+
 export async function removeUser(userId:string):Promise<string>{
     try{
-        let deleted = await UserDao.findByIdAndDelete(userId);
+        let deleted = await UserDao.removeById(userId);
         if(!deleted) throw new UserDoesNotExistError("No user exists with the given id");
         return "User deleted successfully";
     }

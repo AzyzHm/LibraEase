@@ -44,10 +44,10 @@ export const Schemas = {
         password: Joi.string().required()
     }),
     userId: Joi.object<{userId:string}>({
-        userId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+        userId: Joi.string().guid({ version: 'uuidv4' }).required()
     }),
     update : Joi.object<IUserModel>({
-        _id : Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+        id : Joi.string().guid({ version: 'uuidv4' }).required(),
         type: Joi.string().valid('ADMIN','PATRON','EMPLOYEE').required(),
         firstname: Joi.string().required(),
         lastname: Joi.string().required(),
@@ -68,7 +68,7 @@ export const Schemas = {
             genre : Joi.string().required()
         }),
         update: Joi.object<IBookModel>({
-            _id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+            id: Joi.string().guid({ version: 'uuidv4' }).required(),
             barcode : Joi.string().regex(/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/).required(),
             cover : Joi.string().required(),
             title : Joi.string().required(),
@@ -86,10 +86,10 @@ export const Schemas = {
     },
     libraryCard: {
         create: Joi.object<ILibraryCard>({
-            user: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+            user: Joi.string().guid({ version: 'uuidv4' }).required()
         }),
         get: Joi.object<{cardId:string}>({
-            cardId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+            cardId: Joi.string().guid({ version: 'uuidv4' }).required()
         })
     },
     loan: {
@@ -98,24 +98,24 @@ export const Schemas = {
             loanedDate: Joi.date().required(),
             dueDate: Joi.date().required(),
             returnedDate: Joi.date(),
-            patron: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
-            employeeOut: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
-            employeeIn: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
-            item: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+            patron: Joi.string().guid({ version: 'uuidv4' }).required(),
+            employeeOut: Joi.string().guid({ version: 'uuidv4' }).required(),
+            employeeIn: Joi.string().guid({ version: 'uuidv4' }),
+            item: Joi.string().guid({ version: 'uuidv4' }).required()
         }),
         update: Joi.object<ILoanRecordModel>({
-            _id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+            id: Joi.string().guid({ version: 'uuidv4' }).required(),
             status: Joi.string().valid('AVAILABLE','LOANED').required(),
             loanedDate: Joi.date().required(),
             dueDate: Joi.date().required(),
             returnedDate: Joi.date(),
-            patron: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
-            employeeOut: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
-            employeeIn: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
-            item: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+            patron: Joi.string().guid({ version: 'uuidv4' }).required(),
+            employeeOut: Joi.string().guid({ version: 'uuidv4' }).required(),
+            employeeIn: Joi.string().guid({ version: 'uuidv4' }),
+            item: Joi.string().guid({ version: 'uuidv4' }).required()
         }),
         query: Joi.object<{property:string,value:string|Date}>({
-            property: Joi.string().valid('_id','status','loanedDate','dueDate','returnedDate','patron','employeeOut','employeeIn','item').required(),
+            property: Joi.string().valid('id','status','loanedDate','dueDate','returnedDate','patron','employeeOut','employeeIn','item').required(),
             value: Joi.alternatives(Joi.string(),Joi.date()).required()
         })
     }

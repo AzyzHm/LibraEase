@@ -5,7 +5,7 @@ import { ILibraryCard } from "../models/LibraryCard";
 import { LibraryCardDoesNotExistError } from "../utils/LibraryErrors";
 
 async function getLibraryCard(req:Request, res:Response){
-    const {cardId} = req.params;
+    const {cardId} = req.params as { cardId: string };
     try {
         let card = await findLibraryCard(cardId);
         res.status(200).json({message : "Library Card found", card});

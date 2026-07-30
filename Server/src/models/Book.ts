@@ -1,5 +1,3 @@
-import { ILoanRecord } from "./LoanRecord";
-
 export interface IBook {
     barcode : string;
     cover : string;
@@ -11,5 +9,4 @@ export interface IBook {
     publisher : string;
     pages : number;
     genre : string;
-    records : ILoanRecord[];
 }

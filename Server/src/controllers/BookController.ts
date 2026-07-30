@@ -39,7 +39,7 @@ async function updateBook(req: Request, res: Response){
 }
 
 async function deleteBook(req: Request, res: Response){
-    let {barcode} = req.params;
+    let {barcode} = req.params as { barcode: string };
     try{
         const message = await removeBook(barcode);
         res.status(200).json({message});

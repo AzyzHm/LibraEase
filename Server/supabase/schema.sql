@@ -49,6 +49,10 @@ create table if not exists loan_records (
 create index if not exists idx_loan_records_item on loan_records(item);
 create index if not exists idx_loan_records_patron on loan_records(patron);
 create index if not exists idx_books_barcode on books(barcode);
+create index if not exists idx_books_title on books(title);
+create index if not exists idx_books_genre on books(genre);
+create index if not exists idx_books_authors on books using gin (authors);
+create index if not exists idx_books_subjects on books using gin (subjects);
 
 -- New signups land as PENDING and can't log in until an admin approves them
 -- (see UserService.approveUser). Since there's no admin yet on a fresh

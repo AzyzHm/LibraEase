@@ -19,7 +19,7 @@ export const  BookCard:React.FC<BookCardProps> = ({book}) => {
     const dispatch:AppDispatch = useDispatch();
 
     const [available, setAvailable] = useState<boolean>(() => {
-        if (book.records.length === 0) return true;
+        if (!book?.records || book.records.length === 0) return true;
     
         return book.records[0].status === 'AVAILABLE';
     });

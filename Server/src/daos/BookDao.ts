@@ -19,7 +19,7 @@ function toRow(book: Partial<IBook>): Record<string, any> {
 function fromRow(row: any): IBookModel {
     if (!row) return row;
     const { publication_date, ...rest } = row;
-    return { ...rest, publicationDate: publication_date } as IBookModel;
+    return { ...rest, publicationDate: publication_date, records: rest.records || [] } as IBookModel;
 }
 
 export async function find(): Promise<IBookModel[]> {

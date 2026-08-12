@@ -65,14 +65,16 @@ export async function findUserById(id:string):Promise<IUserModel|null>{
     }
 }
 
-export async function modifyUser(user:IUserModel):Promise<IUserModel>{
-    try {
-        let updated = await UserDao.updateById(user.id,user);
-        if (!updated) throw new UserDoesNotExistError("No user exists with the given id");
-        return updated;
-    }catch(error:any){
-        throw error;
+export async function modifyUser(user: IUserModel): Promise<IUserModel> {
+    const { password, ...profileUpdates } = user;
+
+    const updated = await UserDao.updateById(user.id, profileUpdates);
+
+    if (!updated) {
+        throw new UserDoesNotExistError("No user exists with the given id");
     }
+
+    return updated;
 }
 
 export async function approveUser(userId:string):Promise<IUserModel>{

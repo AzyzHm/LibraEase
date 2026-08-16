@@ -1,13 +1,29 @@
-import express,{Express, Request, Response} from 'express';
+import express, { Express } from 'express';
 import cors from 'cors';
-import {config} from './config';
-import {registerRoutes} from './routes';
+import { config } from './config';
+import { registerRoutes } from './routes';
 
 const port = config.server.port;
 
 const app: Express = express();
+
 app.use(express.json());
-app.use(cors());
+
+const allowedOrigins = [
+    'http://localhost:5173'
+];
+
+app.use(
+    cors({
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error('Origin not allowed'));
+            }
+        }
+    })
+);
 
 registerRoutes(app);
 

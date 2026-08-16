@@ -1,0 +1,91 @@
+<section class="mx-auto max-w-6xl px-6 py-10">
+  <h1 class="font-display text-2xl text-ink-900">Catalog</h1>
+  <p class="mt-1 text-sm text-ink-400">Browse every title in the collection.</p>
+
+  <form [formGroup]="filterForm" (ngSubmit)="onSubmit()" class="mt-6 flex flex-wrap items-end gap-3" novalidate>
+    <div class="flex flex-col">
+      <label for="title" class="mb-1 text-xs font-medium text-ink-600">Title</label>
+      <input
+        id="title"
+        type="text"
+        formControlName="title"
+        placeholder="Search by title"
+        class="w-48 rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+      />
+    </div>
+
+    <div class="flex flex-col">
+      <label for="author" class="mb-1 text-xs font-medium text-ink-600">Author</label>
+      <input
+        id="author"
+        type="text"
+        formControlName="author"
+        placeholder="Search by author"
+        class="w-48 rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+      />
+    </div>
+
+    <div class="flex flex-col">
+      <label for="genre" class="mb-1 text-xs font-medium text-ink-600">Genre</label>
+      <input
+        id="genre"
+        type="text"
+        formControlName="genre"
+        placeholder="Search by genre"
+        class="w-40 rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+      />
+    </div>
+
+    <button
+      type="submit"
+      class="rounded-md bg-forest-700 px-4 py-2 text-sm font-medium text-cream-50 transition-colors hover:bg-forest-500"
+    >
+      Search
+    </button>
+    <button
+      type="button"
+      (click)="onClear()"
+      class="rounded-md border border-border px-4 py-2 text-sm font-medium text-ink-600 transition-colors hover:bg-cream-200"
+    >
+      Clear
+    </button>
+  </form>
+
+  <div class="mt-8">
+    @if (store.loading()) {
+      <p class="py-16 text-center text-sm text-ink-400">Loading books…</p>
+    } @else if (store.errorMessage()) {
+      <p class="rounded-md bg-danger-50 px-4 py-3 text-sm text-danger-700">{{ store.errorMessage() }}</p>
+    } @else if (store.books().length === 0) {
+      <p class="py-16 text-center text-sm text-ink-400">No books match your search.</p>
+    } @else {
+      <p class="mb-4 text-sm text-ink-400">{{ store.totalCount() }} book(s) found</p>
+
+      <div class="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
+        @for (book of store.books(); track book.id) {
+          <app-book-card [book]="book" />
+        }
+      </div>
+
+      <div class="mt-8 flex items-center justify-center gap-4">
+        <button
+          type="button"
+          (click)="onPrevious()"
+          [disabled]="store.currentPage() <= 1"
+          class="rounded-md border border-border px-3 py-1.5 text-sm text-ink-600 transition-colors hover:bg-cream-200 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Previous
+        </button>
+        <span class="text-sm text-ink-600">Page {{ store.currentPage() }} of {{ store.totalPages() }}</span>
+        <button
+          type="button"
+          (click)="onNext()"
+          [disabled]="store.currentPage() >= store.totalPages()"
+          class="rounded-md border border-border px-3 py-1.5 text-sm text-ink-600 transition-colors hover:bg-cream-200 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
+    }
+  </div>
+</section>

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Home } from './features/home/home';
+import { Catalog } from './features/catalog/catalog';
 import { ComingSoon } from './shared/ui/coming-soon/coming-soon';
 import { Login } from './features/auth/login/login';
 import { Register } from './features/auth/register/register';
@@ -9,8 +10,7 @@ export const routes: Routes = [
   { path: '', component: Home, title: 'LibraEase' },
   {
     path: 'catalog',
-    component: ComingSoon,
-    data: { title: 'Catalog', phase: 'Phase 3' },
+    component: Catalog,
     title: 'Catalog · LibraEase'
   },
   {

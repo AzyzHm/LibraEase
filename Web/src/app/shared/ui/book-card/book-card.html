@@ -1,0 +1,28 @@
+<article class="flex h-full flex-col overflow-hidden rounded-card border border-border bg-white">
+  <div class="flex aspect-2/3 items-center justify-center bg-cream-200">
+    @if (book().cover && !coverFailed()) {
+      <img
+        [src]="book().cover"
+        [alt]="'Cover of ' + book().title"
+        (error)="onCoverError()"
+        class="h-full w-full object-cover"
+      />
+    } @else {
+      <span class="px-4 text-center font-display text-sm text-ink-400">{{ book().title }}</span>
+    }
+  </div>
+
+  <div class="flex flex-1 flex-col gap-1 px-4 py-3">
+    <h3 class="line-clamp-2 font-display text-base text-ink-900">{{ book().title }}</h3>
+    <p class="line-clamp-1 text-sm text-ink-600">{{ book().authors.join(', ') || 'Unknown author' }}</p>
+
+    <div class="mt-auto flex items-center justify-between pt-2">
+      @if (book().genre) {
+        <span class="rounded-full bg-forest-50 px-2 py-0.5 text-xs font-medium text-forest-700">
+          {{ book().genre }}
+        </span>
+      }
+      <span class="text-xs text-ink-400">{{ book().publisher }}</span>
+    </div>
+  </div>
+</article>

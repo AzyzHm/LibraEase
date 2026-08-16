@@ -18,12 +18,23 @@
         My loans
       </a>
 
-      <a
-        routerLink="/login"
-        class="rounded-md border border-forest-300 px-3 py-1.5 text-cream-50 transition-colors hover:bg-forest-500"
-      >
-        Sign in
-      </a>
+      @if (authStore.isAuthenticated()) {
+        <span class="text-cream-100">{{ authStore.user()?.firstname }}</span>
+        <button
+          type="button"
+          (click)="onSignOut()"
+          class="rounded-md border border-forest-300 px-3 py-1.5 text-cream-50 transition-colors hover:bg-forest-500"
+        >
+          Sign out
+        </button>
+      } @else {
+        <a
+          routerLink="/login"
+          class="rounded-md border border-forest-300 px-3 py-1.5 text-cream-50 transition-colors hover:bg-forest-500"
+        >
+          Sign in
+        </a>
+      }
     </nav>
   </div>
 </header>

@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthStore } from '../../state/auth-store';
 
 @Component({
   selector: 'app-navbar',
@@ -8,4 +9,12 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './navbar.html',
   styleUrl: './navbar.css'
 })
-export class Navbar {}
+export class Navbar {
+  private readonly router = inject(Router);
+  protected readonly authStore = inject(AuthStore);
+
+  onSignOut(): void {
+    this.authStore.logout();
+    this.router.navigateByUrl('/');
+  }
+}

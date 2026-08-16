@@ -1,0 +1,118 @@
+<section class="mx-auto flex max-w-md flex-col px-6 py-16">
+  @if (registered()) {
+    <div class="rounded-card border border-success-500/30 bg-success-50 px-6 py-8 text-center">
+      <h1 class="font-display text-xl text-success-700">Registration submitted</h1>
+      <p class="mt-2 text-sm text-ink-600">
+        An admin needs to approve your account before you can sign in. You'll be able to log in once that happens.
+      </p>
+      <a routerLink="/login" class="mt-4 inline-block text-sm text-coral-500 underline">Back to sign in</a>
+    </div>
+  } @else {
+    <h1 class="font-display text-2xl text-ink-900">Create an account</h1>
+    <p class="mt-1 text-sm text-ink-400">New accounts need admin approval before signing in.</p>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mt-8 flex flex-col gap-4" novalidate>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label for="firstname" class="mb-1 block text-sm font-medium text-ink-900">First name</label>
+          <input
+            id="firstname"
+            type="text"
+            formControlName="firstname"
+            autocomplete="given-name"
+            class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+          />
+          @if (submitted() && form.controls.firstname.invalid) {
+            <p class="mt-1 text-xs text-danger-500">Required.</p>
+          }
+        </div>
+
+        <div>
+          <label for="lastname" class="mb-1 block text-sm font-medium text-ink-900">Last name</label>
+          <input
+            id="lastname"
+            type="text"
+            formControlName="lastname"
+            autocomplete="family-name"
+            class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+          />
+          @if (submitted() && form.controls.lastname.invalid) {
+            <p class="mt-1 text-xs text-danger-500">Required.</p>
+          }
+        </div>
+      </div>
+
+      <div>
+        <label for="email" class="mb-1 block text-sm font-medium text-ink-900">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+        />
+        @if (submitted() && form.controls.email.invalid) {
+          <p class="mt-1 text-xs text-danger-500">Enter a valid email address.</p>
+        }
+      </div>
+
+      <div>
+        <label for="type" class="mb-1 block text-sm font-medium text-ink-900">Account type</label>
+        <select
+          id="type"
+          formControlName="type"
+          class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+        >
+          @for (option of accountTypes; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div>
+        <label for="password" class="mb-1 block text-sm font-medium text-ink-900">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          autocomplete="new-password"
+          class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+        />
+        @if (submitted() && form.controls.password.invalid) {
+          <p class="mt-1 text-xs text-danger-500">At least 8 characters.</p>
+        }
+      </div>
+
+      <div>
+        <label for="confirmPassword" class="mb-1 block text-sm font-medium text-ink-900">Confirm password</label>
+        <input
+          id="confirmPassword"
+          type="password"
+          formControlName="confirmPassword"
+          autocomplete="new-password"
+          class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+        />
+        @if (submitted() && form.errors?.['passwordMismatch']) {
+          <p class="mt-1 text-xs text-danger-500">Passwords don't match.</p>
+        }
+      </div>
+
+      @if (errorMessage()) {
+        <p class="rounded-md bg-danger-50 px-3 py-2 text-sm text-danger-700">{{ errorMessage() }}</p>
+      }
+
+      <button
+        type="submit"
+        [disabled]="loading()"
+        class="mt-2 rounded-md bg-forest-700 px-4 py-2 text-sm font-medium text-cream-50 transition-colors hover:bg-forest-500 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {{ loading() ? 'Submitting…' : 'Create account' }}
+      </button>
+    </form>
+
+    <p class="mt-6 text-sm text-ink-400">
+      Already have an account?
+      <a routerLink="/login" class="text-coral-500 underline">Sign in</a>
+    </p>
+  }
+</section>

@@ -1,7 +1,6 @@
 import {Request , Response} from 'express';
 import { findAllUsers,findUserById,removeUser,modifyUser,findPendingUsers,approveUser,rejectUser } from '../services/UserService';
 import { UserDoesNotExistError } from '../utils/LibraryErrors';
-import { IUserModel } from '../daos/UserDao';
 
 function sanitizeUser(user: any) {
     if (!user) return user;
@@ -69,8 +68,6 @@ async function updateUser(req:Request,res:Response) {
     }}
 }
 
-// NOTE: these two aren't protected by any admin-only auth check yet — see the
-// heads-up in chat. Add an auth/role-guard middleware before shipping this.
 async function approveUserHandler(req:Request,res:Response) {
     const userId = req.params.userId as string;
     try {

@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { CatalogStore } from '../../core/state/catalog-store';
 import { BookCard } from '../../shared/ui/book-card/book-card';
 
@@ -12,6 +13,7 @@ import { BookCard } from '../../shared/ui/book-card/book-card';
 })
 export class Catalog implements OnInit {
   private readonly fb = inject(FormBuilder);
+  private readonly route = inject(ActivatedRoute);
   readonly store = inject(CatalogStore);
 
   readonly filterForm = this.fb.nonNullable.group({
@@ -21,8 +23,19 @@ export class Catalog implements OnInit {
   });
 
   ngOnInit(): void {
-    // Restore any filters already held in the store (e.g. coming back from a book detail
-    // page in a later phase) instead of always starting from a blank search.
+    // A ?title= query param (from the home page search box) takes priority over
+    // whatever filters were already sitting in the store.
+    const queryTitle = this.route.snapshot.queryParamMap.get('title');
+
+    if (queryTitle) {
+      const filters = { ...this.store.filters(), title: queryTitle };
+      this.filterForm.setValue(filters);
+      this.store.applyFilters(filters);
+      return;
+    }
+
+    // Otherwise restore any filters already held in the store (e.g. coming back from a
+    // book detail page in a later phase) instead of always starting from a blank search.
     this.filterForm.setValue(this.store.filters());
     this.store.loadPage(this.store.currentPage());
   }

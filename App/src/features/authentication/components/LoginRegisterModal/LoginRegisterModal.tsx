@@ -27,7 +27,7 @@ export const LoginRegisterModal:React.FC = () => {
         }
         return(() => {
             if(authState.loggedInUser) {
-                localStorage.setItem("userId",authState.loggedInUser._id);
+                localStorage.setItem("userId",authState.loggedInUser.id);
             }
             })
 

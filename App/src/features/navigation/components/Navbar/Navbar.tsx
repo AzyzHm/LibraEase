@@ -29,7 +29,7 @@ export const Navbar:React.FC = () => {
 
     const navigateToProfile = () => {
         if(authState.loggedInUser){
-            navigate(`/profile/${authState.loggedInUser._id}`);
+            navigate(`/profile/${authState.loggedInUser.id}`);
         }
     }
 
@@ -49,6 +49,11 @@ export const Navbar:React.FC = () => {
                 <Link to="/catalog" className="navbar-option navbar-link">
                     <h2>View Catalog</h2>
                 </Link>
+                {authState.loggedInUser?.type === 'ADMIN' &&
+                    <Link to="/admin" className="navbar-option navbar-link">
+                        <h2>Admin</h2>
+                    </Link>
+                }
                 <div className="navbar-search-box">
                     <input className="navbar-search-input" placeholder="Search Catalog" onKeyDown={handleEnterKey} ref={searchRef}/>
                     <Search onClick={handleSearchIconClicked} 

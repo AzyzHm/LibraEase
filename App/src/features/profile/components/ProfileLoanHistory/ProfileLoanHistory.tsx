@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import axios from 'axios';
 
 import './ProfileLoanHistory.css';
+import apiClient from '../../../../api/Client';
 import { RootState } from '../../../../redux/ReduxStore';
 import { LoanRecord } from '../../../../models/LoanRecord';
 import { ProfileLoanRecord } from '../ProfileLoanRecord/ProfileLoanRecord';
@@ -15,9 +15,9 @@ export const ProfileLoanHistory: React.FC = () => {
     const fetchRecordsForUser = async () => {
         if (user) {
             try {
-                let res = await axios.post('http://localhost:8000/loan/query', {
+                let res = await apiClient.post('/loan/query', {
                     property: 'patron',
-                    value: user._id
+                    value: user.id
                 });
 
                 let r = res.data.records;
@@ -38,7 +38,7 @@ export const ProfileLoanHistory: React.FC = () => {
             <h3 className="profile-loan-header">{user?.firstname}'s Item Loan History:</h3>
             {records.map((record) => {
                 return (
-                <ProfileLoanRecord key={record._id} record={record} />
+                <ProfileLoanRecord key={record.id} record={record} />
                 );
             })}
         </div>

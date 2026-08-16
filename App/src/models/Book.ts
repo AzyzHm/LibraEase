@@ -2,18 +2,17 @@ import { LoanRecord } from "./LoanRecord";
 import { User } from "./User";
 
 export type Book = {
-    _id : string;
+    id : string;
     barcode: string;
     cover: string;
     title: string;
     authors: string[];
     description: string;
     subjects: string[];
-    publicationDate: Date;
+    publicationDate: Date | null;
     publisher: string;
-    pages: number;
+    pages: number | null;
     genre: string;
-    records:LoanRecord[];
 }
 
 export type CheckoutBookPayload = {
@@ -25,4 +24,5 @@ export type CheckoutBookPayload = {
 export type  CheckinBookPayload = {
     book:Book;
     employee:User;
+    record:LoanRecord;
 }

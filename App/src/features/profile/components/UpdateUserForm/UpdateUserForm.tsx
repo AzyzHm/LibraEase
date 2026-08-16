@@ -53,8 +53,8 @@ export const UpdateUserForm:React.FC = () => {
         <form className="update-user-form">
             <div className="update-user-input-group">
                 <h4>First Name:</h4>
-                <input className="update-user-input" name="firstname" value={user?.firstname || ''} onChange={updateUserSate} disabled={userState.loggedInUser?._id !== userState.profileUser?._id}/>
-                {userState.loggedInUser?._id === userState.profileUser?._id && <Create sx={{
+                <input className="update-user-input" name="firstname" value={user?.firstname || ''} onChange={updateUserSate} disabled={userState.loggedInUser?.id !== userState.profileUser?.id}/>
+                {userState.loggedInUser?.id === userState.profileUser?.id && <Create sx={{
                     position :'absolute',
                     top: '65%',
                     right: '0'
@@ -62,8 +62,8 @@ export const UpdateUserForm:React.FC = () => {
             </div>
             <div className="update-user-input-group">
                 <h4>Last Name:</h4>
-                <input className="update-user-input" name="lastname" value={user?.lastname || ''} onChange={updateUserSate} disabled={userState.loggedInUser?._id !== userState.profileUser?._id}/>
-                {userState.loggedInUser?._id === userState.profileUser?._id && <Create sx={{
+                <input className="update-user-input" name="lastname" value={user?.lastname || ''} onChange={updateUserSate} disabled={userState.loggedInUser?.id !== userState.profileUser?.id}/>
+                {userState.loggedInUser?.id === userState.profileUser?.id && <Create sx={{
                     position :'absolute',
                     top: '65%',
                     right: '0'
@@ -71,15 +71,15 @@ export const UpdateUserForm:React.FC = () => {
             </div>
             <div className="update-user-input-group">
                 <h4>Email:</h4>
-                <input className="update-user-input" name="email" value={user?.email || ''} onChange={updateUserSate} disabled={userState.loggedInUser?._id !== userState.profileUser?._id}/>
-                {userState.loggedInUser?._id === userState.profileUser?._id && <Create sx={{
+                <input className="update-user-input" name="email" value={user?.email || ''} onChange={updateUserSate} disabled={userState.loggedInUser?.id !== userState.profileUser?.id}/>
+                {userState.loggedInUser?.id === userState.profileUser?.id && <Create sx={{
                     position :'absolute',
                     top: '65%',
                     right: '0'
                 }} />}
             </div>
             {displayUpdate ? <button className="profile-button" onClick={submitUpdateUser}>Update Profile</button> : <></>}
-            {userState.loggedInUser?._id === userState.profileUser?._id ? <button className="profile-button" onClick={logout}>Logout of Account</button> : <></>}
+            {userState.loggedInUser?.id === userState.profileUser?.id ? <button className="profile-button" onClick={logout}>Logout of Account</button> : <></>}
         </form>
 
             )

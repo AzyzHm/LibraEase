@@ -7,16 +7,21 @@ import { setDisplayLoan } from '../../../../redux/slices/ModalSlice';
 export const BookCheckin: React.FC = () => {
     const book = useSelector((state: RootState) => state.book.currentBook);
     const user = useSelector((state: RootState) => state.authentication.loggedInUser);
+    const records = useSelector((state: RootState) =>
+        book ? state.book.loanRecordsByBookId[book.id] : undefined
+    );
+    const activeRecord = records && records.length > 0 ? records[0] : undefined;
 
     const dispatch: AppDispatch = useDispatch();
 
     const checkin = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
-        if (book && user) {
+        if (book && user && activeRecord) {
             dispatch(checkinBook({
                 book,
-                employee: user
+                employee: user,
+                record: activeRecord
             }));
             dispatch(setDisplayLoan(false));
             dispatch(setCurrentBook(undefined));
@@ -29,7 +34,7 @@ export const BookCheckin: React.FC = () => {
             <form className="book-checkin-form">
               <h3>Check In Book Titled: {book.title}</h3>
               <h4>Check In Employee ID: </h4>
-              <input className="book-checkin-input" value={user._id} disabled />
+              <input className="book-checkin-input" value={user.id} disabled />
               <button className="book-checkin-button" onClick={checkin}>Check In Book</button>
             </form>
           )}

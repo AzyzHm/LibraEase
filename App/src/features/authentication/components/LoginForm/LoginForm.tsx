@@ -1,9 +1,8 @@
-import React,{ useRef,useState } from "react";
+import React,{ useRef} from "react";
 import { useDispatch,useSelector } from "react-redux";
 import { AppDispatch,RootState } from "../../../../redux/ReduxStore";
 import { loginUser } from "../../../../redux/slices/AuthenticationSlice";
 import './LoginForm.css';
-import {User} from "../../../../models/User";
 
 interface LoginFormProps {
     toggleRegister():void;
@@ -31,7 +30,7 @@ export const LoginForm:React.FC<LoginFormProps> = ({toggleRegister}) => {
     return(
         <form className="login-form">
             <h2>Login</h2>
-            {auth.error ? <p className="login-form-error">Invalid email or password</p> : <></>}
+            {auth.errorMessage ? <p className="login-form-error">{auth.errorMessage}</p> : <></>}
             <div className="login-form-input-group">
                 <h6>Email</h6>
                 <input className="login-form-input" placeholder="Type in you e-mail" name="email" required ref={emailRef} />

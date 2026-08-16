@@ -1,7 +1,8 @@
 import { createAsyncThunk,createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import axios from "axios";
+import apiClient from "../../api/Client";
 import { Book, CheckinBookPayload, CheckoutBookPayload } from "../../models/Book";
+import { LoanRecord } from "../../models/LoanRecord";
 import { PageInfo } from "../../models/Page";
 
 interface BookSliceState {
@@ -10,6 +11,7 @@ interface BookSliceState {
     books: Book[];
     currentBook : Book | undefined;
     pagingInformation: PageInfo | null;
+    loanRecordsByBookId: Record<string, LoanRecord[]>;
 }
 
 const initialState: BookSliceState = {
@@ -17,14 +19,15 @@ const initialState: BookSliceState = {
     error: false,
     books: [],
     currentBook: undefined,
-    pagingInformation: null
+    pagingInformation: null,
+    loanRecordsByBookId: {}
 }
 
 export const fetchAllBooks = createAsyncThunk(
     'book/all',
     async (payload,thunkAPI) => {
         try{
-            let req = await axios.get('http://localhost:8000/book/');
+            let req = await apiClient.get('/book/');
             return req.data.books;
         }catch(e){
             return thunkAPI.rejectWithValue(e);
@@ -36,13 +39,31 @@ export const queryBooks = createAsyncThunk(
     'book/query',
     async (payload:string,thunkAPI) => {
         try{
-            let req = await axios.get(`http://localhost:8000/book/query${payload}`);
+            let req = await apiClient.get(`/book/query${payload}`);
             return req.data.page;
         }catch(e){
             return thunkAPI.rejectWithValue(e);
         }
     }
 )
+
+export const fetchLoanRecordsForBook = createAsyncThunk(
+    'book/loanRecords',
+    async (bookId: string, thunkAPI) => {
+        try {
+            const res = await apiClient.post('/loan/query', {
+                property: 'item',
+                value: bookId
+            });
+            const records: LoanRecord[] = [...res.data.records].sort(
+                (a, b) => new Date(b.loanedDate).getTime() - new Date(a.loanedDate).getTime()
+            );
+            return { bookId, records };
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e);
+        }
+    }
+);
 
 export const checkoutBook = createAsyncThunk(
     'book/checkout',
@@ -51,19 +72,19 @@ export const checkoutBook = createAsyncThunk(
         const returnDate = new Date();
         returnDate.setDate(returnDate.getDate() + 14);
   
-        const getPatron = await axios.get(`http://localhost:8000/card/${payload.libraryCard}`);
-        let patronId = getPatron.data.libraryCard.user._id;
+        const getPatron = await apiClient.get(`/card/${payload.libraryCard}`);
+        let patronId = getPatron.data.libraryCard.user.id;
   
         const record = {
           status: "LOANED",
-          loanDate: new Date(),
+          loanedDate: new Date(),
           dueDate: returnDate,
-          patronId: patronId,
-          employeeId: payload.employee._id,
-          itemId: payload.book._id
+          patron: patronId,
+          employeeOut: payload.employee.id,
+          item: payload.book.id
         };
   
-        const loading = await axios.post(`http://localhost:8000/loan`, record);
+        const loading = await apiClient.post(`/loan`, record);
         const loan = loading.data.record;
   
         return loan;
@@ -77,7 +98,7 @@ export const checkinBook = createAsyncThunk(
     'loan/checkin',
     async (payload: CheckinBookPayload, thunkAPI) => {
       try {
-        let record = payload.book.records[0];
+        let record = payload.record;
   
         let updatedRecord = {
           status: 'AVAILABLE',
@@ -86,12 +107,12 @@ export const checkinBook = createAsyncThunk(
           returnedDate: new Date(),
           patron: record.patron,
           employeeOut: record.employeeOut,
-          employeeIn: payload.employee._id,
+          employeeIn: payload.employee.id,
           item: record.item,
-          _id: record._id
+          id: record.id
         };
   
-        let loan = await axios.put('http://localhost:8000/loan/', updatedRecord);
+        let loan = await apiClient.put('/loan/', updatedRecord);
   
         return loan.data.record;
       } catch (e) {
@@ -104,7 +125,7 @@ export const loadBookByBarcode = createAsyncThunk(
     'book/id',
     async (payload: string, thunkAPI) => {
       try {
-        let res = await axios.get(`http://localhost:8000/book/query?barcode=${payload}`);
+        let res = await apiClient.get(`/book/query?barcode=${payload}`);
         let book = res.data.page.items[0];
         if (!book || book.barcode !== payload) {
           throw new Error();
@@ -193,37 +214,38 @@ export const BookSlice = createSlice({
             }
             return state;
         })
-        builder.addCase(checkoutBook.fulfilled, (state, action) => {
-            let bookList:Book[] = JSON.parse(JSON.stringify(state.books));
-        
-            bookList = bookList.map((book) => {
-                if (book._id === action.payload.item) {
-                    book.records = [action.payload, ...book.records];
-                    return book;
+        builder.addCase(fetchLoanRecordsForBook.fulfilled, (state, action) => {
+            state = {
+                ...state,
+                loanRecordsByBookId: {
+                    ...state.loanRecordsByBookId,
+                    [action.payload.bookId]: action.payload.records
                 }
-                return book;
-            });
+            }
+            return state;
+        })
+        builder.addCase(checkoutBook.fulfilled, (state, action) => {
+            const existing = state.loanRecordsByBookId[action.payload.item] || [];
             state = {
                 ...state,
                 loading: false,
-                books: bookList
+                loanRecordsByBookId: {
+                    ...state.loanRecordsByBookId,
+                    [action.payload.item]: [action.payload, ...existing]
+                }
             }
             return state;
         });
         builder.addCase(checkinBook.fulfilled, (state, action) => {
-            let bookList:Book[] = JSON.parse(JSON.stringify(state.books));
-        
-            bookList = bookList.map((book) => {
-                if (book._id === action.payload.item) {
-                    book.records.splice(0,1,action.payload);
-                    return book;
-                }
-                return book;
-            });
+            const existing = state.loanRecordsByBookId[action.payload.item] || [];
+            const updated = [action.payload, ...existing.slice(1)];
             state = {
                 ...state,
                 loading: false,
-                books: bookList
+                loanRecordsByBookId: {
+                    ...state.loanRecordsByBookId,
+                    [action.payload.item]: updated
+                }
             }
             return state;
         });

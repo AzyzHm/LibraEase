@@ -6,7 +6,7 @@ import { mapAuthorsToString } from "../../utils/BookUtils";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../redux/ReduxStore";
 import { useEffect, useState } from "react";
-import { setCurrentBook } from "../../../../redux/slices/BookSlice";
+import { fetchLoanRecordsForBook, setCurrentBook } from "../../../../redux/slices/BookSlice";
 import { setDisplayLoan } from "../../../../redux/slices/ModalSlice";
 
 interface BookCardProps {
@@ -16,14 +16,15 @@ interface BookCardProps {
 export const  BookCard:React.FC<BookCardProps> = ({book}) => {
 
     const user = useSelector((state:RootState) => state.authentication.loggedInUser);
+    const records = useSelector((state:RootState) => state.book.loanRecordsByBookId[book.id]);
     const dispatch:AppDispatch = useDispatch();
 
-    const [available, setAvailable] = useState<boolean>(() => {
-        if (!book?.records || book.records.length === 0) return true;
-    
-        return book.records[0].status === 'AVAILABLE';
-    });
-    
+    useEffect(() => {
+        dispatch(fetchLoanRecordsForBook(book.id));
+    }, [book.id]);
+
+    const available = !records || records.length === 0 || records[0].status === 'AVAILABLE';
+
     const [buttonClass, setButtonClass] = useState<string>('');
     
     const handleLoan = (e: React.MouseEvent<HTMLElement>) => {
@@ -57,7 +58,7 @@ export const  BookCard:React.FC<BookCardProps> = ({book}) => {
         }
     
         setButtonClass(c);
-    }, [available, user?.type, book.records]);
+    }, [available, user?.type]);
     
 
     return (

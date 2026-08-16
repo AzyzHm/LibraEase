@@ -18,7 +18,7 @@ export const BookAdditionalInfo: React.FC<BookAdditionalInfoProps> = ({book}) =>
                 </div>
                 <div className="additional-book-info-group">
                     <h3 className="additional-book-info-text">Published On:</h3>
-                    <p className="additional-book-info-text">{new Date(book.publicationDate).toDateString()}</p>
+                    <p className="additional-book-info-text">{book.publicationDate ? new Date(book.publicationDate).toDateString() : "Unknown"}</p>
                 </div>
                 <div className="additional-book-info-group">
                     <h3 className="additional-book-info-text">ISBN:</h3>
@@ -26,7 +26,7 @@ export const BookAdditionalInfo: React.FC<BookAdditionalInfoProps> = ({book}) =>
                 </div>
                 <div className="additional-book-info-group">
                     <h3 className="additional-book-info-text">Number of Pages:</h3>
-                    <p className="additional-book-info-text">{book.pages}</p>
+                    <p className="additional-book-info-text">{book.pages ?? "Unknown"}</p>
                 </div>
             </div>
         </div>

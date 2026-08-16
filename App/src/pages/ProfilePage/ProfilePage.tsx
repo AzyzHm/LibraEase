@@ -18,7 +18,7 @@ export default function ProfilePage() {
 
     useEffect(() => {
         if(userId) {
-            if(loggedInUser?._id === userId || loggedInUser?.type === 'EMPLOYEE'){
+            if(loggedInUser?.id === userId || loggedInUser?.type === 'EMPLOYEE'){
                 dispatch(fetchUser({userId,property:'profileUser'}));
             }else{
                 navigate('/');
@@ -42,4 +42,3 @@ export default function ProfilePage() {
         </div>
     )
 }
-

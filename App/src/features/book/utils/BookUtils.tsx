@@ -1,4 +1,5 @@
 import { Book } from "../../../models/Book";
+import { LoanRecord } from "../../../models/LoanRecord";
 import { BookCheckin } from "../components/BookCheckin/BookCheckin";
 import { BookCheckout } from "../components/BookCheckout/BookCheckout";
 
@@ -12,8 +13,8 @@ export function mapAuthorsToString(book: Book): string {
   return authors.slice(0, authors.length - 2);
 }
 
-export function determineLoanModalContent(book: Book): JSX.Element {
-  if(book.records.length === 0 || book.records[0].status === "AVAILABLE") {
+export function determineLoanModalContent(records: LoanRecord[]): JSX.Element {
+  if(records.length === 0 || records[0].status === "AVAILABLE") {
       return <BookCheckout />;
   }
   return <BookCheckin />;

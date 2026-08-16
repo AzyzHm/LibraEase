@@ -1,9 +1,10 @@
 export type User = {
-    _id:string;
+    id:string;
     type: 'ADMIN' | 'EMPLOYEE' | 'PATRON';
     firstname: string;
     lastname: string;
     email: string;
+    status?: 'PENDING' | 'APPROVED' | 'REJECTED';
 }
 
 export interface LoginUserPayload {

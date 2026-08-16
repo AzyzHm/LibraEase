@@ -10,7 +10,7 @@ export const BookOfTheWeek:React.FC = () => {
             <BookInformation 
                 book = {
                     {
-                        _id: "1234",
+                        id: "1234",
                         barcode: "0679781587",
                         cover: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1409595968i/929.jpg",
                         title: "Memoirs of a Geisha",
@@ -25,8 +25,7 @@ export const BookOfTheWeek:React.FC = () => {
                         publicationDate: new Date("1997-01-01T06:00:00.000Z"),
                         publisher: "Ted Smart",
                         pages: 503,
-                        genre: "Fiction",
-                        records: []
+                        genre: "Fiction"
                     }
                 }
             />

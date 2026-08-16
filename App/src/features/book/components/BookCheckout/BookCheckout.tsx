@@ -35,7 +35,7 @@ export const BookCheckout: React.FC = () => {
                     <h3>Enter patron's library card ID:</h3>
                     <input className='book-checkout-input' placeholder='Library Card ID' ref={libraryCardRef} />
                     <h3>Checkout Employee ID:</h3>
-                    <input className='book-checkout-input' value={user._id} disabled />
+                    <input className='book-checkout-input' value={user.id} disabled />
                     <button className='book-checkout-button' onClick={checkout}>Loan Book</button>
                 </form>
             }

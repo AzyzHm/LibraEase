@@ -2,14 +2,14 @@ import { createAsyncThunk,createSlice,PayloadAction } from "@reduxjs/toolkit";
 
 import { FetchUserPayload, LoginUserPayload,RegisterUserPayload, User } from "../../models/User";
 
-import axios from "axios";
+import apiClient from "../../api/Client";
 
 interface AuthenticationSliceState {
     loggedInUser: User | undefined;
     profileUser: User | undefined;
     libraryCard: string;
     loading: boolean;
-    error: boolean;
+    errorMessage: string | null;
     registerSuccess: boolean;
 }
 
@@ -18,18 +18,23 @@ const initialState: AuthenticationSliceState = {
     profileUser: undefined,
     libraryCard: "",
     loading: false,
-    error: false,
+    errorMessage: null,
     registerSuccess: false,
 };
+
+function extractErrorMessage(e: unknown, fallback: string): string {
+    const anyErr = e as any;
+    return anyErr?.response?.data?.message || fallback;
+}
 
 export const loginUser = createAsyncThunk(
     'auth/login',
     async (user:LoginUserPayload,thunkAPI) => {
         try {
-            const req = await axios.post('http://localhost:8000/auth/login',user);
+            const req = await apiClient.post('/auth/login',user);
             return req.data.user;
         } catch (e) {
-            return thunkAPI.rejectWithValue(e);
+            return thunkAPI.rejectWithValue(extractErrorMessage(e, "Invalid email or password"));
         }
     }
 );
@@ -38,11 +43,10 @@ export const registerUser = createAsyncThunk(
     'auth/register',
     async (user:RegisterUserPayload,thunkAPI) => {
         try {
-            const req = await axios.post('http://localhost:8000/auth/register',user);
+            const req = await apiClient.post('/auth/register',user);
             return req.data.user;
         } catch (e) {
-            console.log(e);
-            return thunkAPI.rejectWithValue(e);
+            return thunkAPI.rejectWithValue(extractErrorMessage(e, "Unable to register at this time"));
         }
     }
 );
@@ -51,13 +55,13 @@ export const fetchUser = createAsyncThunk(
     'auth/fetch',
     async(payload:FetchUserPayload,thunkAPI) => {
         try {
-            const req = await axios.get(`http://localhost:8000/users/${payload.userId}`);
+            const req = await apiClient.get(`/users/${payload.userId}`);
             const user  = req.data.user;
             
             return {user,property:payload.property};
     
         } catch (e) {
-            return thunkAPI.rejectWithValue(e);
+            return thunkAPI.rejectWithValue(extractErrorMessage(e, "Unable to load user"));
         }
     }
 );
@@ -66,10 +70,10 @@ export const updateUser = createAsyncThunk(
     'auth/update',
     async(payload:User,thunkAPI) => {
         try {
-            const req = await axios.put('http://localhost:8000/users/',payload);
+            const req = await apiClient.put('/users/',payload);
             return req.data.user;
         } catch (e) {
-            return thunkAPI.rejectWithValue(e);
+            return thunkAPI.rejectWithValue(extractErrorMessage(e, "Unable to update user"));
         }
     }
 );
@@ -78,10 +82,10 @@ export const getLibraryCard = createAsyncThunk(
     'auth/libraryCard',
     async(userId:string,thunkAPI) => {
         try {
-            const req = await axios.post(`http://localhost:8000/card/`,{user:userId});
+            const req = await apiClient.post(`/card/`,{user:userId});
             return req.data.libraryCard;
         } catch (e:any) {
-            return thunkAPI.rejectWithValue(e);
+            return thunkAPI.rejectWithValue(extractErrorMessage(e, "Unable to load library card"));
         }
     }
 );
@@ -110,7 +114,7 @@ export const AuthenticationSlice = createSlice({
         builder.addCase(loginUser.pending, (state,action) => {
             state = {
                 ...state,
-                error: false,
+                errorMessage: null,
                 loading: true
             }
             return state;
@@ -118,7 +122,7 @@ export const AuthenticationSlice = createSlice({
         builder.addCase(registerUser.pending, (state,action) => {
             state = {
                 ...state,
-                error: false,
+                errorMessage: null,
                 loading: true
             }
             return state;
@@ -126,7 +130,7 @@ export const AuthenticationSlice = createSlice({
         builder.addCase(fetchUser.pending, (state,action) => {
             state = {
                 ...state,
-                error: false,
+                errorMessage: null,
                 loading: true
             }
             return state;
@@ -134,7 +138,7 @@ export const AuthenticationSlice = createSlice({
         builder.addCase(updateUser.pending, (state,action) => {
             state = {
                 ...state,
-                error: false,
+                errorMessage: null,
                 loading: true
             }
             return state;
@@ -142,7 +146,7 @@ export const AuthenticationSlice = createSlice({
         builder.addCase(getLibraryCard.pending, (state,action) => {
             state = {
                 ...state,
-                error: false,
+                errorMessage: null,
                 loading: true
             }
             return state;
@@ -184,7 +188,7 @@ export const AuthenticationSlice = createSlice({
             state = {
                 ...state,
                 loading: false,
-                libraryCard: action.payload._id
+                libraryCard: action.payload.id
                 
             }
             return state;
@@ -192,7 +196,7 @@ export const AuthenticationSlice = createSlice({
         builder.addCase(loginUser.rejected, (state,action) => {
             state = {
                 ...state,
-                error: true,
+                errorMessage: (action.payload as string) || "Invalid email or password",
                 loading: false
             }
             return state;
@@ -200,7 +204,7 @@ export const AuthenticationSlice = createSlice({
         builder.addCase(registerUser.rejected, (state,action) => {
             state = {
                 ...state,
-                error: true,
+                errorMessage: (action.payload as string) || "Unable to register at this time",
                 loading: false
             }
             return state;
@@ -208,7 +212,7 @@ export const AuthenticationSlice = createSlice({
         builder.addCase(fetchUser.rejected, (state,action) => {
             state = {
                 ...state,
-                error: true,
+                errorMessage: (action.payload as string) || "Unable to load user",
                 loading: false
             }
             return state;
@@ -216,7 +220,7 @@ export const AuthenticationSlice = createSlice({
         builder.addCase(updateUser.rejected, (state,action) => {
             state = {
                 ...state,
-                error: true,
+                errorMessage: (action.payload as string) || "Unable to update user",
                 loading: false
             }
             return state;

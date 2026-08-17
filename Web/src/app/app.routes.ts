@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { Home } from './features/home/home';
 import { Catalog } from './features/catalog/catalog';
-import { ComingSoon } from './shared/ui/coming-soon/coming-soon';
+import { Profile } from './features/profile/profile';
 import { Login } from './features/auth/login/login';
 import { Register } from './features/auth/register/register';
 import { authGuard, guestGuard } from './core/guards/auth-guard';
@@ -15,10 +15,9 @@ export const routes: Routes = [
   },
   {
     path: 'profile',
-    component: ComingSoon,
+    component: Profile,
     canActivate: [authGuard],
-    data: { title: 'My loans', phase: 'Phase 4' },
-    title: 'My loans · LibraEase'
+    title: 'My account · LibraEase'
   },
   {
     path: 'login',

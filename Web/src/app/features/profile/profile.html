@@ -76,7 +76,7 @@
       <ul class="flex flex-col gap-3">
         @for (loan of loans(); track loan.id) {
           <li class="flex items-center gap-4 rounded-card border border-border bg-white p-4">
-            <div class="flex h-20 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded bg-cream-200">
+            <div class="flex h-20 w-14 shrink-0 items-center justify-center overflow-hidden rounded bg-cream-200">
               @if (loan.itemDetails.cover && !failedCovers().has(loan.id)) {
                 <img
                   [src]="loan.itemDetails.cover"
@@ -104,13 +104,13 @@
 
             @if (loan.status === 'LOANED') {
               <span
-                class="flex-shrink-0 rounded-full px-2.5 py-1 text-xs font-medium"
+                class="shrink-0 rounded-full px-2.5 py-1 text-xs font-medium"
                 [class]="loan.isOverdue ? 'bg-danger-50 text-danger-700' : 'bg-forest-50 text-forest-700'"
               >
                 {{ loan.isOverdue ? 'Overdue' : 'On loan' }}
               </span>
             } @else {
-              <span class="flex-shrink-0 rounded-full bg-cream-200 px-2.5 py-1 text-xs font-medium text-ink-600">
+              <span class="shrink-0 rounded-full bg-cream-200 px-2.5 py-1 text-xs font-medium text-ink-600">
                 Returned
               </span>
             }

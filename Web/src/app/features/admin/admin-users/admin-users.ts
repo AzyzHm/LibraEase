@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { AdminUsersStore, StatusFilter } from '../../../core/state/admin-users-store';
+import { AuthStore } from '../../../core/state/auth-store';
 import { AdminUser } from '../../../core/models/admin.model';
 
 @Component({
@@ -10,6 +11,7 @@ import { AdminUser } from '../../../core/models/admin.model';
 })
 export class AdminUsers implements OnInit {
   readonly store = inject(AdminUsersStore);
+  readonly authStore = inject(AuthStore);
 
   readonly filters: { label: string; value: StatusFilter }[] = [
     { label: 'Pending', value: 'PENDING' },

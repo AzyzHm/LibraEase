@@ -80,7 +80,7 @@
                       >
                         Cancel
                       </button>
-                    } @else {
+                    } @else if (authStore.isAdmin()) {
                       @if (user.status === 'PENDING') {
                         <button
                           type="button"
@@ -104,6 +104,8 @@
                       >
                         Delete
                       </button>
+                    } @else {
+                      <span class="text-xs text-ink-400">View only</span>
                     }
                   </div>
                 </td>

@@ -6,7 +6,7 @@ import { Login } from './features/auth/login/login';
 import { Register } from './features/auth/register/register';
 import { AdminShell } from './features/admin/admin-shell/admin-shell';
 import { adminRoutes } from './features/admin/admin.routes';
-import { adminGuard, authGuard, guestGuard } from './core/guards/auth-guard';
+import { authGuard, guestGuard, staffGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
   { path: '', component: Home, title: 'LibraEase' },
@@ -24,7 +24,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminShell,
-    canActivate: [adminGuard],
+    canActivate: [staffGuard],
     children: adminRoutes
   },
   {

@@ -2,7 +2,16 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { BookListResponse, BookQueryParams, BookQueryResponse } from '../models/book.model';
+import {
+  BookCreatePayload,
+  BookCreateResponse,
+  BookDeleteResponse,
+  BookListResponse,
+  BookQueryParams,
+  BookQueryResponse,
+  BookUpdatePayload,
+  BookUpdateResponse
+} from '../models/book.model';
 
 @Injectable({ providedIn: 'root' })
 export class BookApi {
@@ -26,5 +35,20 @@ export class BookApi {
     httpParams = httpParams.set('limit', String(params.limit ?? 12));
 
     return this.http.get<BookQueryResponse>(`${this.baseUrl}/query`, { params: httpParams });
+  }
+
+  /** POST /book - admin/employee only. */
+  create(payload: BookCreatePayload): Observable<BookCreateResponse> {
+    return this.http.post<BookCreateResponse>(this.baseUrl, payload);
+  }
+
+  /** PUT /book - admin/employee only. Backend keys the update off `payload.barcode`. */
+  update(payload: BookUpdatePayload): Observable<BookUpdateResponse> {
+    return this.http.put<BookUpdateResponse>(this.baseUrl, payload);
+  }
+
+  /** DELETE /book/:barcode - admin/employee only. */
+  remove(barcode: string): Observable<BookDeleteResponse> {
+    return this.http.delete<BookDeleteResponse>(`${this.baseUrl}/${barcode}`);
   }
 }

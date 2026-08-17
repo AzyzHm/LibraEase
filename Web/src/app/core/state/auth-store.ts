@@ -65,6 +65,12 @@ export class AuthStore {
     localStorage.removeItem(USER_KEY);
   }
 
+  /** Refreshes the cached user (e.g. after a profile edit) without touching the token. */
+  updateUser(user: AuthUser): void {
+    this.userSignal.set(user);
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+  }
+
   private setSession(user: AuthUser, token: string): void {
     this.userSignal.set(user);
     this.tokenSignal.set(token);

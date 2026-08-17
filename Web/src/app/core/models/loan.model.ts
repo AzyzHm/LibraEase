@@ -27,3 +27,33 @@ export interface LoanQueryResponse {
   message: string;
   records: LoanRecordWithItem[];
 }
+
+export interface LoanListResponse {
+  message: string;
+  records: LoanRecordModel[];
+}
+
+export interface LoanPayload {
+  status: LoanStatus;
+  loanedDate: string;
+  dueDate: string;
+  returnedDate?: string;
+  patron: string;
+  employeeOut: string;
+  employeeIn?: string;
+  item: string;
+}
+
+export type LoanUpdatePayload = LoanPayload & { id: string };
+
+/** Response envelope for POST /loan. */
+export interface LoanCreateResponse {
+  message: string;
+  record: LoanRecordModel;
+}
+
+/** Response envelope for PUT /loan. */
+export interface LoanUpdateResponse {
+  message: string;
+  record: LoanRecordModel;
+}

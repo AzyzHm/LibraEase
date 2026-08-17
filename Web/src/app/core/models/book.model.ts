@@ -49,3 +49,24 @@ export interface BookQueryResponse {
   message: string;
   page: Pagination<BookModel>;
 }
+
+export type BookCreatePayload = Book;
+
+export type BookUpdatePayload = Book & { id: string };
+
+/** Response envelope for POST /book. */
+export interface BookCreateResponse {
+  message: string;
+  savedBook: BookModel;
+}
+
+/** Response envelope for PUT /book. */
+export interface BookUpdateResponse {
+  message: string;
+  updatedBook: BookModel;
+}
+
+/** Response envelope for DELETE /book/:barcode. */
+export interface BookDeleteResponse {
+  message: string;
+}

@@ -1,0 +1,314 @@
+<div>
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <form [formGroup]="filterForm" (ngSubmit)="onFilterSubmit()" class="flex flex-wrap items-end gap-3" novalidate>
+      <div>
+        <label for="filter-title" class="mb-1 block text-xs font-medium text-ink-600">Title</label>
+        <input
+          id="filter-title"
+          type="text"
+          formControlName="title"
+          class="w-40 rounded-md border border-border bg-white px-3 py-1.5 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+        />
+      </div>
+      <div>
+        <label for="filter-author" class="mb-1 block text-xs font-medium text-ink-600">Author</label>
+        <input
+          id="filter-author"
+          type="text"
+          formControlName="author"
+          class="w-40 rounded-md border border-border bg-white px-3 py-1.5 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+        />
+      </div>
+      <div>
+        <label for="filter-genre" class="mb-1 block text-xs font-medium text-ink-600">Genre</label>
+        <input
+          id="filter-genre"
+          type="text"
+          formControlName="genre"
+          class="w-40 rounded-md border border-border bg-white px-3 py-1.5 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+        />
+      </div>
+      <button type="submit" class="rounded-md bg-forest-700 px-3 py-1.5 text-sm font-medium text-cream-50 transition-colors hover:bg-forest-500">
+        Search
+      </button>
+      <button type="button" (click)="onFilterClear()" class="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-ink-600 transition-colors hover:bg-cream-200">
+        Clear
+      </button>
+    </form>
+
+    <button
+      type="button"
+      (click)="onOpenCreate()"
+      class="rounded-md bg-coral-500 px-4 py-2 text-sm font-medium text-cream-50 transition-colors hover:bg-coral-700"
+    >
+      + New book
+    </button>
+  </div>
+
+  @if (store.actionError()) {
+    <p class="mt-4 rounded-md bg-danger-50 px-4 py-3 text-sm text-danger-700">{{ store.actionError() }}</p>
+  }
+
+  @if (showForm()) {
+    <form
+      [formGroup]="bookForm"
+      (ngSubmit)="onSubmitForm()"
+      class="mt-6 flex flex-col gap-4 rounded-card border border-border bg-white p-6"
+      novalidate
+    >
+      <h2 class="font-display text-lg text-ink-900">{{ editingBook() ? 'Edit book' : 'New book' }}</h2>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label for="barcode" class="mb-1 block text-sm font-medium text-ink-900">Barcode (ISBN-10 or ISBN-13)</label>
+          <input
+            id="barcode"
+            type="text"
+            formControlName="barcode"
+            class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none disabled:bg-cream-100 disabled:text-ink-400"
+          />
+          @if (submitted() && bookForm.controls.barcode.invalid) {
+            <p class="mt-1 text-xs text-danger-500">Enter a valid 10 or 13-digit barcode.</p>
+          }
+        </div>
+
+        <div>
+          <label for="cover" class="mb-1 block text-sm font-medium text-ink-900">Cover image URL</label>
+          <input
+            id="cover"
+            type="text"
+            formControlName="cover"
+            class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+          />
+          @if (submitted() && bookForm.controls.cover.invalid) {
+            <p class="mt-1 text-xs text-danger-500">Required.</p>
+          }
+        </div>
+      </div>
+
+      <div>
+        <label for="title" class="mb-1 block text-sm font-medium text-ink-900">Title</label>
+        <input
+          id="title"
+          type="text"
+          formControlName="title"
+          class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+        />
+        @if (submitted() && bookForm.controls.title.invalid) {
+          <p class="mt-1 text-xs text-danger-500">Required.</p>
+        }
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label for="authors" class="mb-1 block text-sm font-medium text-ink-900">Authors (comma-separated)</label>
+          <input
+            id="authors"
+            type="text"
+            formControlName="authors"
+            placeholder="Jane Austen, ..."
+            class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+          />
+          @if (submitted() && bookForm.controls.authors.invalid) {
+            <p class="mt-1 text-xs text-danger-500">At least one author is required.</p>
+          }
+        </div>
+
+        <div>
+          <label for="subjects" class="mb-1 block text-sm font-medium text-ink-900">Subjects (comma-separated)</label>
+          <input
+            id="subjects"
+            type="text"
+            formControlName="subjects"
+            placeholder="Fiction, Classics, ..."
+            class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+          />
+          @if (submitted() && bookForm.controls.subjects.invalid) {
+            <p class="mt-1 text-xs text-danger-500">At least one subject is required.</p>
+          }
+        </div>
+      </div>
+
+      <div>
+        <label for="description" class="mb-1 block text-sm font-medium text-ink-900">Description</label>
+        <textarea
+          id="description"
+          formControlName="description"
+          rows="3"
+          class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+        ></textarea>
+        @if (submitted() && bookForm.controls.description.invalid) {
+          <p class="mt-1 text-xs text-danger-500">Required.</p>
+        }
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label for="publisher" class="mb-1 block text-sm font-medium text-ink-900">Publisher</label>
+          <input
+            id="publisher"
+            type="text"
+            formControlName="publisher"
+            class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+          />
+          @if (submitted() && bookForm.controls.publisher.invalid) {
+            <p class="mt-1 text-xs text-danger-500">Required.</p>
+          }
+        </div>
+
+        <div>
+          <label for="genre" class="mb-1 block text-sm font-medium text-ink-900">Genre</label>
+          <input
+            id="genre"
+            type="text"
+            formControlName="genre"
+            class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+          />
+          @if (submitted() && bookForm.controls.genre.invalid) {
+            <p class="mt-1 text-xs text-danger-500">Required.</p>
+          }
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label for="publicationDate" class="mb-1 block text-sm font-medium text-ink-900">Publication date</label>
+          <input
+            id="publicationDate"
+            type="date"
+            formControlName="publicationDate"
+            class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+          />
+          @if (submitted() && bookForm.controls.publicationDate.invalid) {
+            <p class="mt-1 text-xs text-danger-500">Required.</p>
+          }
+        </div>
+
+        <div>
+          <label for="pages" class="mb-1 block text-sm font-medium text-ink-900">Pages</label>
+          <input
+            id="pages"
+            type="number"
+            min="1"
+            formControlName="pages"
+            class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+          />
+          @if (submitted() && bookForm.controls.pages.invalid) {
+            <p class="mt-1 text-xs text-danger-500">Enter a page count of at least 1.</p>
+          }
+        </div>
+      </div>
+
+      <div class="flex gap-3">
+        <button
+          type="submit"
+          [disabled]="store.actionPendingBarcode() !== null"
+          class="rounded-md bg-forest-700 px-4 py-2 text-sm font-medium text-cream-50 transition-colors hover:bg-forest-500 disabled:opacity-60"
+        >
+          {{ store.actionPendingBarcode() ? 'Saving…' : editingBook() ? 'Save changes' : 'Create book' }}
+        </button>
+        <button
+          type="button"
+          (click)="onCancelForm()"
+          class="rounded-md border border-border px-4 py-2 text-sm font-medium text-ink-600 transition-colors hover:bg-cream-200"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  }
+
+  <div class="mt-6">
+    @if (store.loading()) {
+      <p class="py-16 text-center text-sm text-ink-400">Loading books…</p>
+    } @else if (store.errorMessage()) {
+      <p class="rounded-md bg-danger-50 px-4 py-3 text-sm text-danger-700">{{ store.errorMessage() }}</p>
+    } @else if (store.books().length === 0) {
+      <p class="py-16 text-center text-sm text-ink-400">No books match this search.</p>
+    } @else {
+      <div class="overflow-x-auto rounded-(--radius-card) border border-border bg-white">
+        <table class="w-full text-left text-sm">
+          <thead>
+            <tr class="border-b border-border text-xs font-medium uppercase tracking-wide text-ink-400">
+              <th class="px-4 py-3">Title</th>
+              <th class="px-4 py-3">Barcode</th>
+              <th class="px-4 py-3">Authors</th>
+              <th class="px-4 py-3">Genre</th>
+              <th class="px-4 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (book of store.books(); track book.id) {
+              <tr class="border-b border-border last:border-b-0">
+                <td class="px-4 py-3 text-ink-900">{{ book.title }}</td>
+                <td class="px-4 py-3 text-ink-600">{{ book.barcode }}</td>
+                <td class="px-4 py-3 text-ink-600">{{ book.authors.join(', ') }}</td>
+                <td class="px-4 py-3 text-ink-600">{{ book.genre }}</td>
+                <td class="px-4 py-3">
+                  <div class="flex justify-end gap-2">
+                    @if (store.actionPendingBarcode() === book.barcode) {
+                      <span class="text-xs text-ink-400">Working…</span>
+                    } @else if (confirmingDeleteBarcode() === book.barcode) {
+                      <span class="text-xs text-ink-600">Delete this book?</span>
+                      <button
+                        type="button"
+                        (click)="onDeleteConfirm(book)"
+                        class="rounded-md bg-danger-500 px-2 py-1 text-xs font-medium text-cream-50 transition-colors hover:bg-danger-700"
+                      >
+                        Confirm
+                      </button>
+                      <button
+                        type="button"
+                        (click)="onDeleteCancel()"
+                        class="rounded-md border border-border px-2 py-1 text-xs font-medium text-ink-600 transition-colors hover:bg-cream-200"
+                      >
+                        Cancel
+                      </button>
+                    } @else {
+                      <button
+                        type="button"
+                        (click)="onOpenEdit(book)"
+                        class="rounded-md border border-border px-2 py-1 text-xs font-medium text-ink-600 transition-colors hover:bg-cream-200"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        (click)="onDeleteRequest(book)"
+                        class="rounded-md border border-border px-2 py-1 text-xs font-medium text-danger-700 transition-colors hover:bg-danger-50"
+                      >
+                        Delete
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-4 flex items-center justify-between text-sm text-ink-600">
+        <span>Page {{ store.currentPage() }} of {{ store.totalPages() }} · {{ store.totalCount() }} books</span>
+        <div class="flex gap-2">
+          <button
+            type="button"
+            (click)="onPrevious()"
+            [disabled]="store.currentPage() <= 1"
+            class="rounded-md border border-border px-3 py-1.5 font-medium text-ink-600 transition-colors hover:bg-cream-200 disabled:opacity-40"
+          >
+            Previous
+          </button>
+          <button
+            type="button"
+            (click)="onNext()"
+            [disabled]="store.currentPage() >= store.totalPages()"
+            class="rounded-md border border-border px-3 py-1.5 font-medium text-ink-600 transition-colors hover:bg-cream-200 disabled:opacity-40"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

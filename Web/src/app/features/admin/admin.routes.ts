@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { AdminUsers } from './admin-users/admin-users';
 import { AdminBooks } from './admin-books/admin-books';
+import { AdminCards } from './admin-cards/admin-cards';
 import { ComingSoon } from '../../shared/ui/coming-soon/coming-soon';
 
 export const adminRoutes: Routes = [
@@ -13,10 +14,5 @@ export const adminRoutes: Routes = [
     data: { title: 'Loan management', phase: 'a later admin phase' },
     title: 'Manage loans · Admin · LibraEase'
   },
-  {
-    path: 'cards',
-    component: ComingSoon,
-    data: { title: 'Library card issuing', phase: 'a later admin phase' },
-    title: 'Manage library cards · Admin · LibraEase'
-  }
+  { path: 'cards', component: AdminCards, title: 'Library cards · Admin · LibraEase' }
 ];

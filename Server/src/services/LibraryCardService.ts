@@ -4,6 +4,10 @@ import { ILibraryCardWithUser } from "../daos/LibraryCardDao";
 import { ILibraryCard } from "../models/LibraryCard";
 import { LibraryCardDoesNotExistError } from "../utils/LibraryErrors";
 
+export async function findAllLibraryCards(): Promise<ILibraryCardWithUser[]> {
+    return await LibraryCardDao.find();
+}
+
 export async function registerLibraryCard(card: ILibraryCard): Promise<ILibraryCardWithUser> {
     try {
         await LibraryCardDao.insert(card);

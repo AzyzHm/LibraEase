@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import { registerLibraryCard, findLibraryCard } from "../services/LibraryCardService";
+import { registerLibraryCard, findLibraryCard, findAllLibraryCards } from "../services/LibraryCardService";
 
 import { ILibraryCard } from "../models/LibraryCard";
 import { ILibraryCardWithUser } from "../daos/LibraryCardDao";
@@ -9,6 +9,16 @@ function sanitizeCard(card: ILibraryCardWithUser): any {
     if (!card) return card;
     const { password, ...safeUserDetails } = card.userDetails as any;
     return { ...card, userDetails: safeUserDetails };
+}
+
+async function getAllLibraryCards(req:Request, res:Response){
+    // Role check (ADMIN/EMPLOYEE only) happens in the route via `authorize`.
+    try {
+        const cards = await findAllLibraryCards();
+        res.status(200).json({message : "Retrieved all library cards", count: cards.length, cards: cards.map(sanitizeCard)});
+    } catch (error:any) {
+        res.status(500).json({message : "Failed to retrieve library cards", error:error.message});
+    }
 }
 
 async function getLibraryCard(req:Request, res:Response){
@@ -50,4 +60,4 @@ async function createLibraryCard(req:Request, res:Response){
     }
 }
 
-export default {getLibraryCard, createLibraryCard};
+export default {getAllLibraryCards, getLibraryCard, createLibraryCard};

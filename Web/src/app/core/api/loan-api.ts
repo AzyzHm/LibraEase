@@ -2,7 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { LoanQueryResponse } from '../models/loan.model';
+import {
+  LoanCreateResponse,
+  LoanListResponse,
+  LoanPayload,
+  LoanQueryResponse,
+  LoanUpdatePayload,
+  LoanUpdateResponse
+} from '../models/loan.model';
 
 @Injectable({ providedIn: 'root' })
 export class LoanApi {
@@ -15,5 +22,20 @@ export class LoanApi {
       property: 'patron',
       value: patronId
     });
+  }
+
+  /** GET /loan - admin/employee only. Every loan record, unjoined (see LoanListResponse). */
+  getAll(): Observable<LoanListResponse> {
+    return this.http.get<LoanListResponse>(this.baseUrl);
+  }
+
+  /** POST /loan - admin/employee only. Checks a book out to a patron. */
+  create(payload: LoanPayload): Observable<LoanCreateResponse> {
+    return this.http.post<LoanCreateResponse>(this.baseUrl, payload);
+  }
+
+  /** PUT /loan - admin/employee only. Full-record replace; used both to edit and to mark returned. */
+  update(payload: LoanUpdatePayload): Observable<LoanUpdateResponse> {
+    return this.http.put<LoanUpdateResponse>(this.baseUrl, payload);
   }
 }

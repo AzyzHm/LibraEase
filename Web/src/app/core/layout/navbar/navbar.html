@@ -17,6 +17,15 @@
       >
         My loans
       </a>
+      @if (authStore.isAuthenticated() && authStore.isAdmin()) {
+        <a
+          routerLink="/admin"
+          routerLinkActive="text-coral-300"
+          class="text-cream-100 transition-colors hover:text-coral-300"
+        >
+          Admin
+        </a>
+      }
 
       @if (authStore.isAuthenticated()) {
         <span class="text-cream-100">{{ authStore.user()?.firstname }}</span>

@@ -42,6 +42,12 @@ async function getUserById(req:Request,res:Response) {
 
 async function deleteUser(req:Request,res:Response) {
     const userId = req.params.userId as string;
+    const requester = req.user!; // guaranteed by the `authenticate` middleware on this route
+
+    if (requester.type !== 'ADMIN' && requester.id !== userId) {
+        res.status(403).json({message:"You can only delete your own account"});
+        return;
+    }
 
     try {
         let message = await removeUser(userId);
@@ -56,8 +62,19 @@ async function deleteUser(req:Request,res:Response) {
 
 async function updateUser(req:Request,res:Response) {
     const user = req.body;
+    const requester = req.user!; // guaranteed by the `authenticate` middleware on this route
+
+    if (requester.type !== 'ADMIN' && requester.id !== user.id) {
+        res.status(403).json({message:"You can only update your own account"});
+        return;
+    }
 
     try {
+        if (requester.type !== 'ADMIN') {
+            const existing = await findUserById(user.id);
+            user.type = existing!.type;
+        }
+
         let updatedUser = await modifyUser(user);
         res.status(200).json({message:"User updated successfully",updatedUser: sanitizeUser(updatedUser)});
     }catch (error:any) {

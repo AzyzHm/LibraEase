@@ -28,6 +28,12 @@ async function getPendingUsers(req:Request,res:Response) {
 
 async function getUserById(req:Request,res:Response) {
     const userId = req.params.userId as string;
+    const requester = req.user!; // guaranteed by the `authenticate` middleware on this route
+
+    if (requester.type !== 'ADMIN' && requester.type !== 'EMPLOYEE' && requester.id !== userId) {
+        res.status(403).json({message:"You can only view your own account"});
+        return;
+    }
 
     try {
         let user = await findUserById(userId);

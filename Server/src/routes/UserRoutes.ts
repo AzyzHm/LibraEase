@@ -6,13 +6,13 @@ import { authenticate, authorize } from '../middlewares/Auth';
 
 const router = express.Router();
 
-router.get('/', UserController.getAllUsers);
+router.get('/', authenticate, authorize('ADMIN','EMPLOYEE'), UserController.getAllUsers);
 
 // Must come before '/:userId' so it doesn't get swallowed by that route.
 // Admin-only: exposes every pending signup's details.
 router.get('/pending', authenticate, authorize('ADMIN'), UserController.getPendingUsers);
 
-router.get('/:userId',ValidateSchema(Schemas.user.userId,'params') ,UserController.getUserById);
+router.get('/:userId', authenticate, ValidateSchema(Schemas.user.userId,'params') ,UserController.getUserById);
 
 router.delete('/:userId', authenticate, ValidateSchema(Schemas.user.userId,'params') ,UserController.deleteUser);
 

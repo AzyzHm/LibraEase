@@ -1,0 +1,122 @@
+<section class="mx-auto max-w-3xl px-6 py-10">
+  <h1 class="font-display text-2xl text-ink-900">My account</h1>
+  <p class="mt-1 text-sm text-ink-400">{{ authStore.user()?.email }} · {{ authStore.user()?.type }}</p>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mt-6 flex flex-col gap-4 rounded-card border border-border bg-white p-6" novalidate>
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label for="firstname" class="mb-1 block text-sm font-medium text-ink-900">First name</label>
+        <input
+          id="firstname"
+          type="text"
+          formControlName="firstname"
+          autocomplete="given-name"
+          class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+        />
+        @if (submitted() && form.controls.firstname.invalid) {
+          <p class="mt-1 text-xs text-danger-500">Required.</p>
+        }
+      </div>
+
+      <div>
+        <label for="lastname" class="mb-1 block text-sm font-medium text-ink-900">Last name</label>
+        <input
+          id="lastname"
+          type="text"
+          formControlName="lastname"
+          autocomplete="family-name"
+          class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+        />
+        @if (submitted() && form.controls.lastname.invalid) {
+          <p class="mt-1 text-xs text-danger-500">Required.</p>
+        }
+      </div>
+    </div>
+
+    <div>
+      <label for="email" class="mb-1 block text-sm font-medium text-ink-900">Email</label>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        autocomplete="email"
+        class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+      />
+      @if (submitted() && form.controls.email.invalid) {
+        <p class="mt-1 text-xs text-danger-500">Enter a valid email address.</p>
+      }
+    </div>
+
+    @if (store.profileError()) {
+      <p class="rounded-md bg-danger-50 px-3 py-2 text-sm text-danger-700">{{ store.profileError() }}</p>
+    }
+    @if (store.profileSaved()) {
+      <p class="rounded-md bg-success-50 px-3 py-2 text-sm text-success-700">Profile updated.</p>
+    }
+
+    <button
+      type="submit"
+      [disabled]="store.savingProfile()"
+      class="self-start rounded-md bg-forest-700 px-4 py-2 text-sm font-medium text-cream-50 transition-colors hover:bg-forest-500 disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      {{ store.savingProfile() ? 'Saving…' : 'Save changes' }}
+    </button>
+  </form>
+
+  <h2 class="mt-10 font-display text-xl text-ink-900">My loans</h2>
+
+  <div class="mt-4">
+    @if (store.loansLoading()) {
+      <p class="py-10 text-center text-sm text-ink-400">Loading your loans…</p>
+    } @else if (store.loansError()) {
+      <p class="rounded-md bg-danger-50 px-4 py-3 text-sm text-danger-700">{{ store.loansError() }}</p>
+    } @else if (loans().length === 0) {
+      <p class="py-10 text-center text-sm text-ink-400">You haven't borrowed any books yet.</p>
+    } @else {
+      <ul class="flex flex-col gap-3">
+        @for (loan of loans(); track loan.id) {
+          <li class="flex items-center gap-4 rounded-card border border-border bg-white p-4">
+            <div class="flex h-20 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded bg-cream-200">
+              @if (loan.itemDetails.cover && !failedCovers().has(loan.id)) {
+                <img
+                  [src]="loan.itemDetails.cover"
+                  [alt]="'Cover of ' + loan.itemDetails.title"
+                  (error)="onCoverError(loan.id)"
+                  class="h-full w-full object-cover"
+                />
+              } @else {
+                <span class="px-1 text-center text-[10px] text-ink-400">{{ loan.itemDetails.title }}</span>
+              }
+            </div>
+
+            <div class="min-w-0 flex-1">
+              <h3 class="truncate font-display text-base text-ink-900">{{ loan.itemDetails.title }}</h3>
+              <p class="truncate text-sm text-ink-600">{{ loan.itemDetails.authors.join(', ') }}</p>
+              <p class="mt-1 text-xs text-ink-400">
+                Borrowed {{ loan.loanedDate | date: 'mediumDate' }}
+                @if (loan.status === 'LOANED') {
+                  · Due {{ loan.dueDate | date: 'mediumDate' }}
+                } @else {
+                  · Returned {{ loan.returnedDate | date: 'mediumDate' }}
+                }
+              </p>
+            </div>
+
+            @if (loan.status === 'LOANED') {
+              <span
+                class="flex-shrink-0 rounded-full px-2.5 py-1 text-xs font-medium"
+                [class]="loan.isOverdue ? 'bg-danger-50 text-danger-700' : 'bg-forest-50 text-forest-700'"
+              >
+                {{ loan.isOverdue ? 'Overdue' : 'On loan' }}
+              </span>
+            } @else {
+              <span class="flex-shrink-0 rounded-full bg-cream-200 px-2.5 py-1 text-xs font-medium text-ink-600">
+                Returned
+              </span>
+            }
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</section>

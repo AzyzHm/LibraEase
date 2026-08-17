@@ -14,12 +14,11 @@ export const authGuard: CanActivateFn = (_route, state) => {
   return router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
 };
 
-/** Blocks access unless the user is signed in AND an admin; redirects everyone else home. */
-export const adminGuard: CanActivateFn = () => {
+export const staffGuard: CanActivateFn = () => {
   const authStore = inject(AuthStore);
   const router = inject(Router);
 
-  if (authStore.isAuthenticated() && authStore.isAdmin()) {
+  if (authStore.isAuthenticated() && authStore.isStaff()) {
     return true;
   }
 

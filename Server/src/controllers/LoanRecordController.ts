@@ -38,7 +38,13 @@ async function getAllRecords(req: Request, res: Response) {
 }
 
 async function getRecordsByProperty(req: Request, res: Response) {
-    let param = req.body;
+    let param = req.body as { property: string; value: string | Date };
+    const requester = req.user!; // guaranteed by the `authenticate` middleware on this route
+
+    if (requester.type === 'PATRON' && (param.property !== 'patron' || String(param.value) !== requester.id)) {
+        res.status(403).json({ message: 'You can only query your own loan records' });
+        return;
+    }
 
     try {
         let records = await queryRecords(param);

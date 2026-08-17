@@ -4,9 +4,7 @@ import { IUser } from '../models/User';
 import { IUserModel } from '../daos/UserDao';
 import { IBook } from '../models/Book';
 import { IBookModel } from '../daos/BookDao';
-import { create } from 'domain';
 import { ILibraryCard } from '../models/LibraryCard';
-import { get } from 'http';
 import { ILoanRecord } from '../models/LoanRecord';
 import { ILoanRecordModel } from '../daos/LoanRecordDao';
 
@@ -52,7 +50,7 @@ export const Schemas = {
         firstname: Joi.string().required(),
         lastname: Joi.string().required(),
         email: Joi.string().email().regex(/[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/).required(),
-        password: Joi.string().required()
+        password: Joi.string().optional()
     })},
     book : {
         create: Joi.object<IBook>({

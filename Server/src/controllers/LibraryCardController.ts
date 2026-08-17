@@ -2,13 +2,28 @@ import {Request, Response} from "express";
 import { registerLibraryCard, findLibraryCard } from "../services/LibraryCardService";
 
 import { ILibraryCard } from "../models/LibraryCard";
+import { ILibraryCardWithUser } from "../daos/LibraryCardDao";
 import { LibraryCardDoesNotExistError } from "../utils/LibraryErrors";
+
+function sanitizeCard(card: ILibraryCardWithUser): any {
+    if (!card) return card;
+    const { password, ...safeUserDetails } = card.userDetails as any;
+    return { ...card, userDetails: safeUserDetails };
+}
 
 async function getLibraryCard(req:Request, res:Response){
     const {cardId} = req.params as { cardId: string };
+    const requester = req.user!; // guaranteed by the `authenticate` middleware on this route
+
     try {
         let card = await findLibraryCard(cardId);
-        res.status(200).json({message : "Library Card found", card});
+
+        if (requester.type !== 'ADMIN' && requester.type !== 'EMPLOYEE' && requester.id !== card.userDetails.id) {
+            res.status(403).json({message : "You can only view your own library card"});
+            return;
+        }
+
+        res.status(200).json({message : "Library Card found", card: sanitizeCard(card)});
     } catch (error:any) {
         if(error instanceof LibraryCardDoesNotExistError){
             res.status(404).json({message : "Library Card not found", error:error.message});
@@ -20,9 +35,16 @@ async function getLibraryCard(req:Request, res:Response){
 
 async function createLibraryCard(req:Request, res:Response){
     const card:ILibraryCard = req.body;
+    const requester = req.user!; // guaranteed by the `authenticate` middleware on this route
+
+    if (requester.type !== 'ADMIN' && requester.type !== 'EMPLOYEE' && requester.id !== card.user) {
+        res.status(403).json({message : "You can only request a library card for your own account"});
+        return;
+    }
+
     try {
         let savedCard = await registerLibraryCard(card);
-        res.status(201).json({message : "Library Card Generated Successfuly", savedCard});
+        res.status(201).json({message : "Library Card Generated Successfuly", savedCard: sanitizeCard(savedCard)});
     } catch (error:any) {
         res.status(500).json({message : "Failed to generate library card", error:error.message});
     }

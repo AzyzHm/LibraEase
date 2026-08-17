@@ -14,9 +14,9 @@ router.get('/pending', authenticate, authorize('ADMIN'), UserController.getPendi
 
 router.get('/:userId',ValidateSchema(Schemas.user.userId,'params') ,UserController.getUserById);
 
-router.delete('/:userId',ValidateSchema(Schemas.user.userId,'params') ,UserController.deleteUser);
+router.delete('/:userId', authenticate, ValidateSchema(Schemas.user.userId,'params') ,UserController.deleteUser);
 
-router.put('/',ValidateSchema(Schemas.user.update,'body') ,UserController.updateUser);
+router.put('/', authenticate, ValidateSchema(Schemas.user.update,'body') ,UserController.updateUser);
 
 // Admin-only: these change another user's account status.
 router.put('/:userId/approve',authenticate, authorize('ADMIN'), ValidateSchema(Schemas.user.userId,'params') ,UserController.approveUserHandler);

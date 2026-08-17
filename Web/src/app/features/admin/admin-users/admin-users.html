@@ -1,0 +1,117 @@
+<div>
+  <div class="flex flex-wrap items-center gap-2">
+    @for (filter of filters; track filter.value) {
+      <button
+        type="button"
+        (click)="onFilterChange(filter.value)"
+        class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
+        [class.bg-forest-700]="store.statusFilter() === filter.value"
+        [class.text-cream-50]="store.statusFilter() === filter.value"
+        [class.text-ink-600]="store.statusFilter() !== filter.value"
+        [class.hover:bg-cream-200]="store.statusFilter() !== filter.value"
+      >
+        {{ filter.label }}
+        @if (filter.value === 'PENDING' && store.pendingCount() > 0) {
+          <span class="ml-1 rounded-full bg-coral-500 px-1.5 py-0.5 text-xs text-cream-50">{{ store.pendingCount() }}</span>
+        }
+      </button>
+    }
+  </div>
+
+  @if (store.actionError()) {
+    <p class="mt-4 rounded-md bg-danger-50 px-4 py-3 text-sm text-danger-700">{{ store.actionError() }}</p>
+  }
+
+  <div class="mt-6">
+    @if (store.loading()) {
+      <p class="py-16 text-center text-sm text-ink-400">Loading users…</p>
+    } @else if (store.errorMessage()) {
+      <p class="rounded-md bg-danger-50 px-4 py-3 text-sm text-danger-700">{{ store.errorMessage() }}</p>
+    } @else if (store.filteredUsers().length === 0) {
+      <p class="py-16 text-center text-sm text-ink-400">No users in this view.</p>
+    } @else {
+      <div class="overflow-x-auto rounded-(--radius-card) border border-border bg-white">
+        <table class="w-full text-left text-sm">
+          <thead>
+            <tr class="border-b border-border text-xs font-medium uppercase tracking-wide text-ink-400">
+              <th class="px-4 py-3">Name</th>
+              <th class="px-4 py-3">Email</th>
+              <th class="px-4 py-3">Role</th>
+              <th class="px-4 py-3">Status</th>
+              <th class="px-4 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of store.filteredUsers(); track user.id) {
+              <tr class="border-b border-border last:border-b-0">
+                <td class="px-4 py-3 text-ink-900">{{ user.firstname }} {{ user.lastname }}</td>
+                <td class="px-4 py-3 text-ink-600">{{ user.email }}</td>
+                <td class="px-4 py-3 text-ink-600">{{ user.type }}</td>
+                <td class="px-4 py-3">
+                  <span
+                    class="rounded-full px-2 py-0.5 text-xs font-medium"
+                    [class.bg-success-50]="user.status === 'APPROVED'"
+                    [class.text-success-700]="user.status === 'APPROVED'"
+                    [class.bg-coral-50]="user.status === 'PENDING'"
+                    [class.text-coral-700]="user.status === 'PENDING'"
+                    [class.bg-danger-50]="user.status === 'REJECTED'"
+                    [class.text-danger-700]="user.status === 'REJECTED'"
+                  >
+                    {{ user.status }}
+                  </span>
+                </td>
+                <td class="px-4 py-3">
+                  <div class="flex justify-end gap-2">
+                    @if (store.actionPendingId() === user.id) {
+                      <span class="text-xs text-ink-400">Working…</span>
+                    } @else if (confirmingDeleteId() === user.id) {
+                      <span class="text-xs text-ink-600">Delete this user?</span>
+                      <button
+                        type="button"
+                        (click)="onDeleteConfirm(user)"
+                        class="rounded-md bg-danger-500 px-2 py-1 text-xs font-medium text-cream-50 transition-colors hover:bg-danger-700"
+                      >
+                        Confirm
+                      </button>
+                      <button
+                        type="button"
+                        (click)="onDeleteCancel()"
+                        class="rounded-md border border-border px-2 py-1 text-xs font-medium text-ink-600 transition-colors hover:bg-cream-200"
+                      >
+                        Cancel
+                      </button>
+                    } @else {
+                      @if (user.status === 'PENDING') {
+                        <button
+                          type="button"
+                          (click)="onApprove(user)"
+                          class="rounded-md bg-forest-700 px-2 py-1 text-xs font-medium text-cream-50 transition-colors hover:bg-forest-500"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          type="button"
+                          (click)="onReject(user)"
+                          class="rounded-md border border-border px-2 py-1 text-xs font-medium text-ink-600 transition-colors hover:bg-cream-200"
+                        >
+                          Reject
+                        </button>
+                      }
+                      <button
+                        type="button"
+                        (click)="onDeleteRequest(user)"
+                        class="rounded-md border border-border px-2 py-1 text-xs font-medium text-danger-700 transition-colors hover:bg-danger-50"
+                      >
+                        Delete
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

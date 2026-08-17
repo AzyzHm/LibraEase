@@ -4,7 +4,9 @@ import { Catalog } from './features/catalog/catalog';
 import { Profile } from './features/profile/profile';
 import { Login } from './features/auth/login/login';
 import { Register } from './features/auth/register/register';
-import { authGuard, guestGuard } from './core/guards/auth-guard';
+import { AdminShell } from './features/admin/admin-shell/admin-shell';
+import { adminRoutes } from './features/admin/admin.routes';
+import { adminGuard, authGuard, guestGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
   { path: '', component: Home, title: 'LibraEase' },
@@ -18,6 +20,12 @@ export const routes: Routes = [
     component: Profile,
     canActivate: [authGuard],
     title: 'My account · LibraEase'
+  },
+  {
+    path: 'admin',
+    component: AdminShell,
+    canActivate: [adminGuard],
+    children: adminRoutes
   },
   {
     path: 'login',

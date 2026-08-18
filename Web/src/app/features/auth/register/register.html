@@ -12,7 +12,7 @@
     <p class="mt-1 text-sm text-ink-400">New accounts need admin approval before signing in.</p>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mt-8 flex flex-col gap-4" novalidate>
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label for="firstname" class="mb-1 block text-sm font-medium text-ink-900">First name</label>
           <input

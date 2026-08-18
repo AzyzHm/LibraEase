@@ -24,11 +24,11 @@
 
   <div class="mt-6">
     @if (store.loading()) {
-      <p class="py-16 text-center text-sm text-ink-400">Loading users…</p>
+      <app-loading-state message="Loading users…" />
     } @else if (store.errorMessage()) {
-      <p class="rounded-md bg-danger-50 px-4 py-3 text-sm text-danger-700">{{ store.errorMessage() }}</p>
+      <app-error-state [message]="store.errorMessage()!" (retry)="onRetry()" />
     } @else if (store.filteredUsers().length === 0) {
-      <p class="py-16 text-center text-sm text-ink-400">No users in this view.</p>
+      <app-empty-state message="No users in this view." />
     } @else {
       <div class="overflow-x-auto rounded-(--radius-card) border border-border bg-white">
         <table class="w-full text-left text-sm">

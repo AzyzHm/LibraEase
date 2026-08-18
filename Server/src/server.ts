@@ -7,24 +7,8 @@ import {seedInitialAdmin} from './startup/seedAdminUser';
 const port = config.server.port;
 
 const app: Express = express();
-
 app.use(express.json());
-
-const allowedOrigins = [
-    'http://localhost:5173'
-];
-
-app.use(
-    cors({
-        origin: (origin, callback) => {
-            if (!origin || allowedOrigins.includes(origin)) {
-                callback(null, true);
-            } else {
-                callback(new Error('Origin not allowed'));
-            }
-        }
-    })
-);
+app.use(cors());
 
 registerRoutes(app);
 

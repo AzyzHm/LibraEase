@@ -1,0 +1,17 @@
+<div
+  class="flex flex-col items-center justify-center gap-3 text-center"
+  [class.py-16]="!compact()"
+  [class.py-8]="compact()"
+>
+  <span class="text-2xl" aria-hidden="true">📭</span>
+  <p class="text-sm text-ink-400">{{ message() }}</p>
+  @if (actionLabel()) {
+    <button
+      type="button"
+      (click)="action.emit()"
+      class="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-ink-600 transition-colors hover:bg-cream-200"
+    >
+      {{ actionLabel() }}
+    </button>
+  }
+</div>

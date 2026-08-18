@@ -3,11 +3,14 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthStore } from '../../core/state/auth-store';
 import { ProfileStore } from '../../core/state/profile-store';
+import { LoadingState } from '../../shared/ui/loading-state/loading-state';
+import { EmptyState } from '../../shared/ui/empty-state/empty-state';
+import { ErrorState } from '../../shared/ui/error-state/error-state';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [ReactiveFormsModule, DatePipe],
+  imports: [ReactiveFormsModule, DatePipe, LoadingState, EmptyState, ErrorState],
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
@@ -39,6 +42,10 @@ export class Profile implements OnInit {
     if (user) {
       this.form.setValue({ firstname: user.firstname, lastname: user.lastname, email: user.email });
     }
+    this.store.loadMyLoans();
+  }
+
+  onRetryLoans(): void {
     this.store.loadMyLoans();
   }
 

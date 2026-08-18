@@ -2,10 +2,14 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { AdminUsersStore, StatusFilter } from '../../../core/state/admin-users-store';
 import { AuthStore } from '../../../core/state/auth-store';
 import { AdminUser } from '../../../core/models/admin.model';
+import { LoadingState } from '../../../shared/ui/loading-state/loading-state';
+import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
+import { ErrorState } from '../../../shared/ui/error-state/error-state';
 
 @Component({
   selector: 'app-admin-users',
   standalone: true,
+  imports: [LoadingState, EmptyState, ErrorState],
   templateUrl: './admin-users.html',
   styleUrl: './admin-users.css'
 })
@@ -24,6 +28,10 @@ export class AdminUsers implements OnInit {
   readonly confirmingDeleteId = signal<string | null>(null);
 
   ngOnInit(): void {
+    this.store.load();
+  }
+
+  onRetry(): void {
     this.store.load();
   }
 

@@ -1,13 +1,16 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { CatalogStore } from '../../core/state/catalog-store';
 import { BookCard } from '../../shared/ui/book-card/book-card';
+import { LoadingState } from '../../shared/ui/loading-state/loading-state';
+import { EmptyState } from '../../shared/ui/empty-state/empty-state';
+import { ErrorState } from '../../shared/ui/error-state/error-state';
 
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [ReactiveFormsModule, BookCard],
+  imports: [ReactiveFormsModule, BookCard, LoadingState, EmptyState, ErrorState],
   templateUrl: './catalog.html',
   styleUrl: './catalog.css'
 })
@@ -22,6 +25,12 @@ export class Catalog implements OnInit {
     genre: ['']
   });
 
+  /** Drives the empty-state "Clear filters" action - only useful when a filter is actually narrowing results. */
+  readonly hasActiveFilters = computed(() => {
+    const filters = this.store.filters();
+    return Boolean(filters.title || filters.author || filters.genre);
+  });
+
   ngOnInit(): void {
     // A ?title= query param (from the home page search box) takes priority over
     // whatever filters were already sitting in the store.
@@ -34,8 +43,6 @@ export class Catalog implements OnInit {
       return;
     }
 
-    // Otherwise restore any filters already held in the store (e.g. coming back from a
-    // book detail page in a later phase) instead of always starting from a blank search.
     this.filterForm.setValue(this.store.filters());
     this.store.loadPage(this.store.currentPage());
   }
@@ -55,5 +62,9 @@ export class Catalog implements OnInit {
 
   onNext(): void {
     this.store.goToPage(this.store.currentPage() + 1);
+  }
+
+  onRetry(): void {
+    this.store.loadPage(this.store.currentPage());
   }
 }

@@ -1,7 +1,10 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AdminBooksStore } from '../../../core/state/admin-books-store';
 import { Book, BookModel } from '../../../core/models/book.model';
+import { LoadingState } from '../../../shared/ui/loading-state/loading-state';
+import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
+import { ErrorState } from '../../../shared/ui/error-state/error-state';
 
 /** Matches the backend's Joi pattern for barcode (10-digit or 13-digit ISBN, hyphens allowed). */
 const BARCODE_PATTERN = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/;
@@ -9,7 +12,7 @@ const BARCODE_PATTERN = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/;
 @Component({
   selector: 'app-admin-books',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, LoadingState, EmptyState, ErrorState],
   templateUrl: './admin-books.html',
   styleUrl: './admin-books.css'
 })
@@ -43,8 +46,18 @@ export class AdminBooks implements OnInit {
 
   readonly confirmingDeleteBarcode = signal<string | null>(null);
 
+  /** Drives the empty-state "Clear filters" action - only useful when a filter is actually narrowing results. */
+  readonly hasActiveFilters = computed(() => {
+    const filters = this.store.filters();
+    return Boolean(filters.title || filters.author || filters.genre);
+  });
+
   ngOnInit(): void {
     this.store.loadPage(1);
+  }
+
+  onRetry(): void {
+    this.store.loadPage(this.store.currentPage());
   }
 
   onFilterSubmit(): void {
@@ -87,8 +100,6 @@ export class AdminBooks implements OnInit {
       pages: book.pages,
       genre: book.genre
     });
-    // Barcode is the key the backend updates by (BookService.modifyBook) - changing it here
-    // would silently target a different row, so lock it while editing.
     this.bookForm.controls.barcode.disable();
     this.showForm.set(true);
   }

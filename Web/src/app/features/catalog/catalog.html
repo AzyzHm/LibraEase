@@ -53,11 +53,15 @@
 
   <div class="mt-8">
     @if (store.loading()) {
-      <p class="py-16 text-center text-sm text-ink-400">Loading books…</p>
+      <app-loading-state message="Loading books…" />
     } @else if (store.errorMessage()) {
-      <p class="rounded-md bg-danger-50 px-4 py-3 text-sm text-danger-700">{{ store.errorMessage() }}</p>
+      <app-error-state [message]="store.errorMessage()!" (retry)="onRetry()" />
     } @else if (store.books().length === 0) {
-      <p class="py-16 text-center text-sm text-ink-400">No books match your search.</p>
+      <app-empty-state
+        message="No books match your search."
+        [actionLabel]="hasActiveFilters() ? 'Clear filters' : null"
+        (action)="onClear()"
+      />
     } @else {
       <p class="mb-4 text-sm text-ink-400">{{ store.totalCount() }} book(s) found</p>
 

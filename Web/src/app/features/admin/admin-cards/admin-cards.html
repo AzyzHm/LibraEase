@@ -17,11 +17,11 @@
 
     <div class="mt-4">
       @if (store.usersLoading()) {
-        <p class="py-8 text-center text-sm text-ink-400">Loading users…</p>
+        <app-loading-state message="Loading users…" [compact]="true" />
       } @else if (store.usersError()) {
-        <p class="rounded-md bg-danger-50 px-4 py-3 text-sm text-danger-700">{{ store.usersError() }}</p>
+        <app-error-state [message]="store.usersError()!" (retry)="onRetryUsers()" />
       } @else if (filteredUsers().length === 0) {
-        <p class="py-8 text-center text-sm text-ink-400">No users match this search.</p>
+        <app-empty-state message="No users match this search." [compact]="true" />
       } @else {
         <div class="max-h-80 overflow-y-auto rounded-(--radius-card) border border-border bg-white">
           @for (user of filteredUsers(); track user.id) {
@@ -56,11 +56,11 @@
 
     <div class="mt-4">
       @if (store.cardsLoading()) {
-        <p class="py-16 text-center text-sm text-ink-400">Loading cards…</p>
+        <app-loading-state message="Loading cards…" />
       } @else if (store.cardsError()) {
-        <p class="rounded-md bg-danger-50 px-4 py-3 text-sm text-danger-700">{{ store.cardsError() }}</p>
+        <app-error-state [message]="store.cardsError()!" (retry)="onRetryCards()" />
       } @else if (store.cards().length === 0) {
-        <p class="py-16 text-center text-sm text-ink-400">No cards issued yet.</p>
+        <app-empty-state message="No cards issued yet." />
       } @else {
         <div class="overflow-x-auto rounded-(--radius-card) border border-border bg-white">
           <table class="w-full text-left text-sm">

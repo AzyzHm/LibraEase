@@ -67,11 +67,11 @@
 
   <div class="mt-4">
     @if (store.loansLoading()) {
-      <p class="py-10 text-center text-sm text-ink-400">Loading your loans…</p>
+      <app-loading-state message="Loading your loans…" />
     } @else if (store.loansError()) {
-      <p class="rounded-md bg-danger-50 px-4 py-3 text-sm text-danger-700">{{ store.loansError() }}</p>
+      <app-error-state [message]="store.loansError()!" (retry)="onRetryLoans()" />
     } @else if (loans().length === 0) {
-      <p class="py-10 text-center text-sm text-ink-400">You haven't borrowed any books yet.</p>
+      <app-empty-state message="You haven't borrowed any books yet." />
     } @else {
       <ul class="flex flex-col gap-3">
         @for (loan of loans(); track loan.id) {

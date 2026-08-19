@@ -22,6 +22,7 @@ export class AuthStore {
   readonly token = this.tokenSignal.asReadonly();
   readonly isAuthenticated = computed(() => this.userSignal() !== null && this.tokenSignal() !== null);
   readonly isAdmin = computed(() => this.userSignal()?.type === 'ADMIN');
+  readonly isPatron = computed(() => this.userSignal()?.type === 'PATRON');
   readonly isStaff = computed(() => {
     const type = this.userSignal()?.type;
     return type === 'ADMIN' || type === 'EMPLOYEE';

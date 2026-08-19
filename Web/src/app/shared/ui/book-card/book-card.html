@@ -1,4 +1,10 @@
-<article class="flex h-full flex-col overflow-hidden rounded-card border border-border bg-white">
+<article
+  class="flex h-full cursor-pointer flex-col overflow-hidden rounded-card border border-border bg-white transition-shadow hover:shadow-md"
+  role="button"
+  tabindex="0"
+  (click)="openDetail()"
+  (keydown.enter)="openDetail()"
+>
   <div class="flex aspect-2/3 items-center justify-center bg-cream-200">
     @if (book().cover && !coverFailed()) {
       <img
@@ -24,5 +30,45 @@
       }
       <span class="text-xs text-ink-400">{{ book().publisher }}</span>
     </div>
+
+    @if (isPatron()) {
+      <div class="mt-3">
+        @if (available() === undefined) {
+          <button
+            type="button"
+            disabled
+            (click)="$event.stopPropagation()"
+            class="w-full rounded-md border border-border px-3 py-1.5 text-xs font-medium text-ink-400"
+          >
+            Checking availability…
+          </button>
+        } @else if (available() === false) {
+          <button
+            type="button"
+            disabled
+            (click)="$event.stopPropagation()"
+            class="w-full cursor-not-allowed rounded-md border border-border px-3 py-1.5 text-xs font-medium text-ink-400"
+          >
+            Currently loaned
+          </button>
+        } @else {
+          <button
+            type="button"
+            (click)="openCheckout($event)"
+            class="w-full rounded-md bg-forest-700 px-3 py-1.5 text-xs font-medium text-cream-50 transition-colors hover:bg-forest-500"
+          >
+            Borrow this book
+          </button>
+        }
+      </div>
+    }
   </div>
 </article>
+
+@if (showDetail()) {
+  <app-book-detail-modal [book]="book()" (closed)="closeDetail()" />
+}
+
+@if (showCheckout()) {
+  <app-self-checkout-modal [book]="book()" (closed)="closeCheckout()" />
+}

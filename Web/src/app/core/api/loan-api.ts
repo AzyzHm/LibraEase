@@ -3,12 +3,15 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
+  AvailabilityResponse,
   LoanCreateResponse,
   LoanListResponse,
   LoanPayload,
   LoanQueryResponse,
   LoanUpdatePayload,
-  LoanUpdateResponse
+  LoanUpdateResponse,
+  SelfCheckoutPayload,
+  SelfCheckoutResponse
 } from '../models/loan.model';
 
 @Injectable({ providedIn: 'root' })
@@ -37,5 +40,15 @@ export class LoanApi {
   /** PUT /loan - admin/employee only. Full-record replace; used both to edit and to mark returned. */
   update(payload: LoanUpdatePayload): Observable<LoanUpdateResponse> {
     return this.http.put<LoanUpdateResponse>(this.baseUrl, payload);
+  }
+
+  /** POST /loan/self - patron only. Books itself out; no employeeOut involved. */
+  selfCheckout(payload: SelfCheckoutPayload): Observable<SelfCheckoutResponse> {
+    return this.http.post<SelfCheckoutResponse>(`${this.baseUrl}/self`, payload);
+  }
+
+  /** GET /loan/availability/:itemId - any authenticated user. Used to enable/disable the catalog's checkout button. */
+  checkAvailability(itemId: string): Observable<AvailabilityResponse> {
+    return this.http.get<AvailabilityResponse>(`${this.baseUrl}/availability/${itemId}`);
   }
 }

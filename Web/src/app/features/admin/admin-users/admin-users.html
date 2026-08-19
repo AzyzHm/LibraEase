@@ -97,6 +97,23 @@
                           Reject
                         </button>
                       }
+                      @if (user.type === 'PATRON') {
+                        <button
+                          type="button"
+                          (click)="onPromote(user)"
+                          class="rounded-md border border-border px-2 py-1 text-xs font-medium text-ink-600 transition-colors hover:bg-cream-200"
+                        >
+                          Make employee
+                        </button>
+                      } @else if (user.type === 'EMPLOYEE') {
+                        <button
+                          type="button"
+                          (click)="onDemote(user)"
+                          class="rounded-md border border-border px-2 py-1 text-xs font-medium text-ink-600 transition-colors hover:bg-cream-200"
+                        >
+                          Make patron
+                        </button>
+                      }
                       <button
                         type="button"
                         (click)="onDeleteRequest(user)"

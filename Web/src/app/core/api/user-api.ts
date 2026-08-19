@@ -33,4 +33,14 @@ export class UserApi {
   remove(userId: string): Observable<DeleteUserResponse> {
     return this.http.delete<DeleteUserResponse>(`${this.baseUrl}/${userId}`);
   }
+
+  /** PUT /:userId/promote - admin only. PATRON -> EMPLOYEE. */
+  promote(userId: string): Observable<UserActionResponse> {
+    return this.http.put<UserActionResponse>(`${this.baseUrl}/${userId}/promote`, {});
+  }
+
+  /** PUT /:userId/demote - admin only. EMPLOYEE -> PATRON. */
+  demote(userId: string): Observable<UserActionResponse> {
+    return this.http.put<UserActionResponse>(`${this.baseUrl}/${userId}/demote`, {});
+  }
 }

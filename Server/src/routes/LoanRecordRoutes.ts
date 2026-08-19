@@ -9,5 +9,7 @@ router.get('/', authenticate, authorize('ADMIN','EMPLOYEE'), LoanRecordControlle
 router.post('/', authenticate, authorize('ADMIN','EMPLOYEE'), ValidateSchema(Schemas.loan.create,'body') ,LoanRecordController.createRecord);
 router.put('/', authenticate, authorize('ADMIN','EMPLOYEE'), ValidateSchema(Schemas.loan.update,'body'),LoanRecordController.updateRecord);
 router.post('/query', authenticate, ValidateSchema(Schemas.loan.query, 'body'),LoanRecordController.getRecordsByProperty);
+router.post('/self', authenticate, authorize('PATRON'), ValidateSchema(Schemas.loan.selfCheckout,'body'), LoanRecordController.createSelfCheckout);
+router.get('/availability/:itemId', authenticate, ValidateSchema(Schemas.loan.itemId,'params'), LoanRecordController.getItemAvailability);
 
 export = router;

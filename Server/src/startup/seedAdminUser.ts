@@ -6,7 +6,8 @@ import * as UserDao from '../daos/UserDao';
 
 export async function seedInitialAdmin(): Promise<void> {
     const existingUsers = await UserDao.find();
-    if (existingUsers.length > 0) return;
+    const adminAlreadyExists = existingUsers.some(user => user.type === 'ADMIN');
+    if (adminAlreadyExists) return;
 
     const email = process.env.SEED_ADMIN_EMAIL || 'admin@libraease.local';
     const firstname = process.env.SEED_ADMIN_FIRSTNAME || 'Library';

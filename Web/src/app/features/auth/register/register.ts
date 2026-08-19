@@ -2,7 +2,6 @@ import { Component, inject, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthStore } from '../../../core/state/auth-store';
-import { UserType } from '../../../core/models/auth.model';
 
 function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password')?.value;
@@ -26,20 +25,13 @@ export class Register {
   readonly loading = this.authStore.loading;
   readonly errorMessage = this.authStore.errorMessage;
 
-  readonly accountTypes: { value: UserType; label: string }[] = [
-    { value: 'PATRON', label: 'Patron' },
-    { value: 'EMPLOYEE', label: 'Employee' },
-    { value: 'ADMIN', label: 'Admin' }
-  ];
-
   readonly form = this.fb.nonNullable.group(
     {
       firstname: ['', Validators.required],
       lastname: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', Validators.required],
-      type: ['PATRON' as UserType, Validators.required]
+      confirmPassword: ['', Validators.required]
     },
     { validators: passwordsMatchValidator }
   );

@@ -57,19 +57,6 @@
       </div>
 
       <div>
-        <label for="type" class="mb-1 block text-sm font-medium text-ink-900">Account type</label>
-        <select
-          id="type"
-          formControlName="type"
-          class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
-        >
-          @for (option of accountTypes; track option.value) {
-            <option [value]="option.value">{{ option.label }}</option>
-          }
-        </select>
-      </div>
-
-      <div>
         <label for="password" class="mb-1 block text-sm font-medium text-ink-900">Password</label>
         <input
           id="password"

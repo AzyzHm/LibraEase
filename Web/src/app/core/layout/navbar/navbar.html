@@ -32,6 +32,13 @@
         <span class="text-cream-100">{{ authStore.user()?.firstname }}</span>
         <button
           type="button"
+          (click)="openEditProfile()"
+          class="rounded-md border border-forest-300 px-3 py-1.5 text-cream-50 transition-colors hover:bg-forest-500"
+        >
+          Edit profile
+        </button>
+        <button
+          type="button"
           (click)="onSignOut()"
           class="rounded-md border border-forest-300 px-3 py-1.5 text-cream-50 transition-colors hover:bg-forest-500"
         >
@@ -102,6 +109,13 @@
         <span class="px-2 py-2 text-cream-100">Signed in as {{ authStore.user()?.firstname }}</span>
         <button
           type="button"
+          (click)="openEditProfile()"
+          class="mt-1 rounded-md border border-forest-300 px-3 py-1.5 text-left text-cream-50 transition-colors hover:bg-forest-500"
+        >
+          Edit profile
+        </button>
+        <button
+          type="button"
           (click)="onSignOut()"
           class="mt-1 rounded-md border border-forest-300 px-3 py-1.5 text-left text-cream-50 transition-colors hover:bg-forest-500"
         >
@@ -119,3 +133,7 @@
     </nav>
   }
 </header>
+
+@if (editProfileOpen()) {
+  <app-edit-profile-modal (closed)="closeEditProfile()" />
+}

@@ -1,71 +1,8 @@
 <section class="mx-auto max-w-3xl px-6 py-10">
-  <h1 class="font-display text-2xl text-ink-900">My account</h1>
+  <h1 class="font-display text-2xl text-ink-900">My loans</h1>
   <p class="mt-1 text-sm text-ink-400">{{ authStore.user()?.email }} · {{ authStore.user()?.type }}</p>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mt-6 flex flex-col gap-4 rounded-card border border-border bg-white p-6" novalidate>
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      <div>
-        <label for="firstname" class="mb-1 block text-sm font-medium text-ink-900">First name</label>
-        <input
-          id="firstname"
-          type="text"
-          formControlName="firstname"
-          autocomplete="given-name"
-          class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
-        />
-        @if (submitted() && form.controls.firstname.invalid) {
-          <p class="mt-1 text-xs text-danger-500">Required.</p>
-        }
-      </div>
-
-      <div>
-        <label for="lastname" class="mb-1 block text-sm font-medium text-ink-900">Last name</label>
-        <input
-          id="lastname"
-          type="text"
-          formControlName="lastname"
-          autocomplete="family-name"
-          class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
-        />
-        @if (submitted() && form.controls.lastname.invalid) {
-          <p class="mt-1 text-xs text-danger-500">Required.</p>
-        }
-      </div>
-    </div>
-
-    <div>
-      <label for="email" class="mb-1 block text-sm font-medium text-ink-900">Email</label>
-      <input
-        id="email"
-        type="email"
-        formControlName="email"
-        autocomplete="email"
-        class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
-      />
-      @if (submitted() && form.controls.email.invalid) {
-        <p class="mt-1 text-xs text-danger-500">Enter a valid email address.</p>
-      }
-    </div>
-
-    @if (store.profileError()) {
-      <p class="rounded-md bg-danger-50 px-3 py-2 text-sm text-danger-700">{{ store.profileError() }}</p>
-    }
-    @if (store.profileSaved()) {
-      <p class="rounded-md bg-success-50 px-3 py-2 text-sm text-success-700">Profile updated.</p>
-    }
-
-    <button
-      type="submit"
-      [disabled]="store.savingProfile()"
-      class="self-start rounded-md bg-forest-700 px-4 py-2 text-sm font-medium text-cream-50 transition-colors hover:bg-forest-500 disabled:cursor-not-allowed disabled:opacity-60"
-    >
-      {{ store.savingProfile() ? 'Saving…' : 'Save changes' }}
-    </button>
-  </form>
-
-  <h2 class="mt-10 font-display text-xl text-ink-900">My loans</h2>
-
-  <div class="mt-4">
+  <div class="mt-6">
     @if (store.loansLoading()) {
       <app-loading-state message="Loading your loans…" />
     } @else if (store.loansError()) {

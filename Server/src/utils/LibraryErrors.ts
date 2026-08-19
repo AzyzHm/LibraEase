@@ -39,3 +39,15 @@ export class LoanRecordDoesNotExistError extends Error {
         super(message);
     }
 }
+
+export class InvalidRoleTransitionError extends Error {
+    constructor(message: string) {
+        super(message);
+    }
+}
+
+export class BookAlreadyLoanedError extends Error {
+    constructor(message: string) {
+        super(message);
+    }
+}

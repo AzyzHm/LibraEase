@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { findAllRecords, generateRecord, modifyRecord, queryRecords } from '../services/LoanRecordService';
-import { LoanRecordDoesNotExistError } from '../utils/LibraryErrors';
+import { findAllRecords, generateRecord, modifyRecord, queryRecords, selfCheckout, isItemAvailable } from '../services/LoanRecordService';
+import { LoanRecordDoesNotExistError, BookAlreadyLoanedError } from '../utils/LibraryErrors';
 
 async function createRecord(req: Request, res: Response) {
     let record = req.body;
@@ -54,4 +54,31 @@ async function getRecordsByProperty(req: Request, res: Response) {
     }
 }
 
-export default { createRecord, updateRecord, getAllRecords, getRecordsByProperty };
+async function createSelfCheckout(req: Request, res: Response) {
+    const requester = req.user!; // guaranteed by `authenticate`, role-gated to PATRON by `authorize` on this route
+    const { item, dueDate } = req.body as { item: string; dueDate: Date };
+
+    try {
+        const record = await selfCheckout(requester.id, item, dueDate);
+        res.status(201).json({ message: "Book checked out successfully", record });
+    } catch (error: any) {
+        if (error instanceof BookAlreadyLoanedError) {
+            res.status(409).json({ message: error.message, error: error.message });
+        } else {
+            res.status(500).json({ message: "Unable to check out this book", error: error.message });
+        }
+    }
+}
+
+async function getItemAvailability(req: Request, res: Response) {
+    const { itemId } = req.params as { itemId: string };
+
+    try {
+        const available = await isItemAvailable(itemId);
+        res.status(200).json({ message: "Availability checked", available });
+    } catch (error: any) {
+        res.status(500).json({ message: "Unable to check availability at this time", error: error.message });
+    }
+}
+
+export default { createRecord, updateRecord, getAllRecords, getRecordsByProperty, createSelfCheckout, getItemAvailability };

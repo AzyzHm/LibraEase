@@ -1,5 +1,6 @@
 import {Request, Response} from "express";
 import { registerLibraryCard, findLibraryCard, findAllLibraryCards } from "../services/LibraryCardService";
+import { findUserById } from "../services/UserService";
 
 import { ILibraryCard } from "../models/LibraryCard";
 import { ILibraryCardWithUser } from "../daos/LibraryCardDao";
@@ -53,6 +54,12 @@ async function createLibraryCard(req:Request, res:Response){
     }
 
     try {
+        const targetUser = await findUserById(card.user);
+        if (targetUser && targetUser.type === 'ADMIN') {
+            res.status(400).json({message : "The admin account does not need a library card"});
+            return;
+        }
+
         let savedCard = await registerLibraryCard(card);
         res.status(201).json({message : "Library Card Generated Successfuly", savedCard: sanitizeCard(savedCard)});
     } catch (error:any) {

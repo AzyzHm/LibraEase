@@ -1,6 +1,6 @@
 import {Request , Response} from 'express';
-import { findAllUsers,findUserById,removeUser,modifyUser,findPendingUsers,approveUser,rejectUser } from '../services/UserService';
-import { UserDoesNotExistError } from '../utils/LibraryErrors';
+import { findAllUsers,findUserById,removeUser,modifyUser,findPendingUsers,approveUser,rejectUser,promoteUser,demoteUser } from '../services/UserService';
+import { UserDoesNotExistError, InvalidRoleTransitionError } from '../utils/LibraryErrors';
 
 function sanitizeUser(user: any) {
     if (!user) return user;
@@ -117,4 +117,34 @@ async function rejectUserHandler(req:Request,res:Response) {
     }}
 }
 
-export default {getAllUsers,getPendingUsers,getUserById,deleteUser,updateUser,approveUserHandler,rejectUserHandler};
+async function promoteUserHandler(req:Request,res:Response) {
+    const userId = req.params.userId as string;
+    try {
+        let user = await promoteUser(userId);
+        res.status(200).json({message:"User promoted to employee",user: sanitizeUser(user)});
+    }catch (error:any) {
+        if(error instanceof UserDoesNotExistError){
+            res.status(404).json({message:"User not found",error:error.message});
+        }else if(error instanceof InvalidRoleTransitionError){
+            res.status(409).json({message:error.message,error:error.message});
+        }else{
+        res.status(500).json({message:"Unable to promote user",error:error.message});
+    }}
+}
+
+async function demoteUserHandler(req:Request,res:Response) {
+    const userId = req.params.userId as string;
+    try {
+        let user = await demoteUser(userId);
+        res.status(200).json({message:"User demoted to patron",user: sanitizeUser(user)});
+    }catch (error:any) {
+        if(error instanceof UserDoesNotExistError){
+            res.status(404).json({message:"User not found",error:error.message});
+        }else if(error instanceof InvalidRoleTransitionError){
+            res.status(409).json({message:error.message,error:error.message});
+        }else{
+        res.status(500).json({message:"Unable to demote user",error:error.message});
+    }}
+}
+
+export default {getAllUsers,getPendingUsers,getUserById,deleteUser,updateUser,approveUserHandler,rejectUserHandler,promoteUserHandler,demoteUserHandler};

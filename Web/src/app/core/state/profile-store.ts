@@ -49,6 +49,12 @@ export class ProfileStore {
       });
   }
 
+  /** Called each time the edit-profile modal opens, so a stale success/error message from a previous visit doesn't flash in. */
+  resetProfileFeedback(): void {
+    this.profileError.set(null);
+    this.profileSaved.set(false);
+  }
+
   loadMyLoans(): void {
     const currentUser = this.authStore.user();
     if (!currentUser) return;

@@ -38,7 +38,10 @@ export class AdminUsersStore {
       .getAll()
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
-        next: (response) => this.users.set(response.users),
+        // The admin manages everyone else's account here, not their own -
+        // exclude the admin row entirely rather than showing it with a
+        // meaningless delete/promote button next to it.
+        next: (response) => this.users.set(response.users.filter((user) => user.type !== 'ADMIN')),
         error: (error: HttpErrorResponse) => {
           this.users.set([]);
           this.errorMessage.set(this.extractErrorMessage(error, 'Unable to load users right now.'));
@@ -56,6 +59,14 @@ export class AdminUsersStore {
 
   reject(userId: string): void {
     this.runAction(userId, this.userApi.reject(userId), 'Unable to reject this user right now.');
+  }
+
+  promote(userId: string): void {
+    this.runAction(userId, this.userApi.promote(userId), 'Unable to promote this user right now.');
+  }
+
+  demote(userId: string): void {
+    this.runAction(userId, this.userApi.demote(userId), 'Unable to demote this user right now.');
   }
 
   remove(userId: string): void {

@@ -47,6 +47,14 @@ export class AdminUsers implements OnInit {
     this.store.reject(user.id);
   }
 
+  onPromote(user: AdminUser): void {
+    this.store.promote(user.id);
+  }
+
+  onDemote(user: AdminUser): void {
+    this.store.demote(user.id);
+  }
+
   onDeleteRequest(user: AdminUser): void {
     this.confirmingDeleteId.set(user.id);
   }

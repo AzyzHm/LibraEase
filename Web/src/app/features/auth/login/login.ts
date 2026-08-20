@@ -21,11 +21,16 @@ export class Login {
   readonly submitted = signal(false);
   readonly loading = this.authStore.loading;
   readonly errorMessage = this.authStore.errorMessage;
+  readonly showPassword = signal(false);
 
   readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required]
   });
+
+  togglePasswordVisibility(): void {
+    this.showPassword.update((value) => !value);
+  }
 
   onSubmit(): void {
     this.submitted.set(true);

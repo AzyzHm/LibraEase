@@ -38,10 +38,10 @@ export class AdminUsersStore {
       .getAll()
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
-        // The admin manages everyone else's account here, not their own -
-        // exclude the admin row entirely rather than showing it with a
-        // meaningless delete/promote button next to it.
-        next: (response) => this.users.set(response.users.filter((user) => user.type !== 'ADMIN')),
+        // The backend already scopes this list by the requester's role
+        // (admins see everyone but other admins; employees see patrons
+        // only), so no further filtering is needed here.
+        next: (response) => this.users.set(response.users),
         error: (error: HttpErrorResponse) => {
           this.users.set([]);
           this.errorMessage.set(this.extractErrorMessage(error, 'Unable to load users right now.'));

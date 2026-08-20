@@ -29,3 +29,9 @@ export async function findLibraryCard(libraryCardId: string): Promise<ILibraryCa
     if (card) return card;
     throw new LibraryCardDoesNotExistError('Library Card not found');
 }
+
+export async function findLibraryCardByUserId(userId: string): Promise<ILibraryCardWithUser> {
+    const card = await LibraryCardDao.findByUserId(userId);
+    if (card) return card;
+    throw new LibraryCardDoesNotExistError('Library Card not found');
+}

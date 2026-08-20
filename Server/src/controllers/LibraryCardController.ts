@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import { registerLibraryCard, findLibraryCard, findAllLibraryCards } from "../services/LibraryCardService";
+import { registerLibraryCard, findLibraryCard, findAllLibraryCards, findLibraryCardByUserId } from "../services/LibraryCardService";
 import { findUserById } from "../services/UserService";
 
 import { ILibraryCard } from "../models/LibraryCard";
@@ -54,6 +54,7 @@ async function createLibraryCard(req:Request, res:Response){
     }
 
     try {
+        // The admin runs the library, they don't borrow from it - no card needed.
         const targetUser = await findUserById(card.user);
         if (targetUser && targetUser.type === 'ADMIN') {
             res.status(400).json({message : "The admin account does not need a library card"});
@@ -67,4 +68,19 @@ async function createLibraryCard(req:Request, res:Response){
     }
 }
 
-export default {getAllLibraryCards, getLibraryCard, createLibraryCard};
+async function getMyLibraryCard(req:Request, res:Response){
+    const requester = req.user!; // guaranteed by the `authenticate` middleware on this route
+
+    try {
+        let card = await findLibraryCardByUserId(requester.id);
+        res.status(200).json({message : "Library Card found", card: sanitizeCard(card)});
+    } catch (error:any) {
+        if(error instanceof LibraryCardDoesNotExistError){
+            res.status(404).json({message : "You don't have a library card yet - ask an admin or employee to issue you one.", error:error.message});
+            return;
+        }
+        res.status(500).json({message : "Failed to get library card", error:error.message});
+    }
+}
+
+export default {getAllLibraryCards, getLibraryCard, createLibraryCard, getMyLibraryCard};

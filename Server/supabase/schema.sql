@@ -39,7 +39,7 @@ create table if not exists loan_records (
   due_date timestamptz not null,
   returned_date timestamptz,
   patron uuid not null references users(id),
-  employee_out uuid not null references users(id),
+  employee_out uuid references users(id),
   employee_in uuid references users(id),
   item uuid not null references books(id),
   created_at timestamptz not null default now(),
@@ -58,3 +58,9 @@ create index if not exists idx_books_subjects on books using gin (subjects);
 -- (see UserService.approveUser). Since there's no admin yet on a fresh
 -- database, manually approve your first admin account after registering it:
 --   update users set status = 'APPROVED' where email = 'you@example.com';
+
+-- MIGRATION (2026-08-20): self-checkout (POST /loan/self) never has a staff
+-- member issuing the book, so employee_out must be nullable. This only
+-- affects fresh databases created from this file - if your Supabase project
+-- already exists, run this once in the SQL editor:
+--   alter table loan_records alter column employee_out drop not null;

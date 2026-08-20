@@ -50,7 +50,7 @@ async function handleLogin(req: Request, res: Response): Promise<void> {
         if(error instanceof AccountPendingApprovalError){
             res.status(403).json({ message: error.message, error:error.message });
         }else if(error instanceof UnableToFetchUserError){
-            res.status(401).json({ message: "Unable to login user at this time", error:error.message });
+            res.status(401).json({ message: "Incorrect email or password", error:error.message });
         }else{
             res.status(500).json({ message: "Unable to login user at this time", error:error.message });
         }

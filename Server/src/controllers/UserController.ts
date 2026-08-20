@@ -9,9 +9,15 @@ function sanitizeUser(user: any) {
 }
 
 async function getAllUsers(req:Request,res:Response) {
+    const requester = req.user!; // guaranteed by the `authenticate` middleware on this route
+
     try {
         let users = await findAllUsers();
-        res.status(200).json({message:"Users retrieved successfully",users: users.map(sanitizeUser)});
+        const visibleUsers = requester.type === 'EMPLOYEE'
+            ? users.filter((user) => user.type === 'PATRON')
+            : users.filter((user) => user.type !== 'ADMIN');
+
+        res.status(200).json({message:"Users retrieved successfully",users: visibleUsers.map(sanitizeUser)});
     }catch (error:any) {
         res.status(500).json({message:"Unable to retrieve users at this time",error:error.message});
     }

@@ -60,3 +60,20 @@ body {
   color: var(--color-ink-900);
   font-family: var(--font-sans);
 }
+
+@media print {
+  app-navbar,
+  app-footer,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background-color: #fff;
+  }
+
+  #print-card {
+    border-width: 2px;
+    margin: 0 auto;
+  }
+}

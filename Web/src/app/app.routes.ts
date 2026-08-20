@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { Home } from './features/home/home';
 import { Catalog } from './features/catalog/catalog';
 import { Profile } from './features/profile/profile';
+import { LibraryCardPage } from './features/library-card/library-card';
 import { Login } from './features/auth/login/login';
 import { Register } from './features/auth/register/register';
 import { AdminShell } from './features/admin/admin-shell/admin-shell';
@@ -20,6 +21,12 @@ export const routes: Routes = [
     component: Profile,
     canActivate: [authGuard],
     title: 'My account · LibraEase'
+  },
+  {
+    path: 'my-card',
+    component: LibraryCardPage,
+    canActivate: [authGuard],
+    title: 'My library card · LibraEase'
   },
   {
     path: 'admin',

@@ -1,0 +1,13 @@
+<div
+  role="status"
+  aria-live="polite"
+  class="flex flex-col items-center justify-center gap-3 text-center"
+  [class.py-16]="!compact()"
+  [class.py-8]="compact()"
+>
+  <span
+    class="h-6 w-6 animate-spin rounded-full border-2 border-forest-100 border-t-forest-700"
+    aria-hidden="true"
+  ></span>
+  <p class="text-sm text-ink-400">{{ message() }}</p>
+</div>

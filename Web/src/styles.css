@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+/* LibraEase design tokens. Every color used in the app should come from
+   one of these ramps rather than an arbitrary hex value, so the palette
+   stays consistent as new features are added. */
+@theme {
+  --font-display: "Source Serif 4", Georgia, serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* Page background / neutral surface */
+  --color-cream-50: #fbf9f5;
+  --color-cream-100: #f7f3ec;
+  --color-cream-200: #efe8da;
+  --color-cream-300: #e4dfd3;
+
+  /* Primary brand ramp - deep forest green, used for header/hero/nav and
+     primary buttons */
+  --color-forest-50: #eaf3ef;
+  --color-forest-100: #cfe3db;
+  --color-forest-300: #7fa894;
+  --color-forest-500: #2f5c4d;
+  --color-forest-700: #1f3a34;
+  --color-forest-900: #12211d;
+
+  /* Accent ramp - warm coral, used sparingly for primary CTAs and
+     "checked out" status */
+  --color-coral-50: #faece7;
+  --color-coral-100: #f5c4b3;
+  --color-coral-300: #e8825a;
+  --color-coral-500: #d85a30;
+  --color-coral-700: #993c1d;
+  --color-coral-900: #4a1b0c;
+
+  /* Semantic success ramp - "available" status, confirmations */
+  --color-success-50: #eaf3de;
+  --color-success-500: #639922;
+  --color-success-700: #3b6d11;
+
+  /* Semantic danger ramp - errors, destructive actions */
+  --color-danger-50: #fcebeb;
+  --color-danger-500: #e24b4a;
+  --color-danger-700: #a32d2d;
+
+  /* Text and border neutrals */
+  --color-ink-900: #1f1f1d;
+  --color-ink-600: #5b5850;
+  --color-ink-400: #8a8778;
+  --color-border: #e4dfd3;
+
+  --radius-card: 12px;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-cream-100);
+  color: var(--color-ink-900);
+  font-family: var(--font-sans);
+}
+
+@media print {
+  app-navbar,
+  app-footer,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background-color: #fff;
+  }
+
+  #print-card {
+    border-width: 2px;
+    margin: 0 auto;
+  }
+}

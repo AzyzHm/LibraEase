@@ -1,0 +1,13 @@
+<div
+  role="alert"
+  class="flex flex-col items-center gap-3 rounded-md bg-danger-50 px-4 py-6 text-center sm:flex-row sm:justify-between sm:text-left"
+>
+  <p class="text-sm text-danger-700">{{ message() }}</p>
+  <button
+    type="button"
+    (click)="retry.emit()"
+    class="shrink-0 rounded-md border border-danger-500 px-3 py-1.5 text-sm font-medium text-danger-700 transition-colors hover:bg-white"
+  >
+    Retry
+  </button>
+</div>

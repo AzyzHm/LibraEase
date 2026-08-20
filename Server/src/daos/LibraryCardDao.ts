@@ -14,6 +14,11 @@ export interface ILibraryCardWithUser extends ILibraryCardModel {
 const TABLE = "library_cards";
 const SELECT_WITH_USER = "*, userDetails:users(*)";
 
+export async function find(): Promise<ILibraryCardWithUser[]> {
+    const rows = await unwrap<any[]>(supabase.from(TABLE).select(SELECT_WITH_USER));
+    return (rows || []).map((row) => ({ ...row, user: row.user_id }));
+}
+
 export async function insert(card: ILibraryCard): Promise<ILibraryCardModel> {
     // ILibraryCard.user is the user's id; the DB column is user_id
     const row = await unwrap<any>(

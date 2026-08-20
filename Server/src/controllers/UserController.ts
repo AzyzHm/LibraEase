@@ -1,7 +1,6 @@
 import {Request , Response} from 'express';
-import { findAllUsers,findUserById,removeUser,modifyUser,findPendingUsers,approveUser,rejectUser } from '../services/UserService';
-import { UserDoesNotExistError } from '../utils/LibraryErrors';
-import { IUserModel } from '../daos/UserDao';
+import { findAllUsers,findUserById,removeUser,modifyUser,findPendingUsers,approveUser,rejectUser,promoteUser,demoteUser } from '../services/UserService';
+import { UserDoesNotExistError, InvalidRoleTransitionError } from '../utils/LibraryErrors';
 
 function sanitizeUser(user: any) {
     if (!user) return user;
@@ -10,9 +9,15 @@ function sanitizeUser(user: any) {
 }
 
 async function getAllUsers(req:Request,res:Response) {
+    const requester = req.user!; // guaranteed by the `authenticate` middleware on this route
+
     try {
         let users = await findAllUsers();
-        res.status(200).json({message:"Users retrieved successfully",users: users.map(sanitizeUser)});
+        const visibleUsers = requester.type === 'EMPLOYEE'
+            ? users.filter((user) => user.type === 'PATRON')
+            : users.filter((user) => user.type !== 'ADMIN');
+
+        res.status(200).json({message:"Users retrieved successfully",users: visibleUsers.map(sanitizeUser)});
     }catch (error:any) {
         res.status(500).json({message:"Unable to retrieve users at this time",error:error.message});
     }
@@ -29,6 +34,12 @@ async function getPendingUsers(req:Request,res:Response) {
 
 async function getUserById(req:Request,res:Response) {
     const userId = req.params.userId as string;
+    const requester = req.user!; // guaranteed by the `authenticate` middleware on this route
+
+    if (requester.type !== 'ADMIN' && requester.type !== 'EMPLOYEE' && requester.id !== userId) {
+        res.status(403).json({message:"You can only view your own account"});
+        return;
+    }
 
     try {
         let user = await findUserById(userId);
@@ -43,6 +54,12 @@ async function getUserById(req:Request,res:Response) {
 
 async function deleteUser(req:Request,res:Response) {
     const userId = req.params.userId as string;
+    const requester = req.user!; // guaranteed by the `authenticate` middleware on this route
+
+    if (requester.type !== 'ADMIN' && requester.id !== userId) {
+        res.status(403).json({message:"You can only delete your own account"});
+        return;
+    }
 
     try {
         let message = await removeUser(userId);
@@ -57,8 +74,19 @@ async function deleteUser(req:Request,res:Response) {
 
 async function updateUser(req:Request,res:Response) {
     const user = req.body;
+    const requester = req.user!; // guaranteed by the `authenticate` middleware on this route
+
+    if (requester.type !== 'ADMIN' && requester.id !== user.id) {
+        res.status(403).json({message:"You can only update your own account"});
+        return;
+    }
 
     try {
+        if (requester.type !== 'ADMIN') {
+            const existing = await findUserById(user.id);
+            user.type = existing!.type;
+        }
+
         let updatedUser = await modifyUser(user);
         res.status(200).json({message:"User updated successfully",updatedUser: sanitizeUser(updatedUser)});
     }catch (error:any) {
@@ -69,8 +97,6 @@ async function updateUser(req:Request,res:Response) {
     }}
 }
 
-// NOTE: these two aren't protected by any admin-only auth check yet — see the
-// heads-up in chat. Add an auth/role-guard middleware before shipping this.
 async function approveUserHandler(req:Request,res:Response) {
     const userId = req.params.userId as string;
     try {
@@ -97,4 +123,34 @@ async function rejectUserHandler(req:Request,res:Response) {
     }}
 }
 
-export default {getAllUsers,getPendingUsers,getUserById,deleteUser,updateUser,approveUserHandler,rejectUserHandler};
+async function promoteUserHandler(req:Request,res:Response) {
+    const userId = req.params.userId as string;
+    try {
+        let user = await promoteUser(userId);
+        res.status(200).json({message:"User promoted to employee",user: sanitizeUser(user)});
+    }catch (error:any) {
+        if(error instanceof UserDoesNotExistError){
+            res.status(404).json({message:"User not found",error:error.message});
+        }else if(error instanceof InvalidRoleTransitionError){
+            res.status(409).json({message:error.message,error:error.message});
+        }else{
+        res.status(500).json({message:"Unable to promote user",error:error.message});
+    }}
+}
+
+async function demoteUserHandler(req:Request,res:Response) {
+    const userId = req.params.userId as string;
+    try {
+        let user = await demoteUser(userId);
+        res.status(200).json({message:"User demoted to patron",user: sanitizeUser(user)});
+    }catch (error:any) {
+        if(error instanceof UserDoesNotExistError){
+            res.status(404).json({message:"User not found",error:error.message});
+        }else if(error instanceof InvalidRoleTransitionError){
+            res.status(409).json({message:error.message,error:error.message});
+        }else{
+        res.status(500).json({message:"Unable to demote user",error:error.message});
+    }}
+}
+
+export default {getAllUsers,getPendingUsers,getUserById,deleteUser,updateUser,approveUserHandler,rejectUserHandler,promoteUserHandler,demoteUserHandler};

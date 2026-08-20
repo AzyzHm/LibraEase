@@ -1,0 +1,180 @@
+<div>
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div class="flex flex-wrap items-center gap-2">
+      @for (filter of filters; track filter.value) {
+        <button
+          type="button"
+          (click)="onFilterChange(filter.value)"
+          class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
+          [class.bg-forest-700]="store.statusFilter() === filter.value"
+          [class.text-cream-50]="store.statusFilter() === filter.value"
+          [class.text-ink-600]="store.statusFilter() !== filter.value"
+          [class.hover:bg-cream-200]="store.statusFilter() !== filter.value"
+        >
+          {{ filter.label }}
+        </button>
+      }
+    </div>
+
+    <button
+      type="button"
+      (click)="onOpenCheckout()"
+      class="rounded-md bg-coral-500 px-4 py-2 text-sm font-medium text-cream-50 transition-colors hover:bg-coral-700"
+    >
+      + New checkout
+    </button>
+  </div>
+
+  @if (store.refDataError()) {
+    <p class="mt-4 rounded-md bg-danger-50 px-4 py-3 text-sm text-danger-700">{{ store.refDataError() }}</p>
+  }
+  @if (store.actionError()) {
+    <p class="mt-4 rounded-md bg-danger-50 px-4 py-3 text-sm text-danger-700">{{ store.actionError() }}</p>
+  }
+
+  @if (showForm()) {
+    <form
+      [formGroup]="checkoutForm"
+      (ngSubmit)="onSubmitCheckout()"
+      class="mt-6 flex flex-col gap-4 rounded-card border border-border bg-white p-6"
+      novalidate
+    >
+      <h2 class="font-display text-lg text-ink-900">New checkout</h2>
+
+      @if (store.checkoutError()) {
+        <p class="rounded-md bg-danger-50 px-4 py-3 text-sm text-danger-700">{{ store.checkoutError() }}</p>
+      }
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label for="patron" class="mb-1 block text-sm font-medium text-ink-900">Patron</label>
+          <select
+            id="patron"
+            formControlName="patron"
+            class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+          >
+            <option value="" disabled>Select a patron…</option>
+            @for (patron of patrons(); track patron.id) {
+              <option [value]="patron.id">{{ patron.firstname }} {{ patron.lastname }} · {{ patron.email }}</option>
+            }
+          </select>
+          @if (submitted() && checkoutForm.controls.patron.invalid) {
+            <p class="mt-1 text-xs text-danger-500">Select a patron.</p>
+          }
+        </div>
+
+        <div>
+          <label for="item" class="mb-1 block text-sm font-medium text-ink-900">Book</label>
+          <select
+            id="item"
+            formControlName="item"
+            class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+          >
+            <option value="" disabled>Select a book…</option>
+            @for (book of store.books(); track book.id) {
+              <option [value]="book.id">
+                {{ book.title }}{{ store.loanedBookIds().has(book.id) ? ' (currently loaned)' : '' }}
+              </option>
+            }
+          </select>
+          @if (submitted() && checkoutForm.controls.item.invalid) {
+            <p class="mt-1 text-xs text-danger-500">Select a book.</p>
+          }
+        </div>
+      </div>
+
+      <div>
+        <label for="dueDate" class="mb-1 block text-sm font-medium text-ink-900">Due date</label>
+        <input
+          id="dueDate"
+          type="date"
+          formControlName="dueDate"
+          class="w-full max-w-xs rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+        />
+        @if (submitted() && checkoutForm.controls.dueDate.invalid) {
+          <p class="mt-1 text-xs text-danger-500">Required.</p>
+        }
+      </div>
+
+      <div class="flex gap-3">
+        <button
+          type="submit"
+          [disabled]="store.checkingOut()"
+          class="rounded-md bg-forest-700 px-4 py-2 text-sm font-medium text-cream-50 transition-colors hover:bg-forest-500 disabled:opacity-60"
+        >
+          {{ store.checkingOut() ? 'Checking out…' : 'Check out' }}
+        </button>
+        <button
+          type="button"
+          (click)="onCancelCheckout()"
+          class="rounded-md border border-border px-4 py-2 text-sm font-medium text-ink-600 transition-colors hover:bg-cream-200"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  }
+
+  <div class="mt-6">
+    @if (store.loading()) {
+      <app-loading-state message="Loading loan records…" />
+    } @else if (store.errorMessage()) {
+      <app-error-state [message]="store.errorMessage()!" (retry)="onRetry()" />
+    } @else if (store.filteredLoans().length === 0) {
+      <app-empty-state message="No loan records in this view." />
+    } @else {
+      <div class="overflow-x-auto rounded-(--radius-card) border border-border bg-white">
+        <table class="w-full text-left text-sm">
+          <thead>
+            <tr class="border-b border-border text-xs font-medium uppercase tracking-wide text-ink-400">
+              <th class="px-4 py-3">Book</th>
+              <th class="px-4 py-3">Patron</th>
+              <th class="px-4 py-3">Loaned</th>
+              <th class="px-4 py-3">Due</th>
+              <th class="px-4 py-3">Status</th>
+              <th class="px-4 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (loan of store.filteredLoans(); track loan.id) {
+              <tr class="border-b border-border last:border-b-0">
+                <td class="px-4 py-3 text-ink-900">{{ bookTitle(loan) }}</td>
+                <td class="px-4 py-3 text-ink-600">{{ patronName(loan) }}</td>
+                <td class="px-4 py-3 text-ink-600">{{ loan.loanedDate | date: 'mediumDate' }}</td>
+                <td class="px-4 py-3" [class.text-danger-700]="isOverdue(loan)" [class.text-ink-600]="!isOverdue(loan)">
+                  {{ loan.dueDate | date: 'mediumDate' }}{{ isOverdue(loan) ? ' · Overdue' : '' }}
+                </td>
+                <td class="px-4 py-3">
+                  <span
+                    class="rounded-full px-2 py-0.5 text-xs font-medium"
+                    [class.bg-coral-50]="loan.status === 'LOANED'"
+                    [class.text-coral-700]="loan.status === 'LOANED'"
+                    [class.bg-success-50]="loan.status === 'AVAILABLE'"
+                    [class.text-success-700]="loan.status === 'AVAILABLE'"
+                  >
+                    {{ loan.status === 'LOANED' ? 'Loaned' : 'Returned' }}
+                  </span>
+                </td>
+                <td class="px-4 py-3">
+                  <div class="flex justify-end gap-2">
+                    @if (store.actionPendingId() === loan.id) {
+                      <span class="text-xs text-ink-400">Working…</span>
+                    } @else if (loan.status === 'LOANED') {
+                      <button
+                        type="button"
+                        (click)="onMarkReturned(loan)"
+                        class="rounded-md bg-forest-700 px-2 py-1 text-xs font-medium text-cream-50 transition-colors hover:bg-forest-500"
+                      >
+                        Mark returned
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

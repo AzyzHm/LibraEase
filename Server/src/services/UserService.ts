@@ -3,19 +3,16 @@ import {config} from '../config';
 import * as UserDao from '../daos/UserDao';
 import {IUserModel} from '../daos/UserDao';
 import {IUser} from '../models/User';
-import { UnableToSaveUserError,UnableToFetchUserError, UserDoesNotExistError, AccountPendingApprovalError } from '../utils/LibraryErrors';
+import { UnableToSaveUserError,UnableToFetchUserError, UserDoesNotExistError, AccountPendingApprovalError, InvalidRoleTransitionError } from '../utils/LibraryErrors';
 
 export async function register(user:IUser):Promise<IUserModel>{
     const ROUNDS = config.server.rounds;
 
     try {
         const hashedPassword = await bycrypt.hash(user.password, ROUNDS);
-        // New accounts always start PENDING, regardless of what the client sends,
-        // and only become usable once an admin approves them.
-        const created = await UserDao.insert({...user, password: hashedPassword, status: 'PENDING'});
+        const created = await UserDao.insert({...user, type: 'PATRON', password: hashedPassword, status: 'PENDING'});
         return created;
     } catch (error:any) {
-        // Postgres unique-violation error code, replacing Mongo's E11000
         if (error.code === '23505') {
             throw new UnableToSaveUserError("User with email already exists!");
         }
@@ -66,7 +63,7 @@ export async function findUserById(id:string):Promise<IUserModel|null>{
 }
 
 export async function modifyUser(user: IUserModel): Promise<IUserModel> {
-    const { password, ...profileUpdates } = user;
+    const { password, type, ...profileUpdates } = user;
 
     const updated = await UserDao.updateById(user.id, profileUpdates);
 
@@ -74,6 +71,28 @@ export async function modifyUser(user: IUserModel): Promise<IUserModel> {
         throw new UserDoesNotExistError("No user exists with the given id");
     }
 
+    return updated;
+}
+
+export async function promoteUser(userId: string): Promise<IUserModel> {
+    const target = await UserDao.findById(userId);
+    if (!target) throw new UserDoesNotExistError("No user exists with the given id");
+    if (target.type === 'ADMIN') throw new InvalidRoleTransitionError("The admin's role cannot be changed");
+    if (target.type === 'EMPLOYEE') throw new InvalidRoleTransitionError("User is already an employee");
+
+    const updated = await UserDao.updateById(userId, { type: 'EMPLOYEE' });
+    if (!updated) throw new UserDoesNotExistError("No user exists with the given id");
+    return updated;
+}
+
+export async function demoteUser(userId: string): Promise<IUserModel> {
+    const target = await UserDao.findById(userId);
+    if (!target) throw new UserDoesNotExistError("No user exists with the given id");
+    if (target.type === 'ADMIN') throw new InvalidRoleTransitionError("The admin's role cannot be changed");
+    if (target.type === 'PATRON') throw new InvalidRoleTransitionError("User is already a patron");
+
+    const updated = await UserDao.updateById(userId, { type: 'PATRON' });
+    if (!updated) throw new UserDoesNotExistError("No user exists with the given id");
     return updated;
 }
 

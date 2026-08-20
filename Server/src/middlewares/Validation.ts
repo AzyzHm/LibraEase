@@ -4,9 +4,7 @@ import { IUser } from '../models/User';
 import { IUserModel } from '../daos/UserDao';
 import { IBook } from '../models/Book';
 import { IBookModel } from '../daos/BookDao';
-import { create } from 'domain';
 import { ILibraryCard } from '../models/LibraryCard';
-import { get } from 'http';
 import { ILoanRecord } from '../models/LoanRecord';
 import { ILoanRecordModel } from '../daos/LoanRecordDao';
 
@@ -37,7 +35,9 @@ export const Schemas = {
     lastname: Joi.string().required(),
     email: Joi.string().email().regex(/[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/).required(),
     password: Joi.string().required(),
-    type: Joi.string().valid('ADMIN','PATRON','EMPLOYEE').required()
+    // Optional and ignored: UserService.register() always forces new accounts
+    // to PATRON server-side, regardless of what (if anything) is sent here.
+    type: Joi.string().valid('ADMIN','PATRON','EMPLOYEE').optional()
     }),
     login: Joi.object<{email:string,password:string}>({
         email: Joi.string().email().regex(/[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/).required(),
@@ -52,7 +52,7 @@ export const Schemas = {
         firstname: Joi.string().required(),
         lastname: Joi.string().required(),
         email: Joi.string().email().regex(/[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/).required(),
-        password: Joi.string().required()
+        password: Joi.string().optional()
     })},
     book : {
         create: Joi.object<IBook>({
@@ -117,6 +117,13 @@ export const Schemas = {
         query: Joi.object<{property:string,value:string|Date}>({
             property: Joi.string().valid('id','status','loanedDate','dueDate','returnedDate','patron','employeeOut','employeeIn','item').required(),
             value: Joi.alternatives(Joi.string(),Joi.date()).required()
+        }),
+        selfCheckout: Joi.object<{item:string,dueDate:Date}>({
+            item: Joi.string().guid({ version: 'uuidv4' }).required(),
+            dueDate: Joi.date().greater('now').required()
+        }),
+        itemId: Joi.object<{itemId:string}>({
+            itemId: Joi.string().guid({ version: 'uuidv4' }).required()
         })
     }
 };

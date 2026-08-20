@@ -1,0 +1,93 @@
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-ink-900/50 px-4"
+  (click)="onBackdropClick()"
+>
+  <div
+    class="w-full max-w-md rounded-card border border-border bg-white p-6"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="flex items-center justify-between">
+      <h2 class="font-display text-xl text-ink-900">Edit profile</h2>
+      <button
+        type="button"
+        (click)="onClose()"
+        aria-label="Close"
+        class="rounded-md p-1 text-ink-400 transition-colors hover:bg-cream-200 hover:text-ink-900"
+      >
+        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M6 18L18 6" />
+        </svg>
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mt-4 flex flex-col gap-4" novalidate>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label for="edit-firstname" class="mb-1 block text-sm font-medium text-ink-900">First name</label>
+          <input
+            id="edit-firstname"
+            type="text"
+            formControlName="firstname"
+            autocomplete="given-name"
+            class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+          />
+          @if (submitted() && form.controls.firstname.invalid) {
+            <p class="mt-1 text-xs text-danger-500">Required.</p>
+          }
+        </div>
+
+        <div>
+          <label for="edit-lastname" class="mb-1 block text-sm font-medium text-ink-900">Last name</label>
+          <input
+            id="edit-lastname"
+            type="text"
+            formControlName="lastname"
+            autocomplete="family-name"
+            class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+          />
+          @if (submitted() && form.controls.lastname.invalid) {
+            <p class="mt-1 text-xs text-danger-500">Required.</p>
+          }
+        </div>
+      </div>
+
+      <div>
+        <label for="edit-email" class="mb-1 block text-sm font-medium text-ink-900">Email</label>
+        <input
+          id="edit-email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          class="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+        />
+        @if (submitted() && form.controls.email.invalid) {
+          <p class="mt-1 text-xs text-danger-500">Enter a valid email address.</p>
+        }
+      </div>
+
+      @if (store.profileError()) {
+        <p class="rounded-md bg-danger-50 px-3 py-2 text-sm text-danger-700">{{ store.profileError() }}</p>
+      }
+      @if (store.profileSaved()) {
+        <p class="rounded-md bg-success-50 px-3 py-2 text-sm text-success-700">Profile updated.</p>
+      }
+
+      <div class="flex items-center justify-end gap-2">
+        <button
+          type="button"
+          (click)="onClose()"
+          class="rounded-md border border-border px-4 py-2 text-sm font-medium text-ink-600 transition-colors hover:bg-cream-200"
+        >
+          {{ store.profileSaved() ? 'Close' : 'Cancel' }}
+        </button>
+        <button
+          type="submit"
+          [disabled]="store.savingProfile()"
+          class="rounded-md bg-forest-700 px-4 py-2 text-sm font-medium text-cream-50 transition-colors hover:bg-forest-500 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {{ store.savingProfile() ? 'Saving…' : 'Save changes' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

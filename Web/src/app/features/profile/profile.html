@@ -1,0 +1,59 @@
+<section class="mx-auto max-w-3xl px-6 py-10">
+  <h1 class="font-display text-2xl text-ink-900">My loans</h1>
+  <p class="mt-1 text-sm text-ink-400">{{ authStore.user()?.email }} · {{ authStore.user()?.type }}</p>
+
+  <div class="mt-6">
+    @if (store.loansLoading()) {
+      <app-loading-state message="Loading your loans…" />
+    } @else if (store.loansError()) {
+      <app-error-state [message]="store.loansError()!" (retry)="onRetryLoans()" />
+    } @else if (loans().length === 0) {
+      <app-empty-state message="You haven't borrowed any books yet." />
+    } @else {
+      <ul class="flex flex-col gap-3">
+        @for (loan of loans(); track loan.id) {
+          <li class="flex items-center gap-4 rounded-card border border-border bg-white p-4">
+            <div class="flex h-20 w-14 shrink-0 items-center justify-center overflow-hidden rounded bg-cream-200">
+              @if (loan.itemDetails.cover && !failedCovers().has(loan.id)) {
+                <img
+                  [src]="loan.itemDetails.cover"
+                  [alt]="'Cover of ' + loan.itemDetails.title"
+                  (error)="onCoverError(loan.id)"
+                  class="h-full w-full object-cover"
+                />
+              } @else {
+                <span class="px-1 text-center text-[10px] text-ink-400">{{ loan.itemDetails.title }}</span>
+              }
+            </div>
+
+            <div class="min-w-0 flex-1">
+              <h3 class="truncate font-display text-base text-ink-900">{{ loan.itemDetails.title }}</h3>
+              <p class="truncate text-sm text-ink-600">{{ loan.itemDetails.authors.join(', ') }}</p>
+              <p class="mt-1 text-xs text-ink-400">
+                Borrowed {{ loan.loanedDate | date: 'mediumDate' }}
+                @if (loan.status === 'LOANED') {
+                  · Due {{ loan.dueDate | date: 'mediumDate' }}
+                } @else {
+                  · Returned {{ loan.returnedDate | date: 'mediumDate' }}
+                }
+              </p>
+            </div>
+
+            @if (loan.status === 'LOANED') {
+              <span
+                class="shrink-0 rounded-full px-2.5 py-1 text-xs font-medium"
+                [class]="loan.isOverdue ? 'bg-danger-50 text-danger-700' : 'bg-forest-50 text-forest-700'"
+              >
+                {{ loan.isOverdue ? 'Overdue' : 'On loan' }}
+              </span>
+            } @else {
+              <span class="shrink-0 rounded-full bg-cream-200 px-2.5 py-1 text-xs font-medium text-ink-600">
+                Returned
+              </span>
+            }
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</section>

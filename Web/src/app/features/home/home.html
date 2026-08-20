@@ -1,0 +1,33 @@
+<section class="mx-auto max-w-6xl px-6 py-10">
+  <div class="rounded-card bg-forest-700 px-8 py-10">
+    <h1 class="font-display text-3xl text-success-50">Find your next read</h1>
+    <p class="mt-2 text-sm text-forest-100">Search across every branch in the catalog.</p>
+
+    <form
+      (ngSubmit)="onSearch()"
+      class="mt-6 flex max-w-md items-center gap-2 rounded-md bg-cream-100 px-3 py-2 text-sm text-ink-600"
+    >
+      <label class="flex flex-1 items-center gap-2">
+        <span class="sr-only">Search by title</span>
+        <input
+          type="search"
+          name="searchTerm"
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+          placeholder="Search by title"
+          class="w-full bg-transparent text-ink-900 placeholder:text-ink-400 focus:outline-none"
+        />
+      </label>
+      <button type="submit" class="text-sm font-medium text-forest-700 hover:text-forest-500">Search</button>
+    </form>
+  </div>
+</section>
+
+<section class="mx-auto max-w-6xl px-6 pb-16">
+  <h2 class="mb-4 text-lg font-medium text-ink-900">Explore the collection</h2>
+
+  <p class="text-sm text-ink-400">
+    <a routerLink="/catalog" class="text-coral-500 underline">Browse the full catalog</a>
+    or filter by title, author, and genre.
+  </p>
+</section>

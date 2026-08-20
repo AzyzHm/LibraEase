@@ -1,0 +1,90 @@
+<div>
+  <section>
+    <h2 class="font-display text-lg text-ink-900">Issue a card</h2>
+    <p class="mt-1 text-sm text-ink-400">Search for a user and issue them a library card. Issuing is safe to repeat — a user who already has a card just keeps their existing one.</p>
+
+    <input
+      type="text"
+      [ngModel]="searchTerm()"
+      (ngModelChange)="searchTerm.set($event)"
+      placeholder="Search by name or email…"
+      class="mt-4 w-full max-w-md rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+    />
+
+    @if (store.issueError()) {
+      <p class="mt-4 rounded-md bg-danger-50 px-4 py-3 text-sm text-danger-700">{{ store.issueError() }}</p>
+    }
+
+    <div class="mt-4">
+      @if (store.usersLoading()) {
+        <app-loading-state message="Loading users…" [compact]="true" />
+      } @else if (store.usersError()) {
+        <app-error-state [message]="store.usersError()!" (retry)="onRetryUsers()" />
+      } @else if (filteredUsers().length === 0) {
+        <app-empty-state message="No users match this search." [compact]="true" />
+      } @else {
+        <div class="max-h-80 overflow-y-auto rounded-(--radius-card) border border-border bg-white">
+          @for (user of filteredUsers(); track user.id) {
+            <div class="flex items-center justify-between border-b border-border px-4 py-3 last:border-b-0">
+              <div>
+                <p class="text-sm text-ink-900">{{ user.firstname }} {{ user.lastname }}</p>
+                <p class="text-xs text-ink-400">{{ user.email }} · {{ user.type }}</p>
+              </div>
+
+              @if (store.issuePendingUserId() === user.id) {
+                <span class="text-xs text-ink-400">Issuing…</span>
+              } @else if (hasCard(user)) {
+                <span class="rounded-full bg-success-50 px-2 py-0.5 text-xs font-medium text-success-700">Has a card</span>
+              } @else {
+                <button
+                  type="button"
+                  (click)="onIssue(user)"
+                  class="rounded-md bg-forest-700 px-3 py-1.5 text-xs font-medium text-cream-50 transition-colors hover:bg-forest-500"
+                >
+                  Issue card
+                </button>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="mt-10">
+    <h2 class="font-display text-lg text-ink-900">Issued cards</h2>
+
+    <div class="mt-4">
+      @if (store.cardsLoading()) {
+        <app-loading-state message="Loading cards…" />
+      } @else if (store.cardsError()) {
+        <app-error-state [message]="store.cardsError()!" (retry)="onRetryCards()" />
+      } @else if (store.cards().length === 0) {
+        <app-empty-state message="No cards issued yet." />
+      } @else {
+        <div class="overflow-x-auto rounded-(--radius-card) border border-border bg-white">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="border-b border-border text-xs font-medium uppercase tracking-wide text-ink-400">
+                <th class="px-4 py-3">Card ID</th>
+                <th class="px-4 py-3">Name</th>
+                <th class="px-4 py-3">Email</th>
+                <th class="px-4 py-3">Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (card of store.cards(); track card.id) {
+                <tr class="border-b border-border last:border-b-0">
+                  <td class="px-4 py-3 font-mono text-xs text-ink-600">{{ card.id }}</td>
+                  <td class="px-4 py-3 text-ink-900">{{ card.userDetails.firstname }} {{ card.userDetails.lastname }}</td>
+                  <td class="px-4 py-3 text-ink-600">{{ card.userDetails.email }}</td>
+                  <td class="px-4 py-3 text-ink-600">{{ card.userDetails.type }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </section>
+</div>

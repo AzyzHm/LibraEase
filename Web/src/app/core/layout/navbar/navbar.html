@@ -1,66 +1,27 @@
-<header class="bg-forest-700 text-cream-50">
+<header class="surface-glass-dark sticky top-0 z-40 text-cream-50">
   <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-    <a routerLink="/" (click)="closeMenu()" class="font-display text-xl text-cream-50">LibraEase</a>
+    <a routerLink="/" (click)="closeMenu()" class="text-h2 font-display text-cream-50">LibraEase</a>
 
     <!-- Desktop nav (md and up) -->
-    <nav class="hidden items-center gap-6 text-sm md:flex">
-      <a
-        routerLink="/catalog"
-        routerLinkActive="text-coral-300"
-        class="text-cream-100 transition-colors hover:text-coral-300"
-      >
-        Catalog
-      </a>
-      <a
-        routerLink="/profile"
-        routerLinkActive="text-coral-300"
-        class="text-cream-100 transition-colors hover:text-coral-300"
-      >
-        My loans
-      </a>
+    <nav class="hidden items-center md:flex">
+      <a routerLink="/catalog" routerLinkActive="nav-link-active" class="nav-link">Catalog</a>
+      <a routerLink="/profile" routerLinkActive="nav-link-active" class="nav-link">My loans</a>
       @if (authStore.isAuthenticated() && !authStore.isAdmin()) {
-        <a
-          routerLink="/my-card"
-          routerLinkActive="text-coral-300"
-          class="text-cream-100 transition-colors hover:text-coral-300"
-        >
-          My card
-        </a>
+        <a routerLink="/my-card" routerLinkActive="nav-link-active" class="nav-link">My card</a>
       }
       @if (authStore.isAuthenticated() && authStore.isStaff()) {
-        <a
-          routerLink="/admin"
-          routerLinkActive="text-coral-300"
-          class="text-cream-100 transition-colors hover:text-coral-300"
-        >
-          Admin
-        </a>
+        <a routerLink="/admin" routerLinkActive="nav-link-active" class="nav-link">Admin</a>
       }
 
-      @if (authStore.isAuthenticated()) {
-        <span class="text-cream-100">{{ authStore.user()?.firstname }}</span>
-        <button
-          type="button"
-          (click)="openEditProfile()"
-          class="rounded-md border border-forest-300 px-3 py-1.5 text-cream-50 transition-colors hover:bg-forest-500"
-        >
-          Edit profile
-        </button>
-        <button
-          type="button"
-          (click)="onSignOut()"
-          class="rounded-md border border-forest-300 px-3 py-1.5 text-cream-50 transition-colors hover:bg-forest-500"
-        >
-          Sign out
-        </button>
-      } @else {
-        <a
-          routerLink="/login"
-          class="rounded-md border border-forest-300 px-3 py-1.5 text-cream-50 transition-colors hover:bg-forest-500"
-        >
-          Sign in
-        </a>
-      }
+      <div class="ml-3 flex items-center gap-2 border-l border-white/15 pl-4">
+        @if (authStore.isAuthenticated()) {
+          <span class="text-body-sm px-1 text-cream-100/75">{{ authStore.user()?.firstname }}</span>
+          <button type="button" (click)="openEditProfile()" class="btn btn-ghost nav-btn">Edit profile</button>
+          <button type="button" (click)="onSignOut()" class="btn btn-ghost nav-btn">Sign out</button>
+        } @else {
+          <a routerLink="/login" class="btn btn-ghost nav-btn">Sign in</a>
+        }
+      </div>
     </nav>
 
     <!-- Mobile menu toggle (below md) -->
@@ -69,83 +30,45 @@
       (click)="toggleMenu()"
       [attr.aria-expanded]="menuOpen()"
       aria-controls="mobile-nav"
-      class="rounded-md p-2 text-cream-50 transition-colors hover:bg-forest-500 md:hidden"
+      class="menu-toggle md:hidden"
+      [class.is-open]="menuOpen()"
     >
       <span class="sr-only">{{ menuOpen() ? 'Close menu' : 'Open menu' }}</span>
-      @if (menuOpen()) {
-        <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M6 18L18 6" />
-        </svg>
-      } @else {
-        <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16" />
-        </svg>
-      }
+      <span class="menu-toggle-bar"></span>
+      <span class="menu-toggle-bar"></span>
     </button>
   </div>
 
   <!-- Mobile menu panel (below md) -->
   @if (menuOpen()) {
-    <nav id="mobile-nav" class="flex flex-col gap-1 border-t border-forest-500 px-6 py-4 text-sm md:hidden">
-      <a
-        routerLink="/catalog"
-        routerLinkActive="text-coral-300"
-        (click)="closeMenu()"
-        class="rounded-md px-2 py-2 text-cream-100 transition-colors hover:bg-forest-500 hover:text-coral-300"
-      >
+    <nav #mobileNav id="mobile-nav" class="flex flex-col gap-1 border-t border-white/10 px-6 py-4 md:hidden">
+      <a routerLink="/catalog" routerLinkActive="nav-link-active" (click)="closeMenu()" class="nav-link nav-link-block">
         Catalog
       </a>
-      <a
-        routerLink="/profile"
-        routerLinkActive="text-coral-300"
-        (click)="closeMenu()"
-        class="rounded-md px-2 py-2 text-cream-100 transition-colors hover:bg-forest-500 hover:text-coral-300"
-      >
+      <a routerLink="/profile" routerLinkActive="nav-link-active" (click)="closeMenu()" class="nav-link nav-link-block">
         My loans
       </a>
       @if (authStore.isAuthenticated() && !authStore.isAdmin()) {
-        <a
-          routerLink="/my-card"
-          routerLinkActive="text-coral-300"
-          (click)="closeMenu()"
-          class="rounded-md px-2 py-2 text-cream-100 transition-colors hover:bg-forest-500 hover:text-coral-300"
-        >
+        <a routerLink="/my-card" routerLinkActive="nav-link-active" (click)="closeMenu()" class="nav-link nav-link-block">
           My card
         </a>
       }
       @if (authStore.isAuthenticated() && authStore.isStaff()) {
-        <a
-          routerLink="/admin"
-          routerLinkActive="text-coral-300"
-          (click)="closeMenu()"
-          class="rounded-md px-2 py-2 text-cream-100 transition-colors hover:bg-forest-500 hover:text-coral-300"
-        >
+        <a routerLink="/admin" routerLinkActive="nav-link-active" (click)="closeMenu()" class="nav-link nav-link-block">
           Admin
         </a>
       }
 
       @if (authStore.isAuthenticated()) {
-        <span class="px-2 py-2 text-cream-100">Signed in as {{ authStore.user()?.firstname }}</span>
-        <button
-          type="button"
-          (click)="openEditProfile()"
-          class="mt-1 rounded-md border border-forest-300 px-3 py-1.5 text-left text-cream-50 transition-colors hover:bg-forest-500"
-        >
+        <span class="text-body-sm px-2 py-2 text-cream-100/75">Signed in as {{ authStore.user()?.firstname }}</span>
+        <button type="button" (click)="openEditProfile()" class="btn btn-ghost nav-btn mt-1 justify-start">
           Edit profile
         </button>
-        <button
-          type="button"
-          (click)="onSignOut()"
-          class="mt-1 rounded-md border border-forest-300 px-3 py-1.5 text-left text-cream-50 transition-colors hover:bg-forest-500"
-        >
+        <button type="button" (click)="onSignOut()" class="btn btn-ghost nav-btn mt-1 justify-start">
           Sign out
         </button>
       } @else {
-        <a
-          routerLink="/login"
-          (click)="closeMenu()"
-          class="mt-1 rounded-md border border-forest-300 px-3 py-1.5 text-cream-50 transition-colors hover:bg-forest-500"
-        >
+        <a routerLink="/login" (click)="closeMenu()" class="btn btn-ghost nav-btn mt-1 justify-start">
           Sign in
         </a>
       }

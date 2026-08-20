@@ -1,7 +1,10 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, ElementRef, PLATFORM_ID, effect, inject, signal, viewChild } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { animate } from 'motion';
 import { AuthStore } from '../../state/auth-store';
 import { EditProfileModal } from '../../../shared/ui/edit-profile-modal/edit-profile-modal';
+import { springStandard } from '../../../shared/motion/springs';
 
 @Component({
   selector: 'app-navbar',
@@ -12,6 +15,7 @@ import { EditProfileModal } from '../../../shared/ui/edit-profile-modal/edit-pro
 })
 export class Navbar {
   private readonly router = inject(Router);
+  private readonly platformId = inject(PLATFORM_ID);
   protected readonly authStore = inject(AuthStore);
 
   /** Whether the collapsed (mobile, <md) menu is expanded. */
@@ -19,6 +23,28 @@ export class Navbar {
 
   /** Whether the edit-profile modal is open. */
   readonly editProfileOpen = signal(false);
+
+  /** Reference to the mobile menu panel, present only while `menuOpen()`. */
+  private readonly mobileNav = viewChild<ElementRef<HTMLElement>>('mobileNav');
+
+  constructor() {
+    // Entrance animation for the mobile menu panel. Runs whenever the panel
+    // is (re)created, i.e. whenever menuOpen flips to true - the @if that
+    // renders it means there's nothing to animate on close, only on open.
+    effect(() => {
+      const nav = this.mobileNav()?.nativeElement;
+      if (!nav || !isPlatformBrowser(this.platformId)) {
+        return;
+      }
+
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      animate(
+        nav,
+        { opacity: [0, 1], transform: ['translateY(-8px)', 'translateY(0)'] },
+        reducedMotion ? { duration: 0.001 } : springStandard
+      );
+    });
+  }
 
   toggleMenu(): void {
     this.menuOpen.update((open) => !open);

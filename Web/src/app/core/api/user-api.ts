@@ -14,7 +14,8 @@ export class UserApi {
     return this.http.put<UpdateProfileResponse>(this.baseUrl, payload);
   }
 
-  /** GET /users - admin/employee only. Every user in the system, any status. */
+  /** GET /users - admin/employee only. Scoped server-side by role: admins see
+   *  every non-admin user, employees see patrons only. Any status. */
   getAll(): Observable<UsersListResponse> {
     return this.http.get<UsersListResponse>(this.baseUrl);
   }

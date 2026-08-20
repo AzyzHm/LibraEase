@@ -24,6 +24,8 @@ export class Register {
   readonly registered = signal(false);
   readonly loading = this.authStore.loading;
   readonly errorMessage = this.authStore.errorMessage;
+  readonly showPassword = signal(false);
+  readonly showConfirmPassword = signal(false);
 
   readonly form = this.fb.nonNullable.group(
     {
@@ -35,6 +37,14 @@ export class Register {
     },
     { validators: passwordsMatchValidator }
   );
+
+  togglePasswordVisibility(): void {
+    this.showPassword.update((value) => !value);
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword.update((value) => !value);
+  }
 
   onSubmit(): void {
     this.submitted.set(true);

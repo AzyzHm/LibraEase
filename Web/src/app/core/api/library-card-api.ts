@@ -23,4 +23,9 @@ export class LibraryCardApi {
   getById(cardId: string): Observable<LibraryCardGetResponse> {
     return this.http.get<LibraryCardGetResponse>(`${this.baseUrl}/${cardId}`);
   }
+
+  /** GET /card/me - the caller's own card. 404s if an admin/employee hasn't issued one yet. */
+  getMine(): Observable<LibraryCardGetResponse> {
+    return this.http.get<LibraryCardGetResponse>(`${this.baseUrl}/me`);
+  }
 }

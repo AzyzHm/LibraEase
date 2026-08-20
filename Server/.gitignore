@@ -1,3 +1,4 @@
 .env
+.seed-admin-credentials.txt
 node_modules
 dist

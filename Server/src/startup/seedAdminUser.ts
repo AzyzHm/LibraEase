@@ -1,8 +1,11 @@
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
 import { config } from '../config';
 import * as UserDao from '../daos/UserDao';
 
+const CREDENTIALS_FILE = path.resolve(__dirname, '../../.seed-admin-credentials.txt');
 
 export async function seedInitialAdmin(): Promise<void> {
     const existingUsers = await UserDao.find();
@@ -29,11 +32,16 @@ export async function seedInitialAdmin(): Promise<void> {
 
     console.log('============================================================');
     console.log('No users found in the database - created a default admin account:');
-    console.log(`  Email:    ${email}`);
-    console.log(`  Password: ${password}`);
+    console.log(`  Email: ${email}`);
+
     if (passwordWasGenerated) {
-        console.log('(This password was randomly generated because SEED_ADMIN_PASSWORD');
-        console.log(' was not set. Set it in your .env to pin a known password instead.)');
+        fs.writeFileSync(CREDENTIALS_FILE, `email=${email}\npassword=${password}\n`, { mode: 0o600 });
+        console.log(`  Password: a one-time password was generated and saved to:`);
+        console.log(`    ${CREDENTIALS_FILE}`);
+        console.log('  Read it, log in, then delete that file. Set SEED_ADMIN_PASSWORD in your');
+        console.log('  .env instead to pin a known password and skip this step next time.');
+    } else {
+        console.log('  Password: using the value configured in SEED_ADMIN_PASSWORD.');
     }
     console.log('============================================================');
 }

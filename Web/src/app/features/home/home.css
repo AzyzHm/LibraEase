@@ -1,0 +1,56 @@
+/* Hero band. Deep forest gradient with a soft coral glow in the corner,
+   echoing the accent color used for primary CTAs elsewhere. */
+.hero-surface {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    160deg,
+    var(--color-forest-900) 0%,
+    var(--color-forest-700) 55%,
+    var(--color-forest-500) 100%
+  );
+}
+
+.hero-surface::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 60% at 85% 15%, rgba(232, 130, 90, 0.25), transparent 70%);
+  pointer-events: none;
+}
+
+/* Pill-shaped search bar. A bespoke shape (not the stacked-label
+   .field-input primitive), but still built entirely from tokens. */
+.search-pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-full);
+  background-color: var(--color-cream-50);
+  padding: 0.375rem 0.375rem 0.375rem 1.25rem;
+  box-shadow: var(--shadow-md);
+}
+
+.search-pill-input {
+  min-width: 0;
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  color: var(--color-ink-900);
+}
+
+.search-pill-input::placeholder {
+  color: var(--color-ink-400);
+}
+
+.search-pill-input:focus {
+  outline: none;
+}
+
+.search-pill-btn {
+  border-radius: var(--radius-full);
+  padding-inline: 1.25rem;
+}

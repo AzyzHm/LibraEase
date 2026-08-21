@@ -1,54 +1,31 @@
 <section class="mx-auto max-w-6xl px-6 py-10">
-  <h1 class="font-display text-2xl text-ink-900">Catalog</h1>
-  <p class="mt-1 text-sm text-ink-400">Browse every title in the collection.</p>
+  <h1 class="text-h1 text-ink-900">Catalog</h1>
+  <p class="text-body-sm mt-1 text-ink-400">Browse every title in the collection.</p>
 
   <form [formGroup]="filterForm" (ngSubmit)="onSubmit()" class="mt-6 flex flex-wrap items-end gap-3" novalidate>
     <div class="flex flex-col">
-      <label for="title" class="mb-1 text-xs font-medium text-ink-600">Title</label>
-      <input
-        id="title"
-        type="text"
-        formControlName="title"
-        placeholder="Search by title"
-        class="w-48 rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
-      />
+      <label for="title" class="field-label">Title</label>
+      <input id="title" type="text" formControlName="title" placeholder="Search by title" class="field-input w-48" />
     </div>
 
     <div class="flex flex-col">
-      <label for="author" class="mb-1 text-xs font-medium text-ink-600">Author</label>
+      <label for="author" class="field-label">Author</label>
       <input
         id="author"
         type="text"
         formControlName="author"
         placeholder="Search by author"
-        class="w-48 rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
+        class="field-input w-48"
       />
     </div>
 
     <div class="flex flex-col">
-      <label for="genre" class="mb-1 text-xs font-medium text-ink-600">Genre</label>
-      <input
-        id="genre"
-        type="text"
-        formControlName="genre"
-        placeholder="Search by genre"
-        class="w-40 rounded-md border border-border bg-white px-3 py-2 text-sm text-ink-900 focus:border-forest-500 focus:outline-none"
-      />
+      <label for="genre" class="field-label">Genre</label>
+      <input id="genre" type="text" formControlName="genre" placeholder="Search by genre" class="field-input w-40" />
     </div>
 
-    <button
-      type="submit"
-      class="rounded-md bg-forest-700 px-4 py-2 text-sm font-medium text-cream-50 transition-colors hover:bg-forest-500"
-    >
-      Search
-    </button>
-    <button
-      type="button"
-      (click)="onClear()"
-      class="rounded-md border border-border px-4 py-2 text-sm font-medium text-ink-600 transition-colors hover:bg-cream-200"
-    >
-      Clear
-    </button>
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="button" (click)="onClear()" class="btn btn-secondary">Clear</button>
   </form>
 
   <div class="mt-8">
@@ -63,7 +40,7 @@
         (action)="onClear()"
       />
     } @else {
-      <p class="mb-4 text-sm text-ink-400">{{ store.totalCount() }} book(s) found</p>
+      <p class="text-body-sm mb-4 text-ink-400">{{ store.totalCount() }} book(s) found</p>
 
       <div class="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
         @for (book of store.books(); track book.id) {
@@ -72,20 +49,15 @@
       </div>
 
       <div class="mt-8 flex items-center justify-center gap-4">
-        <button
-          type="button"
-          (click)="onPrevious()"
-          [disabled]="store.currentPage() <= 1"
-          class="rounded-md border border-border px-3 py-1.5 text-sm text-ink-600 transition-colors hover:bg-cream-200 disabled:cursor-not-allowed disabled:opacity-50"
-        >
+        <button type="button" (click)="onPrevious()" [disabled]="store.currentPage() <= 1" class="btn btn-secondary">
           Previous
         </button>
-        <span class="text-sm text-ink-600">Page {{ store.currentPage() }} of {{ store.totalPages() }}</span>
+        <span class="text-body-sm text-ink-600">Page {{ store.currentPage() }} of {{ store.totalPages() }}</span>
         <button
           type="button"
           (click)="onNext()"
           [disabled]="store.currentPage() >= store.totalPages()"
-          class="rounded-md border border-border px-3 py-1.5 text-sm text-ink-600 transition-colors hover:bg-cream-200 disabled:cursor-not-allowed disabled:opacity-50"
+          class="btn btn-secondary"
         >
           Next
         </button>

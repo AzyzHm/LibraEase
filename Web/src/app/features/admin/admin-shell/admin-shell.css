@@ -1,0 +1,34 @@
+.admin-tab {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  white-space: nowrap;
+  padding: 0.625rem 1rem;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-ink-600);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.admin-tab:hover {
+  color: var(--color-forest-700);
+}
+
+.admin-tab-active {
+  color: var(--color-forest-700);
+}
+
+/* Animated via `motion` in admin-shell.ts (left/width spring to the active
+   tab's bounding box) rather than a CSS transition, since it's chasing a
+   value driven by route changes, not a fixed target. */
+.admin-tab-indicator {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-forest-700);
+  pointer-events: none;
+}

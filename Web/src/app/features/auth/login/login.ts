@@ -2,11 +2,12 @@ import { Component, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthStore } from '../../../core/state/auth-store';
+import { PasswordVisibilityToggle } from '../../../shared/ui/password-visibility-toggle/password-visibility-toggle';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, PasswordVisibilityToggle],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })

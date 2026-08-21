@@ -1,6 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, ElementRef, OnInit, PLATFORM_ID, computed, effect, inject, signal, viewChild } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { animate } from 'motion';
 import { AdminBooksStore } from '../../../core/state/admin-books-store';
 import { Book, BookModel } from '../../../core/models/book.model';
@@ -9,8 +9,16 @@ import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { ErrorState } from '../../../shared/ui/error-state/error-state';
 import { springStandard } from '../../../shared/motion/springs';
 
-/** Matches the backend's Joi pattern for barcode (10-digit or 13-digit ISBN, hyphens allowed). */
-const BARCODE_PATTERN = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/;
+const barcodeValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  const value = (control.value ?? '') as string;
+  if (!value) return null;
+
+  const stripped = value.replace(/-/g, '');
+  const isIsbn10 = /^\d{9}[\dXx]$/.test(stripped);
+  const isIsbn13 = /^\d{13}$/.test(stripped);
+
+  return isIsbn10 || isIsbn13 ? null : { barcode: true };
+};
 
 @Component({
   selector: 'app-admin-books',
@@ -31,7 +39,7 @@ export class AdminBooks implements OnInit {
   });
 
   readonly bookForm = this.fb.nonNullable.group({
-    barcode: ['', [Validators.required, Validators.pattern(BARCODE_PATTERN)]],
+    barcode: ['', [Validators.required, barcodeValidator]],
     cover: ['', Validators.required],
     title: ['', Validators.required],
     authors: ['', Validators.required],
@@ -43,14 +51,12 @@ export class AdminBooks implements OnInit {
     genre: ['', Validators.required]
   });
 
-  /** The book currently being edited, or null when the form is in "create" mode. */
   readonly editingBook = signal<BookModel | null>(null);
   readonly showForm = signal(false);
   readonly submitted = signal(false);
 
   readonly confirmingDeleteBarcode = signal<string | null>(null);
 
-  /** Drives the empty-state "Clear filters" action - only useful when a filter is actually narrowing results. */
   readonly hasActiveFilters = computed(() => {
     const filters = this.store.filters();
     return Boolean(filters.title || filters.author || filters.genre);
@@ -59,9 +65,6 @@ export class AdminBooks implements OnInit {
   private readonly formPanel = viewChild<ElementRef<HTMLElement>>('formPanel');
 
   constructor() {
-    // The create/edit form is an inline expand/collapse, not a modal, but
-    // it's still an appearing panel rather than a hover/press state, so it
-    // gets the spring treatment same as the modals - just without a scrim.
     effect(() => {
       const el = this.formPanel()?.nativeElement;
       if (!el || !isPlatformBrowser(this.platformId)) {

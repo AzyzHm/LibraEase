@@ -1,19 +1,20 @@
 <header class="surface-glass-dark sticky top-0 z-40 text-cream-50">
-  <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+  <div class="flex items-center justify-between px-6 py-4">
     <a routerLink="/" (click)="closeMenu()" class="flex items-center gap-2.5 text-cream-50">
-      <img src="logo.png" alt="" width="32" height="32" class="h-8 w-8" />
+      <img src="logo.png" alt="" width="59" height="32" class="h-8 w-auto" />
       <span class="text-h2 font-display">LibraEase</span>
     </a>
 
-    <!-- Desktop nav (md and up) -->
     <nav class="hidden items-center md:flex">
       <a routerLink="/catalog" routerLinkActive="nav-link-active" class="nav-link">Catalog</a>
-      <a routerLink="/profile" routerLinkActive="nav-link-active" class="nav-link">My loans</a>
+      @if (authStore.isPatron()) {
+        <a routerLink="/profile" routerLinkActive="nav-link-active" class="nav-link">My loans</a>
+      }
       @if (authStore.isAuthenticated() && !authStore.isAdmin()) {
         <a routerLink="/my-card" routerLinkActive="nav-link-active" class="nav-link">My card</a>
       }
       @if (authStore.isAuthenticated() && authStore.isStaff()) {
-        <a routerLink="/admin" routerLinkActive="nav-link-active" class="nav-link">Admin</a>
+        <a routerLink="/admin" routerLinkActive="nav-link-active" class="nav-link">Adminspace</a>
       }
 
       <div class="ml-3 flex items-center gap-2 border-l border-white/15 pl-4">
@@ -27,13 +28,12 @@
       </div>
     </nav>
 
-    <!-- Mobile menu toggle (below md) -->
     <button
       type="button"
       (click)="toggleMenu()"
       [attr.aria-expanded]="menuOpen()"
       aria-controls="mobile-nav"
-      class="menu-toggle md:hidden"
+      class="menu-toggle inline-flex flex-col items-center justify-center md:hidden"
       [class.is-open]="menuOpen()"
     >
       <span class="sr-only">{{ menuOpen() ? 'Close menu' : 'Open menu' }}</span>
@@ -42,15 +42,16 @@
     </button>
   </div>
 
-  <!-- Mobile menu panel (below md) -->
   @if (menuOpen()) {
     <nav #mobileNav id="mobile-nav" class="flex flex-col gap-1 border-t border-white/10 px-6 py-4 md:hidden">
       <a routerLink="/catalog" routerLinkActive="nav-link-active" (click)="closeMenu()" class="nav-link nav-link-block">
         Catalog
       </a>
-      <a routerLink="/profile" routerLinkActive="nav-link-active" (click)="closeMenu()" class="nav-link nav-link-block">
-        My loans
-      </a>
+      @if (authStore.isPatron()) {
+        <a routerLink="/profile" routerLinkActive="nav-link-active" (click)="closeMenu()" class="nav-link nav-link-block">
+          My loans
+        </a>
+      }
       @if (authStore.isAuthenticated() && !authStore.isAdmin()) {
         <a routerLink="/my-card" routerLinkActive="nav-link-active" (click)="closeMenu()" class="nav-link nav-link-block">
           My card
@@ -58,7 +59,7 @@
       }
       @if (authStore.isAuthenticated() && authStore.isStaff()) {
         <a routerLink="/admin" routerLinkActive="nav-link-active" (click)="closeMenu()" class="nav-link nav-link-block">
-          Admin
+          Adminspace
         </a>
       }
 

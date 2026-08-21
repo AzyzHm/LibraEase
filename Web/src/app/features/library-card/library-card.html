@@ -1,7 +1,7 @@
 <section class="mx-auto max-w-xl px-6 py-10">
   <div class="no-print">
-    <h1 class="font-display text-2xl text-ink-900">My library card</h1>
-    <p class="mt-1 text-sm text-ink-400">Print it or save it as a PDF to keep with you.</p>
+    <h1 class="text-h1 text-ink-900">My library card</h1>
+    <p class="text-body-sm mt-1 text-ink-400">Print it or save it as a PDF to keep with you.</p>
   </div>
 
   <div class="mt-6">
@@ -18,34 +18,32 @@
         <app-empty-state message="You don't have a library card yet. Ask a librarian at the front desk to issue you one." />
       </div>
     } @else if (store.card(); as card) {
-      <div id="print-card" class="mx-auto flex w-full max-w-md flex-col gap-4 rounded-card border border-border bg-white p-6">
+      <div
+        #cardEl
+        id="print-card"
+        class="card-surface mx-auto flex w-full max-w-md flex-col gap-4 p-6"
+      >
         <div class="flex items-center justify-between border-b border-border pb-4">
-          <span class="font-display text-lg text-forest-700">LibraEase</span>
-          <span class="rounded-full bg-forest-50 px-2 py-0.5 text-xs font-medium text-forest-700">
+          <span class="text-h3 font-display text-forest-700">LibraEase</span>
+          <span class="text-caption rounded-full bg-forest-50 px-2 py-0.5 text-forest-700">
             {{ card.userDetails.type }}
           </span>
         </div>
 
         <div>
-          <p class="text-xs font-medium uppercase tracking-wide text-ink-400">Cardholder</p>
-          <p class="mt-0.5 font-display text-xl text-ink-900">{{ card.userDetails.firstname }} {{ card.userDetails.lastname }}</p>
-          <p class="text-sm text-ink-600">{{ card.userDetails.email }}</p>
+          <p class="text-caption text-ink-400">Cardholder</p>
+          <p class="text-h2 mt-0.5 text-ink-900">{{ card.userDetails.firstname }} {{ card.userDetails.lastname }}</p>
+          <p class="text-body-sm text-ink-600">{{ card.userDetails.email }}</p>
         </div>
 
         <div class="border-t border-dashed border-border pt-4">
-          <p class="text-xs font-medium uppercase tracking-wide text-ink-400">Card number</p>
-          <p class="mt-0.5 font-mono text-sm text-ink-900">{{ card.id }}</p>
+          <p class="text-caption text-ink-400">Card number</p>
+          <p class="text-body-sm mt-0.5 font-mono text-ink-900">{{ card.id }}</p>
         </div>
       </div>
 
       <div class="no-print mt-6 flex justify-center">
-        <button
-          type="button"
-          (click)="onPrint()"
-          class="rounded-md bg-forest-700 px-4 py-2 text-sm font-medium text-cream-50 transition-colors hover:bg-forest-500"
-        >
-          Print / Save as PDF
-        </button>
+        <button type="button" (click)="onPrint()" class="btn btn-primary">Print / Save as PDF</button>
       </div>
     }
   </div>

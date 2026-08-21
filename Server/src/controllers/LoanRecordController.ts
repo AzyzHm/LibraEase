@@ -3,10 +3,10 @@ import { findAllRecords, generateRecord, modifyRecord, queryRecords, selfCheckou
 import { LoanRecordDoesNotExistError, BookAlreadyLoanedError } from '../utils/LibraryErrors';
 
 async function createRecord(req: Request, res: Response) {
-    let record = req.body;
+    const record = req.body;
 
     try {
-        let createdRecord = await generateRecord(record);
+        const createdRecord = await generateRecord(record);
         res.status(201).json({ message: "New record generated", record: createdRecord });
     } catch (error) {
         res.status(500).json({ message: "Something went wrong", error });
@@ -14,10 +14,10 @@ async function createRecord(req: Request, res: Response) {
 }
 
 async function updateRecord(req: Request, res: Response) {
-    let record = req.body;
+    const record = req.body;
 
     try {
-        let updatedRecord = await modifyRecord(record);
+        const updatedRecord = await modifyRecord(record);
         res.status(200).json({ message: "Record updated successfully", record: updatedRecord });
     } catch (error) {
         if (error instanceof LoanRecordDoesNotExistError) {
@@ -30,7 +30,7 @@ async function updateRecord(req: Request, res: Response) {
 
 async function getAllRecords(req: Request, res: Response) {
     try {
-        let records = await findAllRecords();
+        const records = await findAllRecords();
         res.status(200).json({ message: "Retrieved all records", records });
     } catch (error) {
         res.status(500).json({ message: "Unable to retrieve records at this time", error });
@@ -38,8 +38,8 @@ async function getAllRecords(req: Request, res: Response) {
 }
 
 async function getRecordsByProperty(req: Request, res: Response) {
-    let param = req.body as { property: string; value: string | Date };
-    const requester = req.user!; // guaranteed by the `authenticate` middleware on this route
+    const param = req.body as { property: string; value: string | Date };
+    const requester = req.user!;
 
     if (requester.type === 'PATRON' && (param.property !== 'patron' || String(param.value) !== requester.id)) {
         res.status(403).json({ message: 'You can only query your own loan records' });
@@ -47,7 +47,7 @@ async function getRecordsByProperty(req: Request, res: Response) {
     }
 
     try {
-        let records = await queryRecords(param);
+        const records = await queryRecords(param);
         res.status(200).json({ message: 'Retrieved records from your query', records });
     } catch (error) {
         res.status(500).json({ message: 'Unable to retrieve records at this time', error });
@@ -55,7 +55,7 @@ async function getRecordsByProperty(req: Request, res: Response) {
 }
 
 async function createSelfCheckout(req: Request, res: Response) {
-    const requester = req.user!; // guaranteed by `authenticate`, role-gated to PATRON by `authorize` on this route
+    const requester = req.user!;
     const { item, dueDate } = req.body as { item: string; dueDate: Date };
 
     try {

@@ -13,7 +13,6 @@ function sanitizeCard(card: ILibraryCardWithUser): any {
 }
 
 async function getAllLibraryCards(req:Request, res:Response){
-    // Role check (ADMIN/EMPLOYEE only) happens in the route via `authorize`.
     try {
         const cards = await findAllLibraryCards();
         res.status(200).json({message : "Retrieved all library cards", count: cards.length, cards: cards.map(sanitizeCard)});
@@ -24,10 +23,10 @@ async function getAllLibraryCards(req:Request, res:Response){
 
 async function getLibraryCard(req:Request, res:Response){
     const {cardId} = req.params as { cardId: string };
-    const requester = req.user!; // guaranteed by the `authenticate` middleware on this route
+    const requester = req.user!;
 
     try {
-        let card = await findLibraryCard(cardId);
+        const card = await findLibraryCard(cardId);
 
         if (requester.type !== 'ADMIN' && requester.type !== 'EMPLOYEE' && requester.id !== card.userDetails.id) {
             res.status(403).json({message : "You can only view your own library card"});
@@ -46,7 +45,7 @@ async function getLibraryCard(req:Request, res:Response){
 
 async function createLibraryCard(req:Request, res:Response){
     const card:ILibraryCard = req.body;
-    const requester = req.user!; // guaranteed by the `authenticate` middleware on this route
+    const requester = req.user!;
 
     if (requester.type !== 'ADMIN' && requester.type !== 'EMPLOYEE' && requester.id !== card.user) {
         res.status(403).json({message : "You can only request a library card for your own account"});
@@ -54,14 +53,13 @@ async function createLibraryCard(req:Request, res:Response){
     }
 
     try {
-        // The admin runs the library, they don't borrow from it - no card needed.
         const targetUser = await findUserById(card.user);
         if (targetUser && targetUser.type === 'ADMIN') {
             res.status(400).json({message : "The admin account does not need a library card"});
             return;
         }
 
-        let savedCard = await registerLibraryCard(card);
+        const savedCard = await registerLibraryCard(card);
         res.status(201).json({message : "Library Card Generated Successfuly", savedCard: sanitizeCard(savedCard)});
     } catch (error:any) {
         res.status(500).json({message : "Failed to generate library card", error:error.message});
@@ -72,7 +70,7 @@ async function getMyLibraryCard(req:Request, res:Response){
     const requester = req.user!; // guaranteed by the `authenticate` middleware on this route
 
     try {
-        let card = await findLibraryCardByUserId(requester.id);
+        const card = await findLibraryCardByUserId(requester.id);
         res.status(200).json({message : "Library Card found", card: sanitizeCard(card)});
     } catch (error:any) {
         if(error instanceof LibraryCardDoesNotExistError){

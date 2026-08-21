@@ -9,10 +9,9 @@ function sanitizeUser(user: any) {
 }
 
 async function getAllUsers(req:Request,res:Response) {
-    const requester = req.user!; // guaranteed by the `authenticate` middleware on this route
-
+    const requester = req.user!;
     try {
-        let users = await findAllUsers();
+        const users = await findAllUsers();
         const visibleUsers = requester.type === 'EMPLOYEE'
             ? users.filter((user) => user.type === 'PATRON')
             : users.filter((user) => user.type !== 'ADMIN');
@@ -25,7 +24,7 @@ async function getAllUsers(req:Request,res:Response) {
 
 async function getPendingUsers(req:Request,res:Response) {
     try {
-        let users = await findPendingUsers();
+        const users = await findPendingUsers();
         res.status(200).json({message:"Pending users retrieved successfully",users: users.map(sanitizeUser)});
     }catch (error:any) {
         res.status(500).json({message:"Unable to retrieve pending users at this time",error:error.message});
@@ -34,7 +33,7 @@ async function getPendingUsers(req:Request,res:Response) {
 
 async function getUserById(req:Request,res:Response) {
     const userId = req.params.userId as string;
-    const requester = req.user!; // guaranteed by the `authenticate` middleware on this route
+    const requester = req.user!;
 
     if (requester.type !== 'ADMIN' && requester.type !== 'EMPLOYEE' && requester.id !== userId) {
         res.status(403).json({message:"You can only view your own account"});
@@ -42,7 +41,7 @@ async function getUserById(req:Request,res:Response) {
     }
 
     try {
-        let user = await findUserById(userId);
+        const user = await findUserById(userId);
         res.status(200).json({message:"User retrieved successfully",user: sanitizeUser(user)});
     }catch (error:any) {
         if(error instanceof UserDoesNotExistError){
@@ -54,7 +53,7 @@ async function getUserById(req:Request,res:Response) {
 
 async function deleteUser(req:Request,res:Response) {
     const userId = req.params.userId as string;
-    const requester = req.user!; // guaranteed by the `authenticate` middleware on this route
+    const requester = req.user!;
 
     if (requester.type !== 'ADMIN' && requester.id !== userId) {
         res.status(403).json({message:"You can only delete your own account"});
@@ -62,7 +61,7 @@ async function deleteUser(req:Request,res:Response) {
     }
 
     try {
-        let message = await removeUser(userId);
+        const message = await removeUser(userId);
         res.status(200).json({message});
     }catch (error:any) {
         if(error instanceof UserDoesNotExistError){
@@ -74,7 +73,7 @@ async function deleteUser(req:Request,res:Response) {
 
 async function updateUser(req:Request,res:Response) {
     const user = req.body;
-    const requester = req.user!; // guaranteed by the `authenticate` middleware on this route
+    const requester = req.user!;
 
     if (requester.type !== 'ADMIN' && requester.id !== user.id) {
         res.status(403).json({message:"You can only update your own account"});
@@ -87,7 +86,7 @@ async function updateUser(req:Request,res:Response) {
             user.type = existing!.type;
         }
 
-        let updatedUser = await modifyUser(user);
+        const updatedUser = await modifyUser(user);
         res.status(200).json({message:"User updated successfully",updatedUser: sanitizeUser(updatedUser)});
     }catch (error:any) {
         if(error instanceof UserDoesNotExistError){
@@ -100,7 +99,7 @@ async function updateUser(req:Request,res:Response) {
 async function approveUserHandler(req:Request,res:Response) {
     const userId = req.params.userId as string;
     try {
-        let user = await approveUser(userId);
+        const user = await approveUser(userId);
         res.status(200).json({message:"User approved successfully",user: sanitizeUser(user)});
     }catch (error:any) {
         if(error instanceof UserDoesNotExistError){
@@ -113,7 +112,7 @@ async function approveUserHandler(req:Request,res:Response) {
 async function rejectUserHandler(req:Request,res:Response) {
     const userId = req.params.userId as string;
     try {
-        let user = await rejectUser(userId);
+        const user = await rejectUser(userId);
         res.status(200).json({message:"User rejected",user: sanitizeUser(user)});
     }catch (error:any) {
         if(error instanceof UserDoesNotExistError){
@@ -126,7 +125,7 @@ async function rejectUserHandler(req:Request,res:Response) {
 async function promoteUserHandler(req:Request,res:Response) {
     const userId = req.params.userId as string;
     try {
-        let user = await promoteUser(userId);
+        const user = await promoteUser(userId);
         res.status(200).json({message:"User promoted to employee",user: sanitizeUser(user)});
     }catch (error:any) {
         if(error instanceof UserDoesNotExistError){
@@ -141,7 +140,7 @@ async function promoteUserHandler(req:Request,res:Response) {
 async function demoteUserHandler(req:Request,res:Response) {
     const userId = req.params.userId as string;
     try {
-        let user = await demoteUser(userId);
+        const user = await demoteUser(userId);
         res.status(200).json({message:"User demoted to patron",user: sanitizeUser(user)});
     }catch (error:any) {
         if(error instanceof UserDoesNotExistError){

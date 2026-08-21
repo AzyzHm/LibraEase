@@ -1,8 +1,5 @@
 import { Request,Response } from "express";
 import { findAllBooks,registerBook,modifyBook,removeBook, queryBooks } from "../services/BookService";
-
-import { IBook } from "../models/Book";
-import { IBookModel } from "../daos/BookDao";
 import { BookDoesNotExistError } from "../utils/LibraryErrors";
 
 async function getAllBooks(req: Request, res: Response){
@@ -15,7 +12,7 @@ async function getAllBooks(req: Request, res: Response){
 }
 
 async function createBook(req: Request, res: Response){
-    let book = req.body;
+    const book = req.body;
     try{
         const savedBook = await registerBook(book);
         res.status(201).json({message: "Book created successfully",savedBook});
@@ -25,7 +22,7 @@ async function createBook(req: Request, res: Response){
 }
 
 async function updateBook(req: Request, res: Response){
-    let book = req.body;
+    const book = req.body;
     try{
         const updatedBook = await modifyBook(book);
         res.status(200).json({message: "Book updated successfully",updatedBook});
@@ -39,7 +36,7 @@ async function updateBook(req: Request, res: Response){
 }
 
 async function deleteBook(req: Request, res: Response){
-    let {barcode} = req.params as { barcode: string };
+    const {barcode} = req.params as { barcode: string };
     try{
         const message = await removeBook(barcode);
         res.status(200).json({message});
@@ -53,9 +50,9 @@ async function deleteBook(req: Request, res: Response){
 }
 
 async function searchForBooksByQuery(req:Request, res:Response){
-    let {title,barcode,description,author,subject,genre,page = 1,limit = 25} = req.query;
+    const {title,barcode,description,author,subject,genre,page = 1,limit = 25} = req.query;
     try{
-        let books = await queryBooks(
+        const books = await queryBooks(
             Number(page),
             Number(limit),
             title as string,

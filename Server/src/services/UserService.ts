@@ -110,7 +110,7 @@ export async function rejectUser(userId:string):Promise<IUserModel>{
 
 export async function removeUser(userId:string):Promise<string>{
     try{
-        let deleted = await UserDao.removeById(userId);
+        const deleted = await UserDao.removeById(userId);
         if(!deleted) throw new UserDoesNotExistError("No user exists with the given id");
         return "User deleted successfully";
     }

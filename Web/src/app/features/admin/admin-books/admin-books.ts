@@ -1,10 +1,13 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, ElementRef, OnInit, PLATFORM_ID, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { animate } from 'motion';
 import { AdminBooksStore } from '../../../core/state/admin-books-store';
 import { Book, BookModel } from '../../../core/models/book.model';
 import { LoadingState } from '../../../shared/ui/loading-state/loading-state';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { ErrorState } from '../../../shared/ui/error-state/error-state';
+import { springStandard } from '../../../shared/motion/springs';
 
 /** Matches the backend's Joi pattern for barcode (10-digit or 13-digit ISBN, hyphens allowed). */
 const BARCODE_PATTERN = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/;
@@ -17,6 +20,7 @@ const BARCODE_PATTERN = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/;
   styleUrl: './admin-books.css'
 })
 export class AdminBooks implements OnInit {
+  private readonly platformId = inject(PLATFORM_ID);
   private readonly fb = inject(FormBuilder);
   readonly store = inject(AdminBooksStore);
 
@@ -51,6 +55,27 @@ export class AdminBooks implements OnInit {
     const filters = this.store.filters();
     return Boolean(filters.title || filters.author || filters.genre);
   });
+
+  private readonly formPanel = viewChild<ElementRef<HTMLElement>>('formPanel');
+
+  constructor() {
+    // The create/edit form is an inline expand/collapse, not a modal, but
+    // it's still an appearing panel rather than a hover/press state, so it
+    // gets the spring treatment same as the modals - just without a scrim.
+    effect(() => {
+      const el = this.formPanel()?.nativeElement;
+      if (!el || !isPlatformBrowser(this.platformId)) {
+        return;
+      }
+
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      animate(
+        el,
+        { opacity: [0, 1], transform: ['translateY(-8px)', 'translateY(0)'] },
+        reducedMotion ? { duration: 0.001 } : springStandard
+      );
+    });
+  }
 
   ngOnInit(): void {
     this.store.loadPage(1);

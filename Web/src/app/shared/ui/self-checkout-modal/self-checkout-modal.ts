@@ -3,11 +3,12 @@ import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Va
 import { HttpErrorResponse } from '@angular/common/http';
 import { BookModel } from '../../../core/models/book.model';
 import { SelfCheckoutStore } from '../../../core/state/self-checkout-store';
+import { ModalShell } from '../modal-shell/modal-shell';
 
 @Component({
   selector: 'app-self-checkout-modal',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, ModalShell],
   templateUrl: './self-checkout-modal.html',
   styleUrl: './self-checkout-modal.css'
 })
@@ -53,10 +54,6 @@ export class SelfCheckoutModal implements OnInit {
         this.error.set(this.store.extractErrorMessage(err));
       }
     });
-  }
-
-  onBackdropClick(): void {
-    this.closed.emit();
   }
 
   onClose(): void {

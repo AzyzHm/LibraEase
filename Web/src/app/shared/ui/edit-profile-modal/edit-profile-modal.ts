@@ -2,11 +2,12 @@ import { Component, OnInit, inject, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthStore } from '../../../core/state/auth-store';
 import { ProfileStore } from '../../../core/state/profile-store';
+import { ModalShell } from '../modal-shell/modal-shell';
 
 @Component({
   selector: 'app-edit-profile-modal',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, ModalShell],
   templateUrl: './edit-profile-modal.html',
   styleUrl: './edit-profile-modal.css'
 })
@@ -40,10 +41,6 @@ export class EditProfileModal implements OnInit {
     this.submitted.set(true);
     if (this.form.invalid) return;
     this.store.saveProfile(this.form.getRawValue());
-  }
-
-  onBackdropClick(): void {
-    this.closed.emit();
   }
 
   onClose(): void {

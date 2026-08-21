@@ -1,36 +1,13 @@
 <section class="mx-auto max-w-6xl px-6 py-10">
-  <h1 class="font-display text-2xl text-ink-900">Admin</h1>
-  <p class="mt-1 text-sm text-ink-400">Manage accounts, the catalog, and active loans.</p>
+  <h1 class="text-h1 text-ink-900">Admin</h1>
+  <p class="text-body-sm mt-1 text-ink-400">Manage accounts, the catalog, and active loans.</p>
 
-  <nav class="mt-6 flex gap-2 overflow-x-auto border-b border-border">
-    <a
-      routerLink="users"
-      routerLinkActive="border-forest-700 text-forest-700"
-      class="shrink-0 whitespace-nowrap border-b-2 border-transparent px-4 py-2 text-sm font-medium text-ink-600 transition-colors hover:text-forest-700"
-    >
-      Users
-    </a>
-    <a
-      routerLink="books"
-      routerLinkActive="border-forest-700 text-forest-700"
-      class="shrink-0 whitespace-nowrap border-b-2 border-transparent px-4 py-2 text-sm font-medium text-ink-600 transition-colors hover:text-forest-700"
-    >
-      Books
-    </a>
-    <a
-      routerLink="loans"
-      routerLinkActive="border-forest-700 text-forest-700"
-      class="shrink-0 whitespace-nowrap border-b-2 border-transparent px-4 py-2 text-sm font-medium text-ink-600 transition-colors hover:text-forest-700"
-    >
-      Loans
-    </a>
-    <a
-      routerLink="cards"
-      routerLinkActive="border-forest-700 text-forest-700"
-      class="shrink-0 whitespace-nowrap border-b-2 border-transparent px-4 py-2 text-sm font-medium text-ink-600 transition-colors hover:text-forest-700"
-    >
-      Library cards
-    </a>
+  <nav class="relative mt-6 flex gap-2 overflow-x-auto border-b border-border">
+    <a #tab routerLink="users" routerLinkActive="admin-tab-active" class="admin-tab">Users</a>
+    <a #tab routerLink="books" routerLinkActive="admin-tab-active" class="admin-tab">Books</a>
+    <a #tab routerLink="loans" routerLinkActive="admin-tab-active" class="admin-tab">Loans</a>
+    <a #tab routerLink="cards" routerLinkActive="admin-tab-active" class="admin-tab">Library cards</a>
+    <span #indicator class="admin-tab-indicator" aria-hidden="true"></span>
   </nav>
 
   <div class="mt-6">

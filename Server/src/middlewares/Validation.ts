@@ -28,6 +28,16 @@ export function ValidateSchema(schema:ObjectSchema, property:string){
     }
 }
 
+const barcodeSchema = Joi.string().custom((value: string, helpers) => {
+    const stripped = value.replace(/-/g, '');
+    const isIsbn10 = /^\d{9}[\dXx]$/.test(stripped);
+    const isIsbn13 = /^\d{13}$/.test(stripped);
+    if (!isIsbn10 && !isIsbn13) {
+        return helpers.error('any.invalid');
+    }
+    return value;
+}, 'ISBN-10 or ISBN-13 barcode').required();
+
 export const Schemas = {
     user : {
     create: Joi.object<IUser>({
@@ -35,8 +45,6 @@ export const Schemas = {
     lastname: Joi.string().required(),
     email: Joi.string().email().regex(/[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/).required(),
     password: Joi.string().required(),
-    // Optional and ignored: UserService.register() always forces new accounts
-    // to PATRON server-side, regardless of what (if anything) is sent here.
     type: Joi.string().valid('ADMIN','PATRON','EMPLOYEE').optional()
     }),
     login: Joi.object<{email:string,password:string}>({
@@ -56,7 +64,7 @@ export const Schemas = {
     })},
     book : {
         create: Joi.object<IBook>({
-            barcode : Joi.string().regex(/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/).required(),
+            barcode : barcodeSchema,
             cover : Joi.string().required(),
             title : Joi.string().required(),
             authors : Joi.array().required(),
@@ -69,7 +77,7 @@ export const Schemas = {
         }),
         update: Joi.object<IBookModel>({
             id: Joi.string().guid({ version: 'uuidv4' }).required(),
-            barcode : Joi.string().regex(/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/).required(),
+            barcode : barcodeSchema,
             cover : Joi.string().required(),
             title : Joi.string().required(),
             authors : Joi.array().required(),
@@ -81,7 +89,7 @@ export const Schemas = {
             genre : Joi.string().required()
         }),
         delete: Joi.object<{barcode:string}>({
-            barcode: Joi.string().regex(/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/).required()
+            barcode: barcodeSchema
         })
     },
     libraryCard: {
@@ -108,10 +116,10 @@ export const Schemas = {
             status: Joi.string().valid('AVAILABLE','LOANED').required(),
             loanedDate: Joi.date().required(),
             dueDate: Joi.date().required(),
-            returnedDate: Joi.date(),
+            returnedDate: Joi.date().allow(null),
             patron: Joi.string().guid({ version: 'uuidv4' }).required(),
-            employeeOut: Joi.string().guid({ version: 'uuidv4' }).required(),
-            employeeIn: Joi.string().guid({ version: 'uuidv4' }),
+            employeeOut: Joi.string().guid({ version: 'uuidv4' }).allow(null).required(),
+            employeeIn: Joi.string().guid({ version: 'uuidv4' }).allow(null),
             item: Joi.string().guid({ version: 'uuidv4' }).required()
         }),
         query: Joi.object<{property:string,value:string|Date}>({

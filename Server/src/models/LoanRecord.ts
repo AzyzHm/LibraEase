@@ -2,9 +2,9 @@ export interface ILoanRecord {
     status: 'AVAILABLE' | 'LOANED';
     loanedDate: Date;
     dueDate: Date;
-    returnedDate?: Date;
+    returnedDate?: Date | null;
     patron: string;
-    employeeOut?: string;
-    employeeIn?: string;
+    employeeOut?: string | null;
+    employeeIn?: string | null;
     item: string;
 }

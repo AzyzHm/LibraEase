@@ -287,6 +287,90 @@ body {
     border: 1px solid var(--color-border);
     box-shadow: var(--shadow-sm);
   }
+
+  /* Compact button variant for inline table actions (approve/reject/delete
+     rows). Combine with a color variant, e.g. class="btn btn-secondary
+     btn-xs". Placed after .btn in source order so it wins on the shared
+     padding/font-size properties. */
+  .btn-xs {
+    gap: 0.25rem;
+    padding: 0.3125rem 0.625rem;
+    font-size: 0.75rem;
+  }
+
+  .btn-danger {
+    background-color: var(--color-danger-500);
+    color: white;
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    background-color: var(--color-danger-700);
+  }
+
+  /* Admin screens: status/category filter pills above a table. */
+  .admin-filter-pill {
+    border-radius: var(--radius-sm);
+    padding: 0.375rem 0.75rem;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-ink-600);
+    transition: background-color var(--duration-fast) var(--ease-standard),
+                color var(--duration-fast) var(--ease-standard);
+  }
+
+  .admin-filter-pill:hover {
+    background-color: var(--color-cream-200);
+  }
+
+  .admin-filter-pill-active,
+  .admin-filter-pill-active:hover {
+    background-color: var(--color-forest-700);
+    color: var(--color-cream-50);
+  }
+
+  /* Admin screens: data table shell. Header row gets a faint tint so it
+     reads as a header without needing a heavier border. */
+  .admin-table-wrap {
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    background-color: white;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .admin-table {
+    width: 100%;
+    text-align: left;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+  }
+
+  .admin-table thead tr {
+    background-color: var(--color-cream-100);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .admin-table th {
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    color: var(--color-ink-400);
+  }
+
+  .admin-table td {
+    padding: 0.75rem 1rem;
+  }
+
+  .admin-table tbody tr {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .admin-table tbody tr:last-child {
+    border-bottom: none;
+  }
 }
 
 /* ---------------------------------------------------------------------
@@ -335,7 +419,8 @@ body {
     border-bottom: 2px solid var(--color-ink-900);
   }
 
-  .card-surface {
+  .card-surface,
+  .admin-table-wrap {
     border-width: 2px;
     border-color: var(--color-ink-900);
   }

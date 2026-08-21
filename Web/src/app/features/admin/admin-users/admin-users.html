@@ -4,22 +4,23 @@
       <button
         type="button"
         (click)="onFilterChange(filter.value)"
-        class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
-        [class.bg-forest-700]="store.statusFilter() === filter.value"
-        [class.text-cream-50]="store.statusFilter() === filter.value"
-        [class.text-ink-600]="store.statusFilter() !== filter.value"
-        [class.hover:bg-cream-200]="store.statusFilter() !== filter.value"
+        class="admin-filter-pill"
+        [class.admin-filter-pill-active]="store.statusFilter() === filter.value"
       >
         {{ filter.label }}
         @if (filter.value === 'PENDING' && store.pendingCount() > 0) {
-          <span class="ml-1 rounded-full bg-coral-500 px-1.5 py-0.5 text-xs text-cream-50">{{ store.pendingCount() }}</span>
+          <span class="text-caption ml-1 rounded-full bg-coral-500 px-1.5 py-0.5 text-cream-50">
+            {{ store.pendingCount() }}
+          </span>
         }
       </button>
     }
   </div>
 
   @if (store.actionError()) {
-    <p class="mt-4 rounded-md bg-danger-50 px-4 py-3 text-sm text-danger-700">{{ store.actionError() }}</p>
+    <p class="text-body-sm mt-4 rounded-sm border-l-2 border-danger-500 bg-danger-50 px-4 py-3 text-danger-700">
+      {{ store.actionError() }}
+    </p>
   }
 
   <div class="mt-6">
@@ -30,26 +31,26 @@
     } @else if (store.filteredUsers().length === 0) {
       <app-empty-state message="No users in this view." />
     } @else {
-      <div class="overflow-x-auto rounded-(--radius-card) border border-border bg-white">
-        <table class="w-full text-left text-sm">
+      <div class="admin-table-wrap">
+        <table class="admin-table">
           <thead>
-            <tr class="border-b border-border text-xs font-medium uppercase tracking-wide text-ink-400">
-              <th class="px-4 py-3">Name</th>
-              <th class="px-4 py-3">Email</th>
-              <th class="px-4 py-3">Role</th>
-              <th class="px-4 py-3">Status</th>
-              <th class="px-4 py-3 text-right">Actions</th>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th class="text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
             @for (user of store.filteredUsers(); track user.id) {
-              <tr class="border-b border-border last:border-b-0">
-                <td class="px-4 py-3 text-ink-900">{{ user.firstname }} {{ user.lastname }}</td>
-                <td class="px-4 py-3 text-ink-600">{{ user.email }}</td>
-                <td class="px-4 py-3 text-ink-600">{{ user.type }}</td>
-                <td class="px-4 py-3">
+              <tr>
+                <td class="text-ink-900">{{ user.firstname }} {{ user.lastname }}</td>
+                <td class="text-ink-600">{{ user.email }}</td>
+                <td class="text-ink-600">{{ user.type }}</td>
+                <td>
                   <span
-                    class="rounded-full px-2 py-0.5 text-xs font-medium"
+                    class="text-caption rounded-full px-2 py-0.5"
                     [class.bg-success-50]="user.status === 'APPROVED'"
                     [class.text-success-700]="user.status === 'APPROVED'"
                     [class.bg-coral-50]="user.status === 'PENDING'"
@@ -60,69 +61,45 @@
                     {{ user.status }}
                   </span>
                 </td>
-                <td class="px-4 py-3">
+                <td>
                   <div class="flex justify-end gap-2">
                     @if (store.actionPendingId() === user.id) {
-                      <span class="text-xs text-ink-400">Working…</span>
+                      <span class="text-body-sm text-ink-400">Working…</span>
                     } @else if (confirmingDeleteId() === user.id) {
-                      <span class="text-xs text-ink-600">Delete this user?</span>
-                      <button
-                        type="button"
-                        (click)="onDeleteConfirm(user)"
-                        class="rounded-md bg-danger-500 px-2 py-1 text-xs font-medium text-cream-50 transition-colors hover:bg-danger-700"
-                      >
+                      <span class="text-body-sm text-ink-600">Delete this user?</span>
+                      <button type="button" (click)="onDeleteConfirm(user)" class="btn btn-danger btn-xs">
                         Confirm
                       </button>
-                      <button
-                        type="button"
-                        (click)="onDeleteCancel()"
-                        class="rounded-md border border-border px-2 py-1 text-xs font-medium text-ink-600 transition-colors hover:bg-cream-200"
-                      >
+                      <button type="button" (click)="onDeleteCancel()" class="btn btn-secondary btn-xs">
                         Cancel
                       </button>
                     } @else if (authStore.isAdmin()) {
                       @if (user.status === 'PENDING') {
-                        <button
-                          type="button"
-                          (click)="onApprove(user)"
-                          class="rounded-md bg-forest-700 px-2 py-1 text-xs font-medium text-cream-50 transition-colors hover:bg-forest-500"
-                        >
+                        <button type="button" (click)="onApprove(user)" class="btn btn-primary btn-xs">
                           Approve
                         </button>
-                        <button
-                          type="button"
-                          (click)="onReject(user)"
-                          class="rounded-md border border-border px-2 py-1 text-xs font-medium text-ink-600 transition-colors hover:bg-cream-200"
-                        >
+                        <button type="button" (click)="onReject(user)" class="btn btn-secondary btn-xs">
                           Reject
                         </button>
                       }
                       @if (user.type === 'PATRON') {
-                        <button
-                          type="button"
-                          (click)="onPromote(user)"
-                          class="rounded-md border border-border px-2 py-1 text-xs font-medium text-ink-600 transition-colors hover:bg-cream-200"
-                        >
+                        <button type="button" (click)="onPromote(user)" class="btn btn-secondary btn-xs">
                           Make employee
                         </button>
                       } @else if (user.type === 'EMPLOYEE') {
-                        <button
-                          type="button"
-                          (click)="onDemote(user)"
-                          class="rounded-md border border-border px-2 py-1 text-xs font-medium text-ink-600 transition-colors hover:bg-cream-200"
-                        >
+                        <button type="button" (click)="onDemote(user)" class="btn btn-secondary btn-xs">
                           Make patron
                         </button>
                       }
                       <button
                         type="button"
                         (click)="onDeleteRequest(user)"
-                        class="rounded-md border border-border px-2 py-1 text-xs font-medium text-danger-700 transition-colors hover:bg-danger-50"
+                        class="btn btn-secondary btn-xs text-danger-700 hover:bg-danger-50"
                       >
                         Delete
                       </button>
                     } @else {
-                      <span class="text-xs text-ink-400">View only</span>
+                      <span class="text-body-sm text-ink-400">View only</span>
                     }
                   </div>
                 </td>

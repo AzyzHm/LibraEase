@@ -1,5 +1,5 @@
 <article
-  class="flex h-full cursor-pointer flex-col overflow-hidden rounded-card border border-border bg-white transition-shadow hover:shadow-md"
+  class="card-surface book-card flex h-full cursor-pointer flex-col overflow-hidden"
   role="button"
   tabindex="0"
   (click)="openDetail()"
@@ -18,17 +18,17 @@
     }
   </div>
 
-  <div class="flex flex-1 flex-col gap-1 px-4 py-3">
-    <h3 class="line-clamp-2 font-display text-base text-ink-900">{{ book().title }}</h3>
-    <p class="line-clamp-1 text-sm text-ink-600">{{ book().authors.join(', ') || 'Unknown author' }}</p>
+  <div class="flex flex-1 flex-col gap-1.5 px-4 py-3.5">
+    <h3 class="text-h3 line-clamp-2 text-ink-900">{{ book().title }}</h3>
+    <p class="text-body-sm line-clamp-1 text-ink-600">{{ book().authors.join(', ') || 'Unknown author' }}</p>
 
-    <div class="mt-auto flex items-center justify-between pt-2">
+    <div class="mt-auto flex items-center justify-between gap-2 pt-2">
       @if (book().genre) {
-        <span class="rounded-full bg-forest-50 px-2 py-0.5 text-xs font-medium text-forest-700">
+        <span class="text-caption rounded-full bg-forest-50 px-2 py-0.5 text-forest-700">
           {{ book().genre }}
         </span>
       }
-      <span class="text-xs text-ink-400">{{ book().publisher }}</span>
+      <span class="text-body-sm truncate text-ink-400">{{ book().publisher }}</span>
     </div>
 
     @if (isPatron()) {
@@ -38,7 +38,7 @@
             type="button"
             disabled
             (click)="$event.stopPropagation()"
-            class="w-full rounded-md border border-border px-3 py-1.5 text-xs font-medium text-ink-400"
+            class="btn btn-secondary w-full"
           >
             Checking availability…
           </button>
@@ -47,16 +47,12 @@
             type="button"
             disabled
             (click)="$event.stopPropagation()"
-            class="w-full cursor-not-allowed rounded-md border border-border px-3 py-1.5 text-xs font-medium text-ink-400"
+            class="btn btn-secondary w-full"
           >
             Currently loaned
           </button>
         } @else {
-          <button
-            type="button"
-            (click)="openCheckout($event)"
-            class="w-full rounded-md bg-forest-700 px-3 py-1.5 text-xs font-medium text-cream-50 transition-colors hover:bg-forest-500"
-          >
+          <button type="button" (click)="openCheckout($event)" class="btn btn-primary w-full">
             Borrow this book
           </button>
         }

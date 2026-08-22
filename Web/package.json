@@ -5,8 +5,19 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.spec.json --noEmit",
+    "test": "jest --passWithNoTests",
+    "test:unit": "jest --testPathPatterns=tests/unit --passWithNoTests",
+    "test:integration": "jest --testPathPatterns=tests/integration --passWithNoTests",
+    "test:coverage": "jest --coverage --passWithNoTests",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\" --no-error-on-unmatched-pattern",
+    "lint:fix": "eslint \"src/**/*.ts\" \"tests/**/*.ts\" --no-error-on-unmatched-pattern --fix",
+    "format": "prettier --write \"src/**/*.{ts,html,css}\" \"tests/**/*.ts\" --no-error-on-unmatched-pattern",
+    "format:check": "prettier --check \"src/**/*.{ts,html,css}\" \"tests/**/*.ts\" --no-error-on-unmatched-pattern"
   },
   "prettier": {
     "printWidth": 100,
@@ -35,19 +46,29 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
+    "@angular-eslint/builder": "^20.7.0",
+    "@angular-eslint/schematics": "^20.7.0",
     "@angular/build": "^20.3.34",
     "@angular/cli": "^20.3.34",
     "@angular/compiler-cli": "^20.3.0",
+    "@playwright/test": "^1.48.0",
     "@tailwindcss/postcss": "^4.3.3",
-    "@types/jasmine": "~5.1.0",
-    "jasmine-core": "~5.9.0",
-    "karma": "~6.4.0",
-    "karma-chrome-launcher": "~3.2.0",
-    "karma-coverage": "~2.2.0",
-    "karma-jasmine": "~5.1.0",
-    "karma-jasmine-html-reporter": "~2.1.0",
+    "@testing-library/angular": "^18.1.1",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/user-event": "^14.6.4",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.9.0",
+    "angular-eslint": "^20.7.0",
+    "eslint": "^9.15.0",
+    "eslint-config-prettier": "^10.1.8",
+    "jest": "^30.0.0",
+    "jest-environment-jsdom": "^30.0.0",
+    "jest-preset-angular": "^17.0.0",
     "postcss": "^8.5.26",
+    "prettier": "^3.4.1",
     "tailwindcss": "^4.3.3",
-    "typescript": "~5.9.2"
+    "ts-node": "^10.9.2",
+    "typescript": "~5.9.2",
+    "typescript-eslint": "^8.16.0"
   }
 }

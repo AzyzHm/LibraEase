@@ -2,7 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { LoginCredentials, LoginResponse, RegisterPayload, RegisterResponse } from '../models/auth.model';
+import {
+  LoginCredentials,
+  LoginResponse,
+  RegisterPayload,
+  RegisterResponse,
+} from '../models/auth.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthApi {

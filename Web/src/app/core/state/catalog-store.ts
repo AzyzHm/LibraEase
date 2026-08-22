@@ -35,7 +35,7 @@ export class CatalogStore {
     const params: BookQueryParams = {
       ...this.toQueryParams(this.filters()),
       page,
-      limit: PAGE_SIZE
+      limit: PAGE_SIZE,
     };
 
     this.bookApi
@@ -51,7 +51,7 @@ export class CatalogStore {
         error: (error: HttpErrorResponse) => {
           this.books.set([]);
           this.errorMessage.set(this.extractErrorMessage(error));
-        }
+        },
       });
   }
 
@@ -76,7 +76,7 @@ export class CatalogStore {
     return {
       title: filters.title.trim() || undefined,
       author: filters.author.trim() || undefined,
-      genre: filters.genre.trim() || undefined
+      genre: filters.genre.trim() || undefined,
     };
   }
 

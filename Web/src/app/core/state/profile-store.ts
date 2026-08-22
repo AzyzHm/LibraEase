@@ -44,8 +44,10 @@ export class ProfileStore {
           this.profileSaved.set(true);
         },
         error: (error: HttpErrorResponse) => {
-          this.profileError.set(this.extractErrorMessage(error, 'Unable to update your profile right now.'));
-        }
+          this.profileError.set(
+            this.extractErrorMessage(error, 'Unable to update your profile right now.'),
+          );
+        },
       });
   }
 
@@ -69,8 +71,10 @@ export class ProfileStore {
         next: (response) => this.loans.set(response.records),
         error: (error: HttpErrorResponse) => {
           this.loans.set([]);
-          this.loansError.set(this.extractErrorMessage(error, 'Unable to load your loans right now.'));
-        }
+          this.loansError.set(
+            this.extractErrorMessage(error, 'Unable to load your loans right now.'),
+          );
+        },
       });
   }
 

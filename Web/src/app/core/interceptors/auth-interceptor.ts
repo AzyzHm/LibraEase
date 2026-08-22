@@ -15,8 +15,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(
     req.clone({
-      setHeaders: { Authorization: `Bearer ${token}` }
-    })
+      setHeaders: { Authorization: `Bearer ${token}` },
+    }),
   ).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401) {
@@ -26,6 +26,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       return throwError(() => error);
-    })
+    }),
   );
 };

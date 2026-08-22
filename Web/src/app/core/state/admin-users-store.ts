@@ -28,7 +28,9 @@ export class AdminUsersStore {
     return filter === 'ALL' ? users : users.filter((user) => user.status === filter);
   });
 
-  readonly pendingCount = computed(() => this.users().filter((user) => user.status === 'PENDING').length);
+  readonly pendingCount = computed(
+    () => this.users().filter((user) => user.status === 'PENDING').length,
+  );
 
   load(): void {
     this.loading.set(true);
@@ -45,7 +47,7 @@ export class AdminUsersStore {
         error: (error: HttpErrorResponse) => {
           this.users.set([]);
           this.errorMessage.set(this.extractErrorMessage(error, 'Unable to load users right now.'));
-        }
+        },
       });
   }
 
@@ -79,8 +81,10 @@ export class AdminUsersStore {
       .subscribe({
         next: () => this.users.update((users) => users.filter((user) => user.id !== userId)),
         error: (error: HttpErrorResponse) => {
-          this.actionError.set(this.extractErrorMessage(error, 'Unable to delete this user right now.'));
-        }
+          this.actionError.set(
+            this.extractErrorMessage(error, 'Unable to delete this user right now.'),
+          );
+        },
       });
   }
 
@@ -88,18 +92,20 @@ export class AdminUsersStore {
   private runAction(
     userId: string,
     request: ReturnType<UserApi['approve']>,
-    fallbackError: string
+    fallbackError: string,
   ): void {
     this.actionPendingId.set(userId);
     this.actionError.set(null);
 
     request.pipe(finalize(() => this.actionPendingId.set(null))).subscribe({
       next: (response) => {
-        this.users.update((users) => users.map((user) => (user.id === userId ? response.user : user)));
+        this.users.update((users) =>
+          users.map((user) => (user.id === userId ? response.user : user)),
+        );
       },
       error: (error: HttpErrorResponse) => {
         this.actionError.set(this.extractErrorMessage(error, fallbackError));
-      }
+      },
     });
   }
 

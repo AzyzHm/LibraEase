@@ -3,7 +3,13 @@
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <div>
         <label for="edit-firstname" class="field-label">First name</label>
-        <input id="edit-firstname" type="text" formControlName="firstname" autocomplete="given-name" class="field-input" />
+        <input
+          id="edit-firstname"
+          type="text"
+          formControlName="firstname"
+          autocomplete="given-name"
+          class="field-input"
+        />
         @if (submitted() && form.controls.firstname.invalid) {
           <p class="text-body-sm mt-1 text-danger-500">Required.</p>
         }
@@ -11,7 +17,13 @@
 
       <div>
         <label for="edit-lastname" class="field-label">Last name</label>
-        <input id="edit-lastname" type="text" formControlName="lastname" autocomplete="family-name" class="field-input" />
+        <input
+          id="edit-lastname"
+          type="text"
+          formControlName="lastname"
+          autocomplete="family-name"
+          class="field-input"
+        />
         @if (submitted() && form.controls.lastname.invalid) {
           <p class="text-body-sm mt-1 text-danger-500">Required.</p>
         }
@@ -20,19 +32,29 @@
 
     <div>
       <label for="edit-email" class="field-label">Email</label>
-      <input id="edit-email" type="email" formControlName="email" autocomplete="email" class="field-input" />
+      <input
+        id="edit-email"
+        type="email"
+        formControlName="email"
+        autocomplete="email"
+        class="field-input"
+      />
       @if (submitted() && form.controls.email.invalid) {
         <p class="text-body-sm mt-1 text-danger-500">Enter a valid email address.</p>
       }
     </div>
 
     @if (store.profileError()) {
-      <p class="text-body-sm rounded-sm border-l-2 border-danger-500 bg-danger-50 px-3 py-2 text-danger-700">
+      <p
+        class="text-body-sm rounded-sm border-l-2 border-danger-500 bg-danger-50 px-3 py-2 text-danger-700"
+      >
         {{ store.profileError() }}
       </p>
     }
     @if (store.profileSaved()) {
-      <p class="text-body-sm rounded-sm border-l-2 border-success-500 bg-success-50 px-3 py-2 text-success-700">
+      <p
+        class="text-body-sm rounded-sm border-l-2 border-success-500 bg-success-50 px-3 py-2 text-success-700"
+      >
         Profile updated.
       </p>
     }

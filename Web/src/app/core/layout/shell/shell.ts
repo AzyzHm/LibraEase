@@ -8,6 +8,6 @@ import { Footer } from '../footer/footer';
   standalone: true,
   imports: [RouterOutlet, Navbar, Footer],
   templateUrl: './shell.html',
-  styleUrl: './shell.css'
+  styleUrl: './shell.css',
 })
 export class Shell {}

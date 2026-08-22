@@ -1,30 +1,51 @@
 <section class="mx-auto flex max-w-md flex-col items-center px-6 py-16 sm:py-20">
   @if (registered()) {
     <div class="card-surface w-full px-6 py-10 text-center sm:px-8">
-      <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-success-50 text-success-700">
-        <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <div
+        class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-success-50 text-success-700"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          class="h-6 w-6"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
           <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
         </svg>
       </div>
       <h1 class="text-h2 mt-4 text-ink-900">Registration submitted</h1>
       <p class="text-body-sm mt-2 text-ink-600">
-        An admin needs to approve your account before you can sign in. You'll be able to log in once that happens.
+        An admin needs to approve your account before you can sign in. You'll be able to log in once
+        that happens.
       </p>
-      <a routerLink="/login" class="mt-5 inline-block font-medium text-coral-500 hover:text-coral-700">
+      <a
+        routerLink="/login"
+        class="mt-5 inline-block font-medium text-coral-500 hover:text-coral-700"
+      >
         Back to sign in
       </a>
     </div>
   } @else {
     <img src="logo.png" alt="" width="88" height="48" class="h-12 w-auto" />
     <h1 class="text-h1 mt-4 text-ink-900">Create an account</h1>
-    <p class="text-body-sm mt-1 text-ink-400">New accounts need admin approval before signing in.</p>
+    <p class="text-body-sm mt-1 text-ink-400">
+      New accounts need admin approval before signing in.
+    </p>
 
     <div class="card-surface mt-8 w-full px-6 py-8 sm:px-8">
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-4" novalidate>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label for="firstname" class="field-label">First name</label>
-            <input id="firstname" type="text" formControlName="firstname" autocomplete="given-name" class="field-input" />
+            <input
+              id="firstname"
+              type="text"
+              formControlName="firstname"
+              autocomplete="given-name"
+              class="field-input"
+            />
             @if (submitted() && form.controls.firstname.invalid) {
               <p class="text-body-sm mt-1 text-danger-500">Required.</p>
             }
@@ -32,7 +53,13 @@
 
           <div>
             <label for="lastname" class="field-label">Last name</label>
-            <input id="lastname" type="text" formControlName="lastname" autocomplete="family-name" class="field-input" />
+            <input
+              id="lastname"
+              type="text"
+              formControlName="lastname"
+              autocomplete="family-name"
+              class="field-input"
+            />
             @if (submitted() && form.controls.lastname.invalid) {
               <p class="text-body-sm mt-1 text-danger-500">Required.</p>
             }
@@ -41,7 +68,13 @@
 
         <div>
           <label for="email" class="field-label">Email</label>
-          <input id="email" type="email" formControlName="email" autocomplete="email" class="field-input" />
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            class="field-input"
+          />
           @if (submitted() && form.controls.email.invalid) {
             <p class="text-body-sm mt-1 text-danger-500">Enter a valid email address.</p>
           }
@@ -57,7 +90,10 @@
               autocomplete="new-password"
               class="field-input pr-10"
             />
-            <app-password-visibility-toggle [visible]="showPassword()" (toggle)="togglePasswordVisibility()" />
+            <app-password-visibility-toggle
+              [visible]="showPassword()"
+              (toggle)="togglePasswordVisibility()"
+            />
           </div>
           @if (submitted() && form.controls.password.invalid) {
             <p class="text-body-sm mt-1 text-danger-500">At least 8 characters.</p>
@@ -85,7 +121,9 @@
         </div>
 
         @if (errorMessage()) {
-          <p class="text-body-sm rounded-sm border-l-2 border-danger-500 bg-danger-50 px-3 py-2 text-danger-700">
+          <p
+            class="text-body-sm rounded-sm border-l-2 border-danger-500 bg-danger-50 px-3 py-2 text-danger-700"
+          >
             {{ errorMessage() }}
           </p>
         }

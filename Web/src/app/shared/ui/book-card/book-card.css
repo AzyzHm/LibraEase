@@ -1,8 +1,9 @@
 /* Hover/focus feedback only - plain state change, not a gesture, so it
    stays on the CSS transition tokens rather than the `motion` springs. */
 .book-card {
-  transition: transform var(--duration-fast) var(--ease-standard),
-              box-shadow var(--duration-fast) var(--ease-standard);
+  transition:
+    transform var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
 }
 
 .book-card:hover {

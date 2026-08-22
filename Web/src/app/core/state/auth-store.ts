@@ -2,7 +2,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, catchError, tap, throwError } from 'rxjs';
 import { AuthApi } from '../api/auth-api';
-import { ApiErrorBody, AuthUser, LoginCredentials, LoginResponse, RegisterPayload, RegisterResponse } from '../models/auth.model';
+import {
+  ApiErrorBody,
+  AuthUser,
+  LoginCredentials,
+  LoginResponse,
+  RegisterPayload,
+  RegisterResponse,
+} from '../models/auth.model';
 import { isJwtExpired } from '../utils/jwt.util';
 
 const TOKEN_KEY = 'libraease.token';
@@ -20,7 +27,9 @@ export class AuthStore {
 
   readonly user = this.userSignal.asReadonly();
   readonly token = this.tokenSignal.asReadonly();
-  readonly isAuthenticated = computed(() => this.userSignal() !== null && this.tokenSignal() !== null);
+  readonly isAuthenticated = computed(
+    () => this.userSignal() !== null && this.tokenSignal() !== null,
+  );
   readonly isAdmin = computed(() => this.userSignal()?.type === 'ADMIN');
   readonly isPatron = computed(() => this.userSignal()?.type === 'PATRON');
   readonly isStaff = computed(() => {
@@ -43,9 +52,11 @@ export class AuthStore {
       }),
       catchError((error: HttpErrorResponse) => {
         this.loading.set(false);
-        this.errorMessage.set(this.extractErrorMessage(error, 'Unable to sign in. Check your details and try again.'));
+        this.errorMessage.set(
+          this.extractErrorMessage(error, 'Unable to sign in. Check your details and try again.'),
+        );
         return throwError(() => error);
-      })
+      }),
     );
   }
 
@@ -57,9 +68,11 @@ export class AuthStore {
       tap(() => this.loading.set(false)),
       catchError((error: HttpErrorResponse) => {
         this.loading.set(false);
-        this.errorMessage.set(this.extractErrorMessage(error, 'Unable to register. Please try again.'));
+        this.errorMessage.set(
+          this.extractErrorMessage(error, 'Unable to register. Please try again.'),
+        );
         return throwError(() => error);
-      })
+      }),
     );
   }
 

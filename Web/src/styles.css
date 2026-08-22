@@ -1,11 +1,11 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* LibraEase design tokens. Every color used in the app should come from
    one of these ramps rather than an arbitrary hex value, so the palette
    stays consistent as new features are added. */
 @theme {
-  --font-display: "Source Serif 4", Georgia, serif;
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: 'Source Serif 4', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   /* Page background / neutral surface */
   --color-cream-50: #fbf9f5;
@@ -59,7 +59,7 @@
      blur - so a modal doesn't use the same shadow as a hovered card. */
   --shadow-xs: 0 1px 2px rgba(18, 33, 29, 0.06);
   --shadow-sm: 0 2px 8px rgba(18, 33, 29, 0.08);
-  --shadow-md: 0 8px 24px rgba(18, 33, 29, 0.10);
+  --shadow-md: 0 8px 24px rgba(18, 33, 29, 0.1);
   --shadow-lg: 0 16px 48px rgba(18, 33, 29, 0.14);
   --shadow-modal: 0 24px 64px rgba(18, 33, 29, 0.22);
 
@@ -199,9 +199,10 @@ body {
     font-weight: 600;
     font-size: 0.9375rem;
     letter-spacing: -0.005em;
-    transition: transform var(--duration-instant) var(--ease-standard),
-                background-color var(--duration-fast) var(--ease-standard),
-                box-shadow var(--duration-fast) var(--ease-standard);
+    transition:
+      transform var(--duration-instant) var(--ease-standard),
+      background-color var(--duration-fast) var(--ease-standard),
+      box-shadow var(--duration-fast) var(--ease-standard);
     cursor: pointer;
   }
 
@@ -271,8 +272,9 @@ body {
     padding: 0.5rem 0.75rem;
     font-size: 0.9375rem;
     color: var(--color-ink-900);
-    transition: border-color var(--duration-fast) var(--ease-standard),
-                box-shadow var(--duration-fast) var(--ease-standard);
+    transition:
+      border-color var(--duration-fast) var(--ease-standard),
+      box-shadow var(--duration-fast) var(--ease-standard);
   }
 
   .field-input:focus {
@@ -315,8 +317,9 @@ body {
     font-size: 0.875rem;
     font-weight: 500;
     color: var(--color-ink-600);
-    transition: background-color var(--duration-fast) var(--ease-standard),
-                color var(--duration-fast) var(--ease-standard);
+    transition:
+      background-color var(--duration-fast) var(--ease-standard),
+      color var(--duration-fast) var(--ease-standard);
   }
 
   .admin-filter-pill:hover {

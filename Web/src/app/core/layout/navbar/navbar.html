@@ -20,8 +20,12 @@
       <div class="ml-3 flex items-center gap-2 border-l border-white/15 pl-4">
         @if (authStore.isAuthenticated()) {
           <span class="text-body-sm px-1 text-cream-100/75">{{ authStore.user()?.firstname }}</span>
-          <button type="button" (click)="openEditProfile()" class="btn btn-ghost nav-btn">Edit profile</button>
-          <button type="button" (click)="onSignOut()" class="btn btn-ghost nav-btn">Sign out</button>
+          <button type="button" (click)="openEditProfile()" class="btn btn-ghost nav-btn">
+            Edit profile
+          </button>
+          <button type="button" (click)="onSignOut()" class="btn btn-ghost nav-btn">
+            Sign out
+          </button>
         } @else {
           <a routerLink="/login" class="btn btn-ghost nav-btn">Sign in</a>
         }
@@ -43,36 +47,74 @@
   </div>
 
   @if (menuOpen()) {
-    <nav #mobileNav id="mobile-nav" class="flex flex-col gap-1 border-t border-white/10 px-6 py-4 md:hidden">
-      <a routerLink="/catalog" routerLinkActive="nav-link-active" (click)="closeMenu()" class="nav-link nav-link-block">
+    <nav
+      #mobileNav
+      id="mobile-nav"
+      class="flex flex-col gap-1 border-t border-white/10 px-6 py-4 md:hidden"
+    >
+      <a
+        routerLink="/catalog"
+        routerLinkActive="nav-link-active"
+        (click)="closeMenu()"
+        class="nav-link nav-link-block"
+      >
         Catalog
       </a>
       @if (authStore.isPatron()) {
-        <a routerLink="/profile" routerLinkActive="nav-link-active" (click)="closeMenu()" class="nav-link nav-link-block">
+        <a
+          routerLink="/profile"
+          routerLinkActive="nav-link-active"
+          (click)="closeMenu()"
+          class="nav-link nav-link-block"
+        >
           My loans
         </a>
       }
       @if (authStore.isAuthenticated() && !authStore.isAdmin()) {
-        <a routerLink="/my-card" routerLinkActive="nav-link-active" (click)="closeMenu()" class="nav-link nav-link-block">
+        <a
+          routerLink="/my-card"
+          routerLinkActive="nav-link-active"
+          (click)="closeMenu()"
+          class="nav-link nav-link-block"
+        >
           My card
         </a>
       }
       @if (authStore.isAuthenticated() && authStore.isStaff()) {
-        <a routerLink="/admin" routerLinkActive="nav-link-active" (click)="closeMenu()" class="nav-link nav-link-block">
+        <a
+          routerLink="/admin"
+          routerLinkActive="nav-link-active"
+          (click)="closeMenu()"
+          class="nav-link nav-link-block"
+        >
           Adminspace
         </a>
       }
 
       @if (authStore.isAuthenticated()) {
-        <span class="text-body-sm px-2 py-2 text-cream-100/75">Signed in as {{ authStore.user()?.firstname }}</span>
-        <button type="button" (click)="openEditProfile()" class="btn btn-ghost nav-btn mt-1 justify-start">
+        <span class="text-body-sm px-2 py-2 text-cream-100/75"
+          >Signed in as {{ authStore.user()?.firstname }}</span
+        >
+        <button
+          type="button"
+          (click)="openEditProfile()"
+          class="btn btn-ghost nav-btn mt-1 justify-start"
+        >
           Edit profile
         </button>
-        <button type="button" (click)="onSignOut()" class="btn btn-ghost nav-btn mt-1 justify-start">
+        <button
+          type="button"
+          (click)="onSignOut()"
+          class="btn btn-ghost nav-btn mt-1 justify-start"
+        >
           Sign out
         </button>
       } @else {
-        <a routerLink="/login" (click)="closeMenu()" class="btn btn-ghost nav-btn mt-1 justify-start">
+        <a
+          routerLink="/login"
+          (click)="closeMenu()"
+          class="btn btn-ghost nav-btn mt-1 justify-start"
+        >
           Sign in
         </a>
       }

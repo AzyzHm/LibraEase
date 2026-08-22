@@ -10,7 +10,7 @@ import { BookDetailModal } from '../book-detail-modal/book-detail-modal';
   standalone: true,
   imports: [SelfCheckoutModal, BookDetailModal],
   templateUrl: './book-card.html',
-  styleUrl: './book-card.css'
+  styleUrl: './book-card.css',
 })
 export class BookCard implements OnInit {
   private readonly authStore = inject(AuthStore);

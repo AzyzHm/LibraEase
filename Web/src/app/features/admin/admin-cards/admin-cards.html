@@ -2,8 +2,8 @@
   <section>
     <h2 class="text-h2 text-ink-900">Issue a card</h2>
     <p class="text-body-sm mt-1 text-ink-400">
-      Search for a user and issue them a library card. Issuing is safe to repeat — a user who already has a card
-      just keeps their existing one.
+      Search for a user and issue them a library card. Issuing is safe to repeat — a user who
+      already has a card just keeps their existing one.
     </p>
 
     <input
@@ -15,7 +15,9 @@
     />
 
     @if (store.issueError()) {
-      <p class="text-body-sm mt-4 rounded-sm border-l-2 border-danger-500 bg-danger-50 px-4 py-3 text-danger-700">
+      <p
+        class="text-body-sm mt-4 rounded-sm border-l-2 border-danger-500 bg-danger-50 px-4 py-3 text-danger-700"
+      >
         {{ store.issueError() }}
       </p>
     }
@@ -30,7 +32,9 @@
       } @else {
         <div class="admin-table-wrap max-h-80 overflow-y-auto">
           @for (user of filteredUsers(); track user.id) {
-            <div class="flex items-center justify-between border-b border-border px-4 py-3 last:border-b-0">
+            <div
+              class="flex items-center justify-between border-b border-border px-4 py-3 last:border-b-0"
+            >
               <div>
                 <p class="text-body-sm text-ink-900">{{ user.firstname }} {{ user.lastname }}</p>
                 <p class="text-caption text-ink-400">{{ user.email }} · {{ user.type }}</p>
@@ -39,9 +43,13 @@
               @if (store.issuePendingUserId() === user.id) {
                 <span class="text-body-sm text-ink-400">Issuing…</span>
               } @else if (hasCard(user)) {
-                <span class="text-caption rounded-full bg-success-50 px-2 py-0.5 text-success-700">Has a card</span>
+                <span class="text-caption rounded-full bg-success-50 px-2 py-0.5 text-success-700"
+                  >Has a card</span
+                >
               } @else {
-                <button type="button" (click)="onIssue(user)" class="btn btn-primary btn-xs">Issue card</button>
+                <button type="button" (click)="onIssue(user)" class="btn btn-primary btn-xs">
+                  Issue card
+                </button>
               }
             </div>
           }
@@ -75,7 +83,9 @@
               @for (card of store.cards(); track card.id) {
                 <tr>
                   <td class="font-mono text-caption text-ink-600">{{ card.id }}</td>
-                  <td class="text-ink-900">{{ card.userDetails.firstname }} {{ card.userDetails.lastname }}</td>
+                  <td class="text-ink-900">
+                    {{ card.userDetails.firstname }} {{ card.userDetails.lastname }}
+                  </td>
                   <td class="text-ink-600">{{ card.userDetails.email }}</td>
                   <td class="text-ink-600">{{ card.userDetails.type }}</td>
                 </tr>

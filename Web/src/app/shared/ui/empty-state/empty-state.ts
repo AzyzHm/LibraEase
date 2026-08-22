@@ -4,7 +4,7 @@ import { Component, input, output } from '@angular/core';
   selector: 'app-empty-state',
   standalone: true,
   templateUrl: './empty-state.html',
-  styleUrl: './empty-state.css'
+  styleUrl: './empty-state.css',
 })
 export class EmptyState {
   readonly message = input.required<string>();

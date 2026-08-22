@@ -8,7 +8,7 @@ import { ModalShell } from '../modal-shell/modal-shell';
   standalone: true,
   imports: [DatePipe, ModalShell],
   templateUrl: './book-detail-modal.html',
-  styleUrl: './book-detail-modal.css'
+  styleUrl: './book-detail-modal.css',
 })
 export class BookDetailModal {
   readonly book = input.required<BookModel>();

@@ -1,5 +1,11 @@
 import { Component, OnInit, inject, input, output, signal } from '@angular/core';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BookModel } from '../../../core/models/book.model';
 import { SelfCheckoutStore } from '../../../core/state/self-checkout-store';
@@ -10,7 +16,7 @@ import { ModalShell } from '../modal-shell/modal-shell';
   standalone: true,
   imports: [ReactiveFormsModule, ModalShell],
   templateUrl: './self-checkout-modal.html',
-  styleUrl: './self-checkout-modal.css'
+  styleUrl: './self-checkout-modal.css',
 })
 export class SelfCheckoutModal implements OnInit {
   private readonly fb = inject(FormBuilder);
@@ -28,7 +34,7 @@ export class SelfCheckoutModal implements OnInit {
   readonly minDate = this.isoDate(this.addDays(new Date(), 1));
 
   readonly form = this.fb.nonNullable.group({
-    dueDate: ['', [Validators.required, this.futureDateValidator]]
+    dueDate: ['', [Validators.required, this.futureDateValidator]],
   });
 
   ngOnInit(): void {
@@ -52,7 +58,7 @@ export class SelfCheckoutModal implements OnInit {
       error: (err: HttpErrorResponse) => {
         this.saving.set(false);
         this.error.set(this.store.extractErrorMessage(err));
-      }
+      },
     });
   }
 

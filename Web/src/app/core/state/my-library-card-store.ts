@@ -32,7 +32,7 @@ export class MyLibraryCardStore {
             return;
           }
           this.errorMessage.set(this.extractErrorMessage(error));
-        }
+        },
       });
   }
 

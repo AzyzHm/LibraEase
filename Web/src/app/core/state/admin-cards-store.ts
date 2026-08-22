@@ -38,8 +38,10 @@ export class AdminCardsStore {
         next: (response) => this.cards.set(response.cards),
         error: (error: HttpErrorResponse) => {
           this.cards.set([]);
-          this.cardsError.set(this.extractErrorMessage(error, 'Unable to load library cards right now.'));
-        }
+          this.cardsError.set(
+            this.extractErrorMessage(error, 'Unable to load library cards right now.'),
+          );
+        },
       });
   }
 
@@ -55,7 +57,7 @@ export class AdminCardsStore {
         error: (error: HttpErrorResponse) => {
           this.users.set([]);
           this.usersError.set(this.extractErrorMessage(error, 'Unable to load users right now.'));
-        }
+        },
       });
   }
 
@@ -75,8 +77,10 @@ export class AdminCardsStore {
           });
         },
         error: (error: HttpErrorResponse) => {
-          this.issueError.set(this.extractErrorMessage(error, 'Unable to issue a card for this user right now.'));
-        }
+          this.issueError.set(
+            this.extractErrorMessage(error, 'Unable to issue a card for this user right now.'),
+          );
+        },
       });
   }
 

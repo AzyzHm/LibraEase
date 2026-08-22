@@ -1,4 +1,7 @@
-<div class="surface-scrim fixed inset-0 z-50 flex items-center justify-center px-4 py-8" (click)="onBackdropClick()">
+<div
+  class="surface-scrim fixed inset-0 z-50 flex items-center justify-center px-4 py-8"
+  (click)="onBackdropClick()"
+>
   <div
     #panel
     class="flex max-h-full w-full flex-col overflow-hidden rounded-lg border border-border bg-white shadow-modal {{
@@ -17,7 +20,14 @@
         aria-label="Close"
         class="shrink-0 rounded-md p-1.5 text-ink-400 transition-colors hover:bg-cream-200 hover:text-ink-900"
       >
-        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <svg
+          viewBox="0 0 24 24"
+          class="h-5 w-5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M6 18L18 6" />
         </svg>
       </button>

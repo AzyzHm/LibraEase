@@ -7,7 +7,13 @@
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-4" novalidate>
       <div>
         <label for="email" class="field-label">Email</label>
-        <input id="email" type="email" formControlName="email" autocomplete="email" class="field-input" />
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          class="field-input"
+        />
         @if (submitted() && form.controls.email.invalid) {
           <p class="text-body-sm mt-1 text-danger-500">Enter a valid email address.</p>
         }
@@ -23,7 +29,10 @@
             autocomplete="current-password"
             class="field-input pr-10"
           />
-          <app-password-visibility-toggle [visible]="showPassword()" (toggle)="togglePasswordVisibility()" />
+          <app-password-visibility-toggle
+            [visible]="showPassword()"
+            (toggle)="togglePasswordVisibility()"
+          />
         </div>
         @if (submitted() && form.controls.password.invalid) {
           <p class="text-body-sm mt-1 text-danger-500">Password is required.</p>
@@ -31,7 +40,9 @@
       </div>
 
       @if (errorMessage()) {
-        <p class="text-body-sm rounded-sm border-l-2 border-danger-500 bg-danger-50 px-3 py-2 text-danger-700">
+        <p
+          class="text-body-sm rounded-sm border-l-2 border-danger-500 bg-danger-50 px-3 py-2 text-danger-700"
+        >
           {{ errorMessage() }}
         </p>
       }

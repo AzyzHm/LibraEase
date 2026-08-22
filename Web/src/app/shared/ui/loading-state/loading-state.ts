@@ -4,7 +4,7 @@ import { Component, input } from '@angular/core';
   selector: 'app-loading-state',
   standalone: true,
   templateUrl: './loading-state.html',
-  styleUrl: './loading-state.css'
+  styleUrl: './loading-state.css',
 })
 export class LoadingState {
   readonly message = input('Loading…');

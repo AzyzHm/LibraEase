@@ -14,37 +14,37 @@ export const routes: Routes = [
   {
     path: 'catalog',
     component: Catalog,
-    title: 'Catalog · LibraEase'
+    title: 'Catalog · LibraEase',
   },
   {
     path: 'profile',
     component: Profile,
     canActivate: [authGuard],
-    title: 'My account · LibraEase'
+    title: 'My account · LibraEase',
   },
   {
     path: 'my-card',
     component: LibraryCardPage,
     canActivate: [authGuard],
-    title: 'My library card · LibraEase'
+    title: 'My library card · LibraEase',
   },
   {
     path: 'admin',
     component: AdminShell,
     canActivate: [staffGuard],
-    children: adminRoutes
+    children: adminRoutes,
   },
   {
     path: 'login',
     component: Login,
     canActivate: [guestGuard],
-    title: 'Sign in · LibraEase'
+    title: 'Sign in · LibraEase',
   },
   {
     path: 'register',
     component: Register,
     canActivate: [guestGuard],
-    title: 'Register · LibraEase'
+    title: 'Register · LibraEase',
   },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: '' },
 ];

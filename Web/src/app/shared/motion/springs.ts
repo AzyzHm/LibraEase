@@ -25,7 +25,7 @@ import type { AnimationOptions } from 'motion';
 export const springStandard: AnimationOptions = {
   type: 'spring',
   bounce: 0,
-  duration: 0.4
+  duration: 0.4,
 };
 
 /** Snappier variant of the standard spring for small, frequent UI
@@ -33,7 +33,7 @@ export const springStandard: AnimationOptions = {
 export const springSnappy: AnimationOptions = {
   type: 'spring',
   bounce: 0,
-  duration: 0.3
+  duration: 0.3,
 };
 
 /** Momentum spring: use only when the motion is the direct continuation
@@ -43,7 +43,7 @@ export const springSnappy: AnimationOptions = {
 export const springMomentum: AnimationOptions = {
   type: 'spring',
   bounce: 0.2,
-  duration: 0.4
+  duration: 0.4,
 };
 
 /** Drawer/sheet open-close - Apple's shipped values for this exact
@@ -51,7 +51,7 @@ export const springMomentum: AnimationOptions = {
 export const springSheet: AnimationOptions = {
   type: 'spring',
   bounce: 0.2,
-  duration: 0.3
+  duration: 0.3,
 };
 
 /**
@@ -68,7 +68,7 @@ export const springSheet: AnimationOptions = {
  * @param decelerationRate ~0.998 for normal scroll feel, ~0.99 for snappier.
  */
 export function projectMomentum(releaseVelocity: number, decelerationRate = 0.998): number {
-  return (releaseVelocity / 1000) * decelerationRate / (1 - decelerationRate);
+  return ((releaseVelocity / 1000) * decelerationRate) / (1 - decelerationRate);
 }
 
 /**

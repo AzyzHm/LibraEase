@@ -11,7 +11,7 @@ import {
   LoanUpdatePayload,
   LoanUpdateResponse,
   SelfCheckoutPayload,
-  SelfCheckoutResponse
+  SelfCheckoutResponse,
 } from '../models/loan.model';
 
 @Injectable({ providedIn: 'root' })
@@ -23,7 +23,7 @@ export class LoanApi {
   queryByPatron(patronId: string): Observable<LoanQueryResponse> {
     return this.http.post<LoanQueryResponse>(`${this.baseUrl}/query`, {
       property: 'patron',
-      value: patronId
+      value: patronId,
     });
   }
 

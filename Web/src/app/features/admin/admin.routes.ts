@@ -9,5 +9,5 @@ export const adminRoutes: Routes = [
   { path: 'users', component: AdminUsers, title: 'Manage users · Admin · LibraEase' },
   { path: 'books', component: AdminBooks, title: 'Manage books · Admin · LibraEase' },
   { path: 'loans', component: AdminLoans, title: 'Manage loans · Admin · LibraEase' },
-  { path: 'cards', component: AdminCards, title: 'Library cards · Admin · LibraEase' }
+  { path: 'cards', component: AdminCards, title: 'Library cards · Admin · LibraEase' },
 ];

@@ -1,5 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthStore } from '../../../core/state/auth-store';
 import { PasswordVisibilityToggle } from '../../../shared/ui/password-visibility-toggle/password-visibility-toggle';
@@ -15,7 +21,7 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink, PasswordVisibilityToggle],
   templateUrl: './register.html',
-  styleUrls: ['./register.css']
+  styleUrls: ['./register.css'],
 })
 export class Register {
   private readonly fb = inject(FormBuilder);
@@ -34,9 +40,9 @@ export class Register {
       lastname: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', Validators.required]
+      confirmPassword: ['', Validators.required],
     },
-    { validators: passwordsMatchValidator }
+    { validators: passwordsMatchValidator },
   );
 
   togglePasswordVisibility(): void {
@@ -57,7 +63,7 @@ export class Register {
     const { confirmPassword, ...payload } = this.form.getRawValue();
 
     this.authStore.register(payload).subscribe({
-      next: () => this.registered.set(true)
+      next: () => this.registered.set(true),
     });
   }
 }

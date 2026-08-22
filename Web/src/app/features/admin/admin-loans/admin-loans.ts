@@ -1,5 +1,15 @@
 import { DatePipe, isPlatformBrowser } from '@angular/common';
-import { Component, ElementRef, OnInit, PLATFORM_ID, computed, effect, inject, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  PLATFORM_ID,
+  computed,
+  effect,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { animate } from 'motion';
 import { AdminLoansStore, LoanStatusFilter } from '../../../core/state/admin-loans-store';
@@ -15,7 +25,7 @@ import { springStandard } from '../../../shared/motion/springs';
   standalone: true,
   imports: [ReactiveFormsModule, DatePipe, LoadingState, EmptyState, ErrorState],
   templateUrl: './admin-loans.html',
-  styleUrl: './admin-loans.css'
+  styleUrl: './admin-loans.css',
 })
 export class AdminLoans implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
@@ -26,7 +36,7 @@ export class AdminLoans implements OnInit {
   readonly filters: { label: string; value: LoanStatusFilter }[] = [
     { label: 'On loan', value: 'LOANED' },
     { label: 'Returned', value: 'AVAILABLE' },
-    { label: 'All', value: 'ALL' }
+    { label: 'All', value: 'ALL' },
   ];
 
   readonly showForm = signal(false);
@@ -35,7 +45,7 @@ export class AdminLoans implements OnInit {
   readonly checkoutForm = this.fb.nonNullable.group({
     patron: ['', Validators.required],
     item: ['', Validators.required],
-    dueDate: ['', Validators.required]
+    dueDate: ['', Validators.required],
   });
 
   /** Only PATRON accounts can borrow books - staff shouldn't see themselves/other staff in the picker. */
@@ -55,7 +65,7 @@ export class AdminLoans implements OnInit {
       animate(
         el,
         { opacity: [0, 1], transform: ['translateY(-8px)', 'translateY(0)'] },
-        reducedMotion ? { duration: 0.001 } : springStandard
+        reducedMotion ? { duration: 0.001 } : springStandard,
       );
     });
   }
@@ -97,7 +107,7 @@ export class AdminLoans implements OnInit {
       dueDate: new Date(raw.dueDate).toISOString(),
       patron: raw.patron,
       employeeOut: currentUser.id,
-      item: raw.item
+      item: raw.item,
     };
 
     this.store.checkout(payload, () => this.showForm.set(false));

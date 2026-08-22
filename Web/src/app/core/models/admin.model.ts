@@ -2,7 +2,6 @@ import { UserType } from './auth.model';
 
 export type UserStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 
-
 export interface AdminUser {
   id: string;
   type: UserType;

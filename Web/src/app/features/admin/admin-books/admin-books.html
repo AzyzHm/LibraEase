@@ -1,6 +1,11 @@
 <div>
   <div class="flex flex-wrap items-end justify-between gap-4">
-    <form [formGroup]="filterForm" (ngSubmit)="onFilterSubmit()" class="flex flex-wrap items-end gap-3" novalidate>
+    <form
+      [formGroup]="filterForm"
+      (ngSubmit)="onFilterSubmit()"
+      class="flex flex-wrap items-end gap-3"
+      novalidate
+    >
       <div>
         <label for="filter-title" class="field-label">Title</label>
         <input id="filter-title" type="text" formControlName="title" class="field-input w-40" />
@@ -21,7 +26,9 @@
   </div>
 
   @if (store.actionError()) {
-    <p class="text-body-sm mt-4 rounded-sm border-l-2 border-danger-500 bg-danger-50 px-4 py-3 text-danger-700">
+    <p
+      class="text-body-sm mt-4 rounded-sm border-l-2 border-danger-500 bg-danger-50 px-4 py-3 text-danger-700"
+    >
       {{ store.actionError() }}
     </p>
   }
@@ -65,7 +72,13 @@
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label for="authors" class="field-label">Authors (comma-separated)</label>
-          <input id="authors" type="text" formControlName="authors" placeholder="Jane Austen, ..." class="field-input" />
+          <input
+            id="authors"
+            type="text"
+            formControlName="authors"
+            placeholder="Jane Austen, ..."
+            class="field-input"
+          />
           @if (submitted() && bookForm.controls.authors.invalid) {
             <p class="text-body-sm mt-1 text-danger-500">At least one author is required.</p>
           }
@@ -88,7 +101,12 @@
 
       <div>
         <label for="description" class="field-label">Description</label>
-        <textarea id="description" formControlName="description" rows="3" class="field-input"></textarea>
+        <textarea
+          id="description"
+          formControlName="description"
+          rows="3"
+          class="field-input"
+        ></textarea>
         @if (submitted() && bookForm.controls.description.invalid) {
           <p class="text-body-sm mt-1 text-danger-500">Required.</p>
         }
@@ -115,7 +133,12 @@
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label for="publicationDate" class="field-label">Publication date</label>
-          <input id="publicationDate" type="date" formControlName="publicationDate" class="field-input" />
+          <input
+            id="publicationDate"
+            type="date"
+            formControlName="publicationDate"
+            class="field-input"
+          />
           @if (submitted() && bookForm.controls.publicationDate.invalid) {
             <p class="text-body-sm mt-1 text-danger-500">Required.</p>
           }
@@ -131,8 +154,18 @@
       </div>
 
       <div class="flex gap-3">
-        <button type="submit" [disabled]="store.actionPendingBarcode() !== null" class="btn btn-primary">
-          {{ store.actionPendingBarcode() ? 'Saving…' : editingBook() ? 'Save changes' : 'Create book' }}
+        <button
+          type="submit"
+          [disabled]="store.actionPendingBarcode() !== null"
+          class="btn btn-primary"
+        >
+          {{
+            store.actionPendingBarcode()
+              ? 'Saving…'
+              : editingBook()
+                ? 'Save changes'
+                : 'Create book'
+          }}
         </button>
         <button type="button" (click)="onCancelForm()" class="btn btn-secondary">Cancel</button>
       </div>
@@ -175,14 +208,28 @@
                       <span class="text-body-sm text-ink-400">Working…</span>
                     } @else if (confirmingDeleteBarcode() === book.barcode) {
                       <span class="text-body-sm text-ink-600">Delete this book?</span>
-                      <button type="button" (click)="onDeleteConfirm(book)" class="btn btn-danger btn-xs">
+                      <button
+                        type="button"
+                        (click)="onDeleteConfirm(book)"
+                        class="btn btn-danger btn-xs"
+                      >
                         Confirm
                       </button>
-                      <button type="button" (click)="onDeleteCancel()" class="btn btn-secondary btn-xs">
+                      <button
+                        type="button"
+                        (click)="onDeleteCancel()"
+                        class="btn btn-secondary btn-xs"
+                      >
                         Cancel
                       </button>
                     } @else {
-                      <button type="button" (click)="onOpenEdit(book)" class="btn btn-secondary btn-xs">Edit</button>
+                      <button
+                        type="button"
+                        (click)="onOpenEdit(book)"
+                        class="btn btn-secondary btn-xs"
+                      >
+                        Edit
+                      </button>
                       <button
                         type="button"
                         (click)="onDeleteRequest(book)"
@@ -201,10 +248,16 @@
 
       <div class="mt-4 flex items-center justify-between">
         <span class="text-body-sm text-ink-600">
-          Page {{ store.currentPage() }} of {{ store.totalPages() }} · {{ store.totalCount() }} books
+          Page {{ store.currentPage() }} of {{ store.totalPages() }} ·
+          {{ store.totalCount() }} books
         </span>
         <div class="flex gap-2">
-          <button type="button" (click)="onPrevious()" [disabled]="store.currentPage() <= 1" class="btn btn-secondary">
+          <button
+            type="button"
+            (click)="onPrevious()"
+            [disabled]="store.currentPage() <= 1"
+            class="btn btn-secondary"
+          >
             Previous
           </button>
           <button

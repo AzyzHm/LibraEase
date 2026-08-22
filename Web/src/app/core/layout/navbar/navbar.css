@@ -8,8 +8,9 @@
   font-size: 0.9375rem;
   font-weight: 500;
   color: rgba(251, 249, 245, 0.75);
-  transition: color var(--duration-fast) var(--ease-standard),
-              background-color var(--duration-fast) var(--ease-standard);
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard);
 }
 
 .nav-link:hover {
@@ -56,8 +57,9 @@
   height: 2px;
   border-radius: var(--radius-full);
   background-color: var(--color-cream-50);
-  transition: transform var(--duration-fast) var(--ease-standard),
-              opacity var(--duration-fast) var(--ease-standard);
+  transition:
+    transform var(--duration-fast) var(--ease-standard),
+    opacity var(--duration-fast) var(--ease-standard);
 }
 
 .menu-toggle.is-open .menu-toggle-bar:first-child {

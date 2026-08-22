@@ -1,8 +1,8 @@
 export interface IUser {
-    type: 'ADMIN' | 'EMPLOYEE' | 'PATRON';
-    firstname: string;
-    lastname: string;
-    email: string;
-    password: string;
-    status?: 'PENDING' | 'APPROVED' | 'REJECTED';
+  type: 'ADMIN' | 'EMPLOYEE' | 'PATRON';
+  firstname: string;
+  lastname: string;
+  email: string;
+  password: string;
+  status?: 'PENDING' | 'APPROVED' | 'REJECTED';
 }

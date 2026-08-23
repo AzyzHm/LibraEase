@@ -23,6 +23,16 @@ function makeBook(overrides: Partial<BookModel> = {}): BookModel {
   };
 }
 
+function addDays(date: Date, days: number): Date {
+  const copy = new Date(date);
+  copy.setDate(copy.getDate() + days);
+  return copy;
+}
+
+function isoDateString(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
 function setup(opts: { checkoutResult?: 'success' | 'error' }) {
   const checkoutSpy = jest.fn().mockReturnValue(
     opts.checkoutResult === 'error'
@@ -41,8 +51,15 @@ function providersFor(stubs: ReturnType<typeof setup>) {
   return [{ provide: SelfCheckoutStore, useValue: stubs.storeStub }];
 }
 
+let expectedMinDate: string;
+let expectedDueDateIso: string;
+let expectedPastDate: string;
+
 beforeEach(() => {
   jest.useFakeTimers().setSystemTime(new Date('2030-06-15T12:00:00.000Z'));
+  expectedMinDate = isoDateString(addDays(new Date(), 1));
+  expectedDueDateIso = new Date(`${expectedMinDate}T00:00:00`).toISOString();
+  expectedPastDate = isoDateString(addDays(new Date(), -7));
 });
 
 afterEach(() => {
@@ -58,7 +75,7 @@ describe('SelfCheckoutModal - initial state', () => {
     });
 
     expect(screen.getByText('The Pragmatic Programmer')).toBeInTheDocument();
-    expect(screen.getByLabelText('Due date')).toHaveValue('2030-06-16');
+    expect(screen.getByLabelText('Due date')).toHaveValue(expectedMinDate);
   });
 });
 
@@ -73,7 +90,7 @@ describe('SelfCheckoutModal - validation', () => {
 
     const dueDate = screen.getByLabelText('Due date');
     await user.clear(dueDate);
-    await user.type(dueDate, '2030-06-15');
+    await user.type(dueDate, expectedPastDate);
     await user.click(screen.getByRole('button', { name: 'Confirm' }));
 
     expect(screen.getByText('Pick a date after today.')).toBeInTheDocument();
@@ -107,7 +124,7 @@ describe('SelfCheckoutModal - submit success', () => {
 
     await user.click(screen.getByRole('button', { name: 'Confirm' }));
 
-    expect(stubs.checkoutSpy).toHaveBeenCalledWith('book-42', '2030-06-16T00:00:00.000Z');
+    expect(stubs.checkoutSpy).toHaveBeenCalledWith('book-42', expectedDueDateIso);
     expect(screen.getByText(/Checked out/)).toBeInTheDocument();
     expect(screen.getByText('Close')).toBeInTheDocument();
   });

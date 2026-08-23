@@ -22,7 +22,14 @@ function makeBook(overrides: Partial<BookModel> = {}): BookModel {
   };
 }
 
-const emptyPage = { totalCount: 0, currentPage: 1, totalPages: 1, limit: 10, pageCount: 0, items: [] };
+const emptyPage = {
+  totalCount: 0,
+  currentPage: 1,
+  totalPages: 1,
+  limit: 10,
+  pageCount: 0,
+  items: [],
+};
 
 function setup(bookApiStub: Partial<BookApi>) {
   TestBed.configureTestingModule({ providers: [{ provide: BookApi, useValue: bookApiStub }] });
@@ -31,7 +38,17 @@ function setup(bookApiStub: Partial<BookApi>) {
 
 describe('AdminBooksStore.loadPage', () => {
   it('populates books/pagination on success', () => {
-    const response = { message: 'ok', page: { totalCount: 1, currentPage: 1, totalPages: 1, limit: 10, pageCount: 1, items: [makeBook()] } };
+    const response = {
+      message: 'ok',
+      page: {
+        totalCount: 1,
+        currentPage: 1,
+        totalPages: 1,
+        limit: 10,
+        pageCount: 1,
+        items: [makeBook()],
+      },
+    };
     const store = setup({ search: () => of(response) });
 
     store.loadPage(1);
@@ -87,7 +104,10 @@ describe('AdminBooksStore.create', () => {
 
   it('calls onSuccess and reloads page 1 on success', () => {
     const searchSpy = jest.fn(() => of({ message: 'ok', page: emptyPage }));
-    const store = setup({ create: () => of({ message: 'created', savedBook: makeBook() }), search: searchSpy });
+    const store = setup({
+      create: () => of({ message: 'created', savedBook: makeBook() }),
+      search: searchSpy,
+    });
     const onSuccess = jest.fn();
 
     store.create(payload, onSuccess);
@@ -114,7 +134,10 @@ describe('AdminBooksStore.create', () => {
 describe('AdminBooksStore.update', () => {
   it('calls onSuccess and reloads the current page on success', () => {
     const searchSpy = jest.fn(() => of({ message: 'ok', page: emptyPage }));
-    const store = setup({ update: () => of({ message: 'updated', updatedBook: makeBook() }), search: searchSpy });
+    const store = setup({
+      update: () => of({ message: 'updated', updatedBook: makeBook() }),
+      search: searchSpy,
+    });
     const onSuccess = jest.fn();
 
     store.update({ ...makeBook(), id: 'book-1' }, onSuccess);
@@ -135,7 +158,12 @@ describe('AdminBooksStore.update', () => {
 
 describe('AdminBooksStore.remove', () => {
   it('reloads the current page when it is not the last row on a page beyond page 1', () => {
-    const searchSpy = jest.fn(() => of({ message: 'ok', page: { ...emptyPage, currentPage: 1, items: [makeBook(), makeBook({ id: 'b2' })] } }));
+    const searchSpy = jest.fn(() =>
+      of({
+        message: 'ok',
+        page: { ...emptyPage, currentPage: 1, items: [makeBook(), makeBook({ id: 'b2' })] },
+      }),
+    );
     const store = setup({ search: searchSpy, remove: () => of({ message: 'deleted' }) });
     store.loadPage(1);
     searchSpy.mockClear();
@@ -148,7 +176,9 @@ describe('AdminBooksStore.remove', () => {
   it('steps back a page when removing the last row on a page beyond page 1', () => {
     const searchSpy = jest
       .fn()
-      .mockReturnValueOnce(of({ message: 'ok', page: { ...emptyPage, currentPage: 2, items: [makeBook()] } }))
+      .mockReturnValueOnce(
+        of({ message: 'ok', page: { ...emptyPage, currentPage: 2, items: [makeBook()] } }),
+      )
       .mockReturnValue(of({ message: 'ok', page: { ...emptyPage, currentPage: 1, items: [] } }));
     const store = setup({ search: searchSpy, remove: () => of({ message: 'deleted' }) });
     store.loadPage(2);

@@ -138,7 +138,10 @@ describe('BookCard - patron checkout affordance', () => {
   });
 
   it('shows a disabled "Currently loaned" button when unavailable', async () => {
-    const { authStoreStub, checkoutStoreStub } = setup({ isPatron: true, availability: { 'book-1': false } });
+    const { authStoreStub, checkoutStoreStub } = setup({
+      isPatron: true,
+      availability: { 'book-1': false },
+    });
     await render(BookCard, {
       inputs: { book: makeBook() },
       providers: [
@@ -176,7 +179,10 @@ describe('BookCard - patron checkout affordance', () => {
 
   it('opens the checkout modal (not the detail modal) when "Borrow this book" is clicked', async () => {
     const user = userEvent.setup();
-    const { authStoreStub, checkoutStoreStub } = setup({ isPatron: true, availability: { 'book-1': true } });
+    const { authStoreStub, checkoutStoreStub } = setup({
+      isPatron: true,
+      availability: { 'book-1': true },
+    });
     await render(BookCard, {
       inputs: { book: makeBook() },
       providers: [

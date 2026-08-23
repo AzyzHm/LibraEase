@@ -67,7 +67,7 @@ describe('AdminUsers - initial load', () => {
 });
 
 describe('AdminUsers - status filter pills', () => {
-  it('calls setStatusFilter with the clicked pill\'s value', async () => {
+  it("calls setStatusFilter with the clicked pill's value", async () => {
     const user = userEvent.setup();
     const stubs = setup({});
     await render(AdminUsers, { providers: providersFor(stubs) });

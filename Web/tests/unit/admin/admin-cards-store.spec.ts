@@ -47,7 +47,9 @@ function setup(opts: { cardApi?: Partial<LibraryCardApi>; userApi?: Partial<User
 
 describe('AdminCardsStore.loadCards', () => {
   it('populates cards on success', () => {
-    const store = setup({ cardApi: { getAll: () => of({ message: 'ok', count: 1, cards: [makeCard()] }) } });
+    const store = setup({
+      cardApi: { getAll: () => of({ message: 'ok', count: 1, cards: [makeCard()] }) },
+    });
 
     store.loadCards();
 
@@ -91,7 +93,11 @@ describe('AdminCardsStore.userIdsWithCard', () => {
     const store = setup({
       cardApi: {
         getAll: () =>
-          of({ message: 'ok', count: 2, cards: [makeCard({ user: 'u1' }), makeCard({ user: 'u2', id: 'card-2' })] }),
+          of({
+            message: 'ok',
+            count: 2,
+            cards: [makeCard({ user: 'u1' }), makeCard({ user: 'u2', id: 'card-2' })],
+          }),
       },
     });
 
@@ -103,7 +109,9 @@ describe('AdminCardsStore.userIdsWithCard', () => {
 
 describe('AdminCardsStore.issue', () => {
   it('adds the newly issued card to the list', () => {
-    const store = setup({ cardApi: { issue: () => of({ message: 'issued', savedCard: makeCard() }) } });
+    const store = setup({
+      cardApi: { issue: () => of({ message: 'issued', savedCard: makeCard() }) },
+    });
 
     store.issue('user-1');
 
@@ -113,7 +121,9 @@ describe('AdminCardsStore.issue', () => {
   });
 
   it('de-dupes when the backend returns an already-existing card for that user (idempotent issue)', () => {
-    const store = setup({ cardApi: { issue: () => of({ message: 'issued', savedCard: makeCard() }) } });
+    const store = setup({
+      cardApi: { issue: () => of({ message: 'issued', savedCard: makeCard() }) },
+    });
     store.issue('user-1');
 
     store.issue('user-1');
@@ -122,7 +132,10 @@ describe('AdminCardsStore.issue', () => {
   });
 
   it('sets issueError on failure', () => {
-    const httpError = new HttpErrorResponse({ status: 400, error: { message: 'Cannot issue to an admin' } });
+    const httpError = new HttpErrorResponse({
+      status: 400,
+      error: { message: 'Cannot issue to an admin' },
+    });
     const store = setup({ cardApi: { issue: () => throwError(() => httpError) } });
 
     store.issue('admin-1');

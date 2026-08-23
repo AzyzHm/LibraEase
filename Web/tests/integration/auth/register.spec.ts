@@ -5,7 +5,9 @@ import { of } from 'rxjs';
 import { Register } from '../../../src/app/features/auth/register/register';
 import { AuthStore } from '../../../src/app/core/state/auth-store';
 
-function setup(opts: { register?: jest.Mock; loading?: boolean; errorMessage?: string | null } = {}) {
+function setup(
+  opts: { register?: jest.Mock; loading?: boolean; errorMessage?: string | null } = {},
+) {
   const authStoreStub = {
     register: opts.register ?? jest.fn(() => of({ message: 'ok', user: { id: 'u1' } })),
     loading: () => opts.loading ?? false,

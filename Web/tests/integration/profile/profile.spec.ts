@@ -47,7 +47,11 @@ function makeLoan(overrides: Partial<LoanRecordWithItem> = {}): LoanRecordWithIt
   };
 }
 
-function setup(opts: { loansLoading?: boolean; loansError?: string | null; loans?: LoanRecordWithItem[] }) {
+function setup(opts: {
+  loansLoading?: boolean;
+  loansError?: string | null;
+  loans?: LoanRecordWithItem[];
+}) {
   const authStoreStub = { user: () => currentUser };
   const profileStoreStub = {
     loansLoading: () => opts.loansLoading ?? false,
@@ -67,7 +71,7 @@ function providersFor(stubs: ReturnType<typeof setup>) {
 }
 
 describe('Profile - header', () => {
-  it('shows the signed-in user\'s email and account type', async () => {
+  it("shows the signed-in user's email and account type", async () => {
     const stubs = setup({});
     await render(Profile, { providers: providersFor(stubs) });
 
@@ -141,7 +145,9 @@ describe('Profile - loan list rendering', () => {
   });
 
   it('falls back to a text placeholder after the cover image fails to load', async () => {
-    const stubs = setup({ loans: [makeLoan({ itemDetails: makeBook({ cover: 'https://example.com/broken.jpg' }) })] });
+    const stubs = setup({
+      loans: [makeLoan({ itemDetails: makeBook({ cover: 'https://example.com/broken.jpg' }) })],
+    });
     const { container } = await render(Profile, { providers: providersFor(stubs) });
     const img = container.querySelector('img') as HTMLImageElement;
     expect(img).not.toBeNull();

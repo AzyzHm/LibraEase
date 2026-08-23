@@ -3,9 +3,7 @@ import { mockApi } from '../helpers/mock-api';
 import { makeAuthUser } from '../helpers/auth';
 
 test.describe('Register', () => {
-  test('shows the "registration submitted" screen after a successful submit', async ({
-    page,
-  }) => {
+  test('shows the "registration submitted" screen after a successful submit', async ({ page }) => {
     await mockApi(page, '/auth/register', {
       method: 'POST',
       body: { message: 'Registered', user: makeAuthUser() },

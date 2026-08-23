@@ -21,7 +21,11 @@ function makeLoan(overrides: Partial<LoanRecordModel> = {}): LoanRecordModel {
   };
 }
 
-function setup(opts: { loanApi?: Partial<LoanApi>; userApi?: Partial<UserApi>; bookApi?: Partial<BookApi> }) {
+function setup(opts: {
+  loanApi?: Partial<LoanApi>;
+  userApi?: Partial<UserApi>;
+  bookApi?: Partial<BookApi>;
+}) {
   TestBed.configureTestingModule({
     providers: [
       { provide: LoanApi, useValue: opts.loanApi ?? {} },
@@ -34,7 +38,9 @@ function setup(opts: { loanApi?: Partial<LoanApi>; userApi?: Partial<UserApi>; b
 
 describe('AdminLoansStore.load', () => {
   it('populates loans on success', () => {
-    const store = setup({ loanApi: { getAll: () => of({ message: 'ok', records: [makeLoan()] }) } });
+    const store = setup({
+      loanApi: { getAll: () => of({ message: 'ok', records: [makeLoan()] }) },
+    });
 
     store.load();
 
@@ -56,8 +62,44 @@ describe('AdminLoansStore.load', () => {
 describe('AdminLoansStore.loadReferenceData', () => {
   it('loads users and books together via forkJoin', () => {
     const store = setup({
-      userApi: { getAll: () => of({ message: 'ok', users: [{ id: 'u1', type: 'PATRON', firstname: 'Jane', lastname: 'Doe', email: 'j@x.com', status: 'APPROVED' }] }) },
-      bookApi: { getAll: () => of({ message: 'ok', count: 1, books: [{ id: 'b1', barcode: '123', cover: '', title: 'T', authors: [], description: '', subjects: [], publicationDate: '2020-01-01', publisher: 'P', pages: 1, genre: 'G' }] }) },
+      userApi: {
+        getAll: () =>
+          of({
+            message: 'ok',
+            users: [
+              {
+                id: 'u1',
+                type: 'PATRON',
+                firstname: 'Jane',
+                lastname: 'Doe',
+                email: 'j@x.com',
+                status: 'APPROVED',
+              },
+            ],
+          }),
+      },
+      bookApi: {
+        getAll: () =>
+          of({
+            message: 'ok',
+            count: 1,
+            books: [
+              {
+                id: 'b1',
+                barcode: '123',
+                cover: '',
+                title: 'T',
+                authors: [],
+                description: '',
+                subjects: [],
+                publicationDate: '2020-01-01',
+                publisher: 'P',
+                pages: 1,
+                genre: 'G',
+              },
+            ],
+          }),
+      },
     });
 
     store.loadReferenceData();
@@ -83,7 +125,22 @@ describe('AdminLoansStore.loadReferenceData', () => {
 describe('AdminLoansStore derived signals', () => {
   it('userById/bookById index reference data by id', () => {
     const store = setup({
-      userApi: { getAll: () => of({ message: 'ok', users: [{ id: 'u1', type: 'PATRON', firstname: 'Jane', lastname: 'Doe', email: 'j@x.com', status: 'APPROVED' }] }) },
+      userApi: {
+        getAll: () =>
+          of({
+            message: 'ok',
+            users: [
+              {
+                id: 'u1',
+                type: 'PATRON',
+                firstname: 'Jane',
+                lastname: 'Doe',
+                email: 'j@x.com',
+                status: 'APPROVED',
+              },
+            ],
+          }),
+      },
       bookApi: { getAll: () => of({ message: 'ok', count: 0, books: [] }) },
     });
     store.loadReferenceData();
@@ -97,7 +154,10 @@ describe('AdminLoansStore derived signals', () => {
         getAll: () =>
           of({
             message: 'ok',
-            records: [makeLoan({ item: 'book-1', status: 'LOANED' }), makeLoan({ id: 'r2', item: 'book-2', status: 'AVAILABLE' })],
+            records: [
+              makeLoan({ item: 'book-1', status: 'LOANED' }),
+              makeLoan({ id: 'r2', item: 'book-2', status: 'AVAILABLE' }),
+            ],
           }),
       },
     });
@@ -112,7 +172,10 @@ describe('AdminLoansStore derived signals', () => {
         getAll: () =>
           of({
             message: 'ok',
-            records: [makeLoan({ id: 'r1', status: 'LOANED' }), makeLoan({ id: 'r2', status: 'AVAILABLE' })],
+            records: [
+              makeLoan({ id: 'r1', status: 'LOANED' }),
+              makeLoan({ id: 'r2', status: 'AVAILABLE' }),
+            ],
           }),
       },
     });
@@ -127,12 +190,23 @@ describe('AdminLoansStore derived signals', () => {
 
 describe('AdminLoansStore.checkout', () => {
   it('prepends the new record and calls onSuccess', () => {
-    const store = setup({ loanApi: { create: () => of({ message: 'checked out', record: makeLoan({ id: 'new-record' }) }) } });
+    const store = setup({
+      loanApi: {
+        create: () => of({ message: 'checked out', record: makeLoan({ id: 'new-record' }) }),
+      },
+    });
     const onSuccess = jest.fn();
 
     store.checkout(
-      { status: 'LOANED', loanedDate: '2026-01-01', dueDate: '2026-01-15', patron: 'patron-1', employeeOut: 'employee-1', item: 'book-1' },
-      onSuccess
+      {
+        status: 'LOANED',
+        loanedDate: '2026-01-01',
+        dueDate: '2026-01-15',
+        patron: 'patron-1',
+        employeeOut: 'employee-1',
+        item: 'book-1',
+      },
+      onSuccess,
     );
 
     expect(store.loans()[0].id).toBe('new-record');
@@ -141,13 +215,23 @@ describe('AdminLoansStore.checkout', () => {
   });
 
   it('sets checkoutError and does not call onSuccess on failure', () => {
-    const httpError = new HttpErrorResponse({ status: 409, error: { message: 'Book already loaned' } });
+    const httpError = new HttpErrorResponse({
+      status: 409,
+      error: { message: 'Book already loaned' },
+    });
     const store = setup({ loanApi: { create: () => throwError(() => httpError) } });
     const onSuccess = jest.fn();
 
     store.checkout(
-      { status: 'LOANED', loanedDate: '2026-01-01', dueDate: '2026-01-15', patron: 'patron-1', employeeOut: 'employee-1', item: 'book-1' },
-      onSuccess
+      {
+        status: 'LOANED',
+        loanedDate: '2026-01-01',
+        dueDate: '2026-01-15',
+        patron: 'patron-1',
+        employeeOut: 'employee-1',
+        item: 'book-1',
+      },
+      onSuccess,
     );
 
     expect(onSuccess).not.toHaveBeenCalled();
@@ -175,7 +259,7 @@ describe('AdminLoansStore.markReturned', () => {
         employeeOut: 'employee-who-checked-out',
         employeeIn: 'employee-who-is-returning-it',
         status: 'AVAILABLE',
-      })
+      }),
     );
   });
 
@@ -183,7 +267,8 @@ describe('AdminLoansStore.markReturned', () => {
     const store = setup({
       loanApi: {
         getAll: () => of({ message: 'ok', records: [makeLoan({ id: 'r1' })] }),
-        update: () => of({ message: 'returned', record: makeLoan({ id: 'r1', status: 'AVAILABLE' }) }),
+        update: () =>
+          of({ message: 'returned', record: makeLoan({ id: 'r1', status: 'AVAILABLE' }) }),
       },
     });
     store.load();
@@ -194,7 +279,10 @@ describe('AdminLoansStore.markReturned', () => {
   });
 
   it('sets actionError on failure', () => {
-    const httpError = new HttpErrorResponse({ status: 404, error: { message: 'Record not found' } });
+    const httpError = new HttpErrorResponse({
+      status: 404,
+      error: { message: 'Record not found' },
+    });
     const store = setup({ loanApi: { update: () => throwError(() => httpError) } });
 
     store.markReturned(makeLoan(), 'employee-1');

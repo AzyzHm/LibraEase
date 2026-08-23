@@ -138,7 +138,10 @@ describe('AuthStore.register', () => {
   });
 
   it('sets errorMessage and re-throws on failure', (done) => {
-    const httpError = new HttpErrorResponse({ status: 409, error: { message: 'Email already registered' } });
+    const httpError = new HttpErrorResponse({
+      status: 409,
+      error: { message: 'Email already registered' },
+    });
     const store = setup({ register: () => throwError(() => httpError) });
 
     store.register({ ...testUser, password: 'x' } as any).subscribe({

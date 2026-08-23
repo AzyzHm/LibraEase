@@ -33,7 +33,14 @@ describe('CatalogStore.loadPage', () => {
   it('populates books/pagination signals on success', () => {
     const response: BookQueryResponse = {
       message: 'ok',
-      page: { totalCount: 20, currentPage: 2, totalPages: 2, limit: 12, pageCount: 8, items: [makeBook()] },
+      page: {
+        totalCount: 20,
+        currentPage: 2,
+        totalPages: 2,
+        limit: 12,
+        pageCount: 8,
+        items: [makeBook()],
+      },
     };
     const store = setup({ search: () => of(response) });
 
@@ -75,19 +82,48 @@ describe('CatalogStore.loadPage', () => {
     const store = setup({
       search: (params) => {
         capturedParams = params;
-        return of({ message: 'ok', page: { totalCount: 0, currentPage: 1, totalPages: 1, limit: 12, pageCount: 0, items: [] } });
+        return of({
+          message: 'ok',
+          page: {
+            totalCount: 0,
+            currentPage: 1,
+            totalPages: 1,
+            limit: 12,
+            pageCount: 0,
+            items: [],
+          },
+        });
       },
     });
 
     store.applyFilters({ title: '  Pragmatic  ', author: '', genre: '   ' });
 
-    expect(capturedParams).toEqual({ title: 'Pragmatic', author: undefined, genre: undefined, page: 1, limit: 12 });
+    expect(capturedParams).toEqual({
+      title: 'Pragmatic',
+      author: undefined,
+      genre: undefined,
+      page: 1,
+      limit: 12,
+    });
   });
 });
 
 describe('CatalogStore.applyFilters / clearFilters', () => {
   it('applyFilters stores the filters and jumps back to page 1', () => {
-    const store = setup({ search: () => of({ message: 'ok', page: { totalCount: 0, currentPage: 1, totalPages: 1, limit: 12, pageCount: 0, items: [] } }) });
+    const store = setup({
+      search: () =>
+        of({
+          message: 'ok',
+          page: {
+            totalCount: 0,
+            currentPage: 1,
+            totalPages: 1,
+            limit: 12,
+            pageCount: 0,
+            items: [],
+          },
+        }),
+    });
 
     store.applyFilters({ title: 'x', author: '', genre: '' });
 
@@ -96,7 +132,20 @@ describe('CatalogStore.applyFilters / clearFilters', () => {
   });
 
   it('clearFilters resets to empty filters', () => {
-    const store = setup({ search: () => of({ message: 'ok', page: { totalCount: 0, currentPage: 1, totalPages: 1, limit: 12, pageCount: 0, items: [] } }) });
+    const store = setup({
+      search: () =>
+        of({
+          message: 'ok',
+          page: {
+            totalCount: 0,
+            currentPage: 1,
+            totalPages: 1,
+            limit: 12,
+            pageCount: 0,
+            items: [],
+          },
+        }),
+    });
     store.applyFilters({ title: 'x', author: 'y', genre: 'z' });
 
     store.clearFilters();
@@ -108,7 +157,17 @@ describe('CatalogStore.applyFilters / clearFilters', () => {
 describe('CatalogStore.goToPage', () => {
   it('loads the requested page when in range and different from the current page', () => {
     const searchSpy = jest.fn((params: { page?: number }) =>
-      of({ message: 'ok', page: { totalCount: 30, currentPage: params.page ?? 1, totalPages: 3, limit: 12, pageCount: 6, items: [] } })
+      of({
+        message: 'ok',
+        page: {
+          totalCount: 30,
+          currentPage: params.page ?? 1,
+          totalPages: 3,
+          limit: 12,
+          pageCount: 6,
+          items: [],
+        },
+      }),
     );
     const store = setup({ search: searchSpy });
     store.loadPage(1);
@@ -121,7 +180,10 @@ describe('CatalogStore.goToPage', () => {
 
   it('does nothing when the page is out of range', () => {
     const searchSpy = jest.fn(() =>
-      of({ message: 'ok', page: { totalCount: 12, currentPage: 1, totalPages: 1, limit: 12, pageCount: 1, items: [] } })
+      of({
+        message: 'ok',
+        page: { totalCount: 12, currentPage: 1, totalPages: 1, limit: 12, pageCount: 1, items: [] },
+      }),
     );
     const store = setup({ search: searchSpy });
     store.loadPage(1);
@@ -135,7 +197,17 @@ describe('CatalogStore.goToPage', () => {
 
   it('does nothing when the requested page equals the current page', () => {
     const searchSpy = jest.fn(() =>
-      of({ message: 'ok', page: { totalCount: 24, currentPage: 1, totalPages: 2, limit: 12, pageCount: 12, items: [] } })
+      of({
+        message: 'ok',
+        page: {
+          totalCount: 24,
+          currentPage: 1,
+          totalPages: 2,
+          limit: 12,
+          pageCount: 12,
+          items: [],
+        },
+      }),
     );
     const store = setup({ search: searchSpy });
     store.loadPage(1);

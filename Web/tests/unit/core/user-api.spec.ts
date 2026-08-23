@@ -32,13 +32,28 @@ describe('UserApi', () => {
   });
 
   it('update() PUTs the payload to /users', () => {
-    const payload = { id: 'user-1', type: 'PATRON' as const, firstname: 'Jane', lastname: 'Doe', email: 'jane@example.com' };
+    const payload = {
+      id: 'user-1',
+      type: 'PATRON' as const,
+      firstname: 'Jane',
+      lastname: 'Doe',
+      email: 'jane@example.com',
+    };
     api.update(payload).subscribe();
 
     const req = httpMock.expectOne(baseUrl);
     expect(req.request.method).toBe('PUT');
     expect(req.request.body).toEqual(payload);
-    req.flush({ message: 'updated', updatedUser: { id: 'user-1', type: 'PATRON', firstname: 'Jane', lastname: 'Doe', email: 'jane@example.com' } });
+    req.flush({
+      message: 'updated',
+      updatedUser: {
+        id: 'user-1',
+        type: 'PATRON',
+        firstname: 'Jane',
+        lastname: 'Doe',
+        email: 'jane@example.com',
+      },
+    });
   });
 
   it('getAll() issues a GET to /users', () => {

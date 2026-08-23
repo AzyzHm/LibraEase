@@ -105,7 +105,9 @@ function setup(opts: {
     markReturned: jest.fn(),
   };
 
-  const authStoreStub = { user: () => (opts.currentUser === undefined ? makeAuthUser() : opts.currentUser) };
+  const authStoreStub = {
+    user: () => (opts.currentUser === undefined ? makeAuthUser() : opts.currentUser),
+  };
 
   return { storeStub, authStoreStub };
 }
@@ -128,7 +130,7 @@ describe('AdminLoans - initial load', () => {
 });
 
 describe('AdminLoans - status filter pills', () => {
-  it('calls setStatusFilter with the clicked pill\'s value', async () => {
+  it("calls setStatusFilter with the clicked pill's value", async () => {
     const user = userEvent.setup();
     const stubs = setup({});
     await render(AdminLoans, { providers: providersFor(stubs) });
@@ -278,7 +280,10 @@ describe('AdminLoans - checkout form', () => {
   it('excludes non-PATRON users from the patron picker', async () => {
     const user = userEvent.setup();
     const stubs = setup({
-      users: [makePatron(), makePatron({ id: 'emp-9', type: 'EMPLOYEE', firstname: 'Staff', lastname: 'Member' })],
+      users: [
+        makePatron(),
+        makePatron({ id: 'emp-9', type: 'EMPLOYEE', firstname: 'Staff', lastname: 'Member' }),
+      ],
     });
     await render(AdminLoans, { providers: providersFor(stubs) });
 

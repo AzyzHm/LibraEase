@@ -25,9 +25,7 @@ test.describe('Catalog - guest browsing', () => {
         contentType: 'application/json',
         body: JSON.stringify({
           message: 'ok',
-          page: makePagination(
-            lastQuery ? [makeBook({ title: 'Filtered Result' })] : [makeBook()],
-          ),
+          page: makePagination(lastQuery ? [makeBook({ title: 'Filtered Result' })] : [makeBook()]),
         }),
       });
     });
@@ -63,10 +61,11 @@ test.describe('Catalog - guest browsing', () => {
         contentType: 'application/json',
         body: JSON.stringify({
           message: 'ok',
-          page: makePagination(
-            [makeBook({ title: `Page ${requestedPage} Book` })],
-            { currentPage: requestedPage, totalPages: 3, totalCount: 30 },
-          ),
+          page: makePagination([makeBook({ title: `Page ${requestedPage} Book` })], {
+            currentPage: requestedPage,
+            totalPages: 3,
+            totalCount: 30,
+          }),
         }),
       });
     });

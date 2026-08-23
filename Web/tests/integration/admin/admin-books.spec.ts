@@ -137,7 +137,10 @@ describe('AdminBooks - filters', () => {
 describe('AdminBooks - results table', () => {
   it('renders a row per book', async () => {
     const stubs = setup({
-      books: [makeBook(), makeBook({ id: 'book-2', barcode: '0131103628', title: 'The C Programming Language' })],
+      books: [
+        makeBook(),
+        makeBook({ id: 'book-2', barcode: '0131103628', title: 'The C Programming Language' }),
+      ],
       totalCount: 2,
     });
     await render(AdminBooks, { providers: providersFor(stubs) });

@@ -19,9 +19,7 @@ describe('authGuard', () => {
   it('allows navigation when the user is authenticated', () => {
     setup({ isAuthenticated: () => true } as Partial<AuthStore>);
 
-    const result = runGuard(() =>
-      authGuard({} as any, { url: '/profile' } as any)
-    );
+    const result = runGuard(() => authGuard({} as any, { url: '/profile' } as any));
 
     expect(result).toBe(true);
   });
@@ -29,9 +27,7 @@ describe('authGuard', () => {
   it('redirects to /login with a returnUrl when not authenticated', () => {
     const router = setup({ isAuthenticated: () => false } as Partial<AuthStore>);
 
-    const result = runGuard(() =>
-      authGuard({} as any, { url: '/profile' } as any)
-    ) as UrlTree;
+    const result = runGuard(() => authGuard({} as any, { url: '/profile' } as any)) as UrlTree;
 
     expect(router.serializeUrl(result)).toBe('/login?returnUrl=%2Fprofile');
   });
@@ -47,7 +43,10 @@ describe('staffGuard', () => {
   });
 
   it('redirects home when authenticated but not staff', () => {
-    const router = setup({ isAuthenticated: () => true, isStaff: () => false } as Partial<AuthStore>);
+    const router = setup({
+      isAuthenticated: () => true,
+      isStaff: () => false,
+    } as Partial<AuthStore>);
 
     const result = runGuard(() => staffGuard({} as any, {} as any)) as UrlTree;
 
@@ -55,7 +54,10 @@ describe('staffGuard', () => {
   });
 
   it('redirects home when not authenticated', () => {
-    const router = setup({ isAuthenticated: () => false, isStaff: () => false } as Partial<AuthStore>);
+    const router = setup({
+      isAuthenticated: () => false,
+      isStaff: () => false,
+    } as Partial<AuthStore>);
 
     const result = runGuard(() => staffGuard({} as any, {} as any)) as UrlTree;
 

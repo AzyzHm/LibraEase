@@ -209,7 +209,16 @@ describe('AdminCards - cards table', () => {
     const stubs = setup({
       cards: [
         makeCard(),
-        makeCard({ id: 'card-2', user: 'user-2', userDetails: makeUser({ id: 'user-2', firstname: 'Bob', lastname: 'Smith', email: 'bob@example.com' }) }),
+        makeCard({
+          id: 'card-2',
+          user: 'user-2',
+          userDetails: makeUser({
+            id: 'user-2',
+            firstname: 'Bob',
+            lastname: 'Smith',
+            email: 'bob@example.com',
+          }),
+        }),
       ],
     });
     await render(AdminCards, { providers: providersFor(stubs) });

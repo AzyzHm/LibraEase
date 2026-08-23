@@ -18,7 +18,10 @@ describe('PasswordVisibilityToggle', () => {
   it('emits (toggled) when clicked', async () => {
     const user = userEvent.setup();
     const onToggle = jest.fn();
-    await render(PasswordVisibilityToggle, { inputs: { visible: false }, on: { toggled: onToggle } });
+    await render(PasswordVisibilityToggle, {
+      inputs: { visible: false },
+      on: { toggled: onToggle },
+    });
 
     await user.click(screen.getByRole('button'));
 

@@ -13,11 +13,15 @@ class StubBooks {}
 function providers() {
   return [
     provideRouter([
-      { path: 'admin', component: AdminShell, children: [
-        { path: '', redirectTo: 'users', pathMatch: 'full' },
-        { path: 'users', component: StubUsers },
-        { path: 'books', component: StubBooks },
-      ] },
+      {
+        path: 'admin',
+        component: AdminShell,
+        children: [
+          { path: '', redirectTo: 'users', pathMatch: 'full' },
+          { path: 'users', component: StubUsers },
+          { path: 'books', component: StubBooks },
+        ],
+      },
     ]),
   ];
 }

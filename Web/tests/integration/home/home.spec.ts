@@ -28,16 +28,25 @@ function makeBook(overrides: Partial<BookModel> = {}): BookModel {
 function makeResponse(items: BookModel[]): BookQueryResponse {
   return {
     message: 'ok',
-    page: { items, currentPage: 1, limit: 8, totalCount: items.length, totalPages: 1, pageCount: 1 },
+    page: {
+      items,
+      currentPage: 1,
+      limit: 8,
+      totalCount: items.length,
+      totalPages: 1,
+      pageCount: 1,
+    },
   };
 }
 
 function setup(opts: { searchResult?: 'success' | 'error'; items?: BookModel[] }) {
-  const searchSpy = jest.fn().mockReturnValue(
-    opts.searchResult === 'error'
-      ? throwError(() => new Error('network error'))
-      : of(makeResponse(opts.items ?? [makeBook()])),
-  );
+  const searchSpy = jest
+    .fn()
+    .mockReturnValue(
+      opts.searchResult === 'error'
+        ? throwError(() => new Error('network error'))
+        : of(makeResponse(opts.items ?? [makeBook()])),
+    );
   const bookApiStub = { search: searchSpy };
   const authStoreStub = { isPatron: () => false };
   const checkoutStoreStub = {

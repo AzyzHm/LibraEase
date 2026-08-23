@@ -34,11 +34,15 @@ function isoDateString(date: Date): string {
 }
 
 function setup(opts: { checkoutResult?: 'success' | 'error' }) {
-  const checkoutSpy = jest.fn().mockReturnValue(
-    opts.checkoutResult === 'error'
-      ? throwError(() => new HttpErrorResponse({ status: 409, error: { message: 'Already on loan' } }))
-      : of({ message: 'checked out', record: {} }),
-  );
+  const checkoutSpy = jest
+    .fn()
+    .mockReturnValue(
+      opts.checkoutResult === 'error'
+        ? throwError(
+            () => new HttpErrorResponse({ status: 409, error: { message: 'Already on loan' } }),
+          )
+        : of({ message: 'checked out', record: {} }),
+    );
   const storeStub = {
     checkout: checkoutSpy,
     extractErrorMessage: jest.fn().mockReturnValue('This book is already on loan.'),

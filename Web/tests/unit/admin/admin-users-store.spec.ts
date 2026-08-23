@@ -47,7 +47,13 @@ describe('AdminUsersStore derived signals', () => {
   it('filteredUsers defaults to the PENDING filter', () => {
     const store = setup({
       getAll: () =>
-        of({ message: 'ok', users: [makeUser({ id: 'u1', status: 'PENDING' }), makeUser({ id: 'u2', status: 'APPROVED' })] }),
+        of({
+          message: 'ok',
+          users: [
+            makeUser({ id: 'u1', status: 'PENDING' }),
+            makeUser({ id: 'u2', status: 'APPROVED' }),
+          ],
+        }),
     });
     store.load();
 
@@ -57,7 +63,13 @@ describe('AdminUsersStore derived signals', () => {
   it('filteredUsers returns everyone when the filter is ALL', () => {
     const store = setup({
       getAll: () =>
-        of({ message: 'ok', users: [makeUser({ id: 'u1', status: 'PENDING' }), makeUser({ id: 'u2', status: 'APPROVED' })] }),
+        of({
+          message: 'ok',
+          users: [
+            makeUser({ id: 'u1', status: 'PENDING' }),
+            makeUser({ id: 'u2', status: 'APPROVED' }),
+          ],
+        }),
     });
     store.load();
 
@@ -71,7 +83,11 @@ describe('AdminUsersStore derived signals', () => {
       getAll: () =>
         of({
           message: 'ok',
-          users: [makeUser({ id: 'u1', status: 'PENDING' }), makeUser({ id: 'u2', status: 'PENDING' }), makeUser({ id: 'u3', status: 'APPROVED' })],
+          users: [
+            makeUser({ id: 'u1', status: 'PENDING' }),
+            makeUser({ id: 'u2', status: 'PENDING' }),
+            makeUser({ id: 'u3', status: 'APPROVED' }),
+          ],
         }),
     });
     store.load();

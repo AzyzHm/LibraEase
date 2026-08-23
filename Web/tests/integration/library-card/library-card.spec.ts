@@ -18,7 +18,12 @@ const card: LibraryCardWithUser = {
   },
 };
 
-function setup(opts: { loading?: boolean; errorMessage?: string | null; notIssued?: boolean; card?: LibraryCardWithUser | null }) {
+function setup(opts: {
+  loading?: boolean;
+  errorMessage?: string | null;
+  notIssued?: boolean;
+  card?: LibraryCardWithUser | null;
+}) {
   const authStoreStub = {};
   const storeStub = {
     loading: () => opts.loading ?? false,
@@ -68,7 +73,9 @@ describe('LibraryCardPage - states', () => {
     await render(LibraryCardPage, { providers: providersFor(stubs) });
 
     expect(
-      screen.getByText("You don't have a library card yet. Ask a librarian at the front desk to issue you one.")
+      screen.getByText(
+        "You don't have a library card yet. Ask a librarian at the front desk to issue you one.",
+      ),
     ).toBeInTheDocument();
   });
 });

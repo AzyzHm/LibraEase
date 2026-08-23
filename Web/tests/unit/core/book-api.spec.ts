@@ -48,12 +48,22 @@ describe('BookApi', () => {
     api.search({ title: 'Pragmatic' }).subscribe();
 
     const req = httpMock.expectOne(
-      (r) => r.url === `${baseUrl}/query` && r.params.get('title') === 'Pragmatic'
+      (r) => r.url === `${baseUrl}/query` && r.params.get('title') === 'Pragmatic',
     );
     expect(req.request.params.has('author')).toBe(false);
     expect(req.request.params.get('page')).toBe('1');
     expect(req.request.params.get('limit')).toBe('12');
-    req.flush({ message: 'ok', page: { totalCount: 1, currentPage: 1, totalPages: 1, limit: 12, pageCount: 1, items: [bookModel] } });
+    req.flush({
+      message: 'ok',
+      page: {
+        totalCount: 1,
+        currentPage: 1,
+        totalPages: 1,
+        limit: 12,
+        pageCount: 1,
+        items: [bookModel],
+      },
+    });
   });
 
   it('search() forwards an explicit page/limit instead of the defaults', () => {
@@ -62,7 +72,10 @@ describe('BookApi', () => {
     const req = httpMock.expectOne((r) => r.url === `${baseUrl}/query`);
     expect(req.request.params.get('page')).toBe('3');
     expect(req.request.params.get('limit')).toBe('25');
-    req.flush({ message: 'ok', page: { totalCount: 0, currentPage: 3, totalPages: 1, limit: 25, pageCount: 0, items: [] } });
+    req.flush({
+      message: 'ok',
+      page: { totalCount: 0, currentPage: 3, totalPages: 1, limit: 25, pageCount: 0, items: [] },
+    });
   });
 
   it('create() POSTs the payload to /book', () => {

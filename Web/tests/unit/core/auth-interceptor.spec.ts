@@ -62,23 +62,23 @@ describe('authInterceptor', () => {
     const navigateSpy = jest.spyOn(router, 'navigate').mockResolvedValue(true);
 
     http.get('/api/books').subscribe({
-      error: () => {
-      },
+      error: () => {},
     });
 
     const req = httpMock.expectOne('/api/books');
     req.flush({ message: 'Unauthorized' }, { status: 401, statusText: 'Unauthorized' });
 
     expect(authStoreStub.logout).toHaveBeenCalledTimes(1);
-    expect(navigateSpy).toHaveBeenCalledWith(['/login'], { queryParams: { returnUrl: expect.any(String) } });
+    expect(navigateSpy).toHaveBeenCalledWith(['/login'], {
+      queryParams: { returnUrl: expect.any(String) },
+    });
   });
 
   it('does not log out on non-401 errors', () => {
     setup('the-jwt-token');
 
     http.get('/api/books').subscribe({
-      error: () => {
-      },
+      error: () => {},
     });
 
     const req = httpMock.expectOne('/api/books');

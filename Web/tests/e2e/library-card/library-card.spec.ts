@@ -45,7 +45,9 @@ test.describe('Library card - not issued', () => {
     await page.goto('/my-card');
 
     await expect(
-      page.getByText("You don't have a library card yet. Ask a librarian at the front desk to issue you one."),
+      page.getByText(
+        "You don't have a library card yet. Ask a librarian at the front desk to issue you one.",
+      ),
     ).toBeVisible();
   });
 });

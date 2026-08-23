@@ -50,7 +50,9 @@ function setup(opts: {
   const authStoreStub = { isPatron: () => false };
   const checkoutStoreStub = { availability: () => ({}), checkAvailability: jest.fn() };
   const activatedRouteStub = {
-    snapshot: { queryParamMap: convertToParamMap(opts.queryTitle ? { title: opts.queryTitle } : {}) },
+    snapshot: {
+      queryParamMap: convertToParamMap(opts.queryTitle ? { title: opts.queryTitle } : {}),
+    },
   };
 
   return { catalogStoreStub, authStoreStub, checkoutStoreStub, activatedRouteStub };
@@ -75,10 +77,17 @@ describe('Catalog - initial load', () => {
   });
 
   it('applies a ?title= query param as a filter override instead of loading the current page as-is', async () => {
-    const stubs = setup({ queryTitle: 'Pragmatic', filters: { title: '', author: 'Hunt', genre: '' } });
+    const stubs = setup({
+      queryTitle: 'Pragmatic',
+      filters: { title: '', author: 'Hunt', genre: '' },
+    });
     await render(Catalog, { providers: providersFor(stubs) });
 
-    expect(stubs.catalogStoreStub.applyFilters).toHaveBeenCalledWith({ title: 'Pragmatic', author: 'Hunt', genre: '' });
+    expect(stubs.catalogStoreStub.applyFilters).toHaveBeenCalledWith({
+      title: 'Pragmatic',
+      author: 'Hunt',
+      genre: '',
+    });
     expect(stubs.catalogStoreStub.loadPage).not.toHaveBeenCalled();
   });
 
@@ -150,7 +159,11 @@ describe('Catalog - filter form', () => {
     await user.type(screen.getByLabelText('Title'), 'Pragmatic');
     await user.click(screen.getByRole('button', { name: 'Search' }));
 
-    expect(stubs.catalogStoreStub.applyFilters).toHaveBeenCalledWith({ title: 'Pragmatic', author: '', genre: '' });
+    expect(stubs.catalogStoreStub.applyFilters).toHaveBeenCalledWith({
+      title: 'Pragmatic',
+      author: '',
+      genre: '',
+    });
   });
 
   it('resets the form and calls clearFilters when Clear is clicked', async () => {

@@ -18,9 +18,7 @@ test.describe('Home', () => {
     await page.goto('/');
 
     await expect(page.getByRole('heading', { name: 'The Pragmatic Programmer' })).toBeVisible();
-    await expect(
-      page.getByRole('heading', { name: 'The C Programming Language' }),
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'The C Programming Language' })).toBeVisible();
   });
 
   test('shows an empty state when the catalog has no books yet', async ({ page }) => {

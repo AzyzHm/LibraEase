@@ -28,7 +28,13 @@ describe('AuthApi', () => {
     const mockResponse: LoginResponse = {
       message: 'ok',
       token: 'jwt-token',
-      user: { id: 'u1', type: 'PATRON', firstname: 'Jane', lastname: 'Doe', email: credentials.email },
+      user: {
+        id: 'u1',
+        type: 'PATRON',
+        firstname: 'Jane',
+        lastname: 'Doe',
+        email: credentials.email,
+      },
     };
 
     let result: LoginResponse | undefined;

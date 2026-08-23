@@ -21,7 +21,10 @@ function setup(opts: {
   loanApi?: Partial<LoanApi>;
   user?: AuthUser | null;
 }) {
-  const authStoreStub = { user: () => (opts.user === undefined ? currentUser : opts.user), updateUser: jest.fn() };
+  const authStoreStub = {
+    user: () => (opts.user === undefined ? currentUser : opts.user),
+    updateUser: jest.fn(),
+  };
 
   TestBed.configureTestingModule({
     providers: [
@@ -77,7 +80,10 @@ describe('ProfileStore.saveProfile', () => {
   });
 
   it('sets profileError and leaves profileSaved false on failure', () => {
-    const httpError = new HttpErrorResponse({ status: 409, error: { message: 'Email already in use' } });
+    const httpError = new HttpErrorResponse({
+      status: 409,
+      error: { message: 'Email already in use' },
+    });
     const { store } = setup({ userApi: { update: () => throwError(() => httpError) } });
 
     store.saveProfile(editPayload);
@@ -114,7 +120,9 @@ describe('ProfileStore.loadMyLoans', () => {
 
   it('populates loans for the current user on success', () => {
     const record = { id: 'r1' } as unknown as LoanRecordWithItem;
-    const { store } = setup({ loanApi: { queryByPatron: () => of({ message: 'ok', records: [record] }) } });
+    const { store } = setup({
+      loanApi: { queryByPatron: () => of({ message: 'ok', records: [record] }) },
+    });
 
     store.loadMyLoans();
 

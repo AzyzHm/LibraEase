@@ -92,7 +92,7 @@
             />
             <app-password-visibility-toggle
               [visible]="showPassword()"
-              (toggle)="togglePasswordVisibility()"
+              (toggled)="togglePasswordVisibility()"
             />
           </div>
           @if (submitted() && form.controls.password.invalid) {
@@ -112,7 +112,7 @@
             />
             <app-password-visibility-toggle
               [visible]="showConfirmPassword()"
-              (toggle)="toggleConfirmPasswordVisibility()"
+              (toggled)="toggleConfirmPasswordVisibility()"
             />
           </div>
           @if (submitted() && form.errors?.['passwordMismatch']) {

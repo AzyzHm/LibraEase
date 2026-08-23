@@ -7,5 +7,5 @@ import { Component, input, output } from '@angular/core';
 })
 export class PasswordVisibilityToggle {
   readonly visible = input.required<boolean>();
-  readonly toggle = output<void>();
+  readonly toggled = output<void>();
 }

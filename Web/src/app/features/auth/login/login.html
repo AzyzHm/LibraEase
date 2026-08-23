@@ -31,7 +31,7 @@
           />
           <app-password-visibility-toggle
             [visible]="showPassword()"
-            (toggle)="togglePasswordVisibility()"
+            (toggled)="togglePasswordVisibility()"
           />
         </div>
         @if (submitted() && form.controls.password.invalid) {

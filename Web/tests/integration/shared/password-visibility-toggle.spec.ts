@@ -15,10 +15,10 @@ describe('PasswordVisibilityToggle', () => {
     expect(screen.getByRole('button', { name: 'Hide password' })).toBeInTheDocument();
   });
 
-  it('emits (toggle) when clicked', async () => {
+  it('emits (toggled) when clicked', async () => {
     const user = userEvent.setup();
     const onToggle = jest.fn();
-    await render(PasswordVisibilityToggle, { inputs: { visible: false }, on: { toggle: onToggle } });
+    await render(PasswordVisibilityToggle, { inputs: { visible: false }, on: { toggled: onToggle } });
 
     await user.click(screen.getByRole('button'));
 

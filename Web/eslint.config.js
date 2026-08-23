@@ -21,8 +21,11 @@ module.exports = tseslint.config(
       '@angular-eslint/directive-selector': ['error', { type: 'attribute', prefix: 'app', style: 'camelCase' }],
       '@angular-eslint/component-selector': ['error', { type: 'element', prefix: 'app', style: 'kebab-case' }],
       '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-      '@typescript-eslint/no-empty-function': 'warn',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', ignoreRestSiblings: true },
+      ],
+      '@typescript-eslint/no-empty-function': ['warn', { allow: ['arrowFunctions'] }],
       '@angular-eslint/no-output-native': 'warn',
       'no-console': ['warn', { allow: ['warn', 'error'] }],
     },

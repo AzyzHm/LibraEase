@@ -10,7 +10,7 @@ import {
   BookQueryParams,
   BookQueryResponse,
   BookUpdatePayload,
-  BookUpdateResponse
+  BookUpdateResponse,
 } from '../models/book.model';
 
 @Injectable({ providedIn: 'root' })

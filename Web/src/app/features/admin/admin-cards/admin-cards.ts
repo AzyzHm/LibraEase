@@ -11,7 +11,7 @@ import { ErrorState } from '../../../shared/ui/error-state/error-state';
   standalone: true,
   imports: [FormsModule, LoadingState, EmptyState, ErrorState],
   templateUrl: './admin-cards.html',
-  styleUrl: './admin-cards.css'
+  styleUrl: './admin-cards.css',
 })
 export class AdminCards implements OnInit {
   readonly store = inject(AdminCardsStore);
@@ -24,7 +24,7 @@ export class AdminCards implements OnInit {
     if (!term) return users;
 
     return users.filter((user) =>
-      `${user.firstname} ${user.lastname} ${user.email}`.toLowerCase().includes(term)
+      `${user.firstname} ${user.lastname} ${user.email}`.toLowerCase().includes(term),
     );
   });
 

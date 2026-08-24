@@ -1,6 +1,23 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, ElementRef, OnInit, PLATFORM_ID, computed, effect, inject, signal, viewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  PLATFORM_ID,
+  computed,
+  effect,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { animate } from 'motion';
 import { AdminBooksStore } from '../../../core/state/admin-books-store';
 import { Book, BookModel } from '../../../core/models/book.model';
@@ -25,7 +42,7 @@ const barcodeValidator: ValidatorFn = (control: AbstractControl): ValidationErro
   standalone: true,
   imports: [ReactiveFormsModule, LoadingState, EmptyState, ErrorState],
   templateUrl: './admin-books.html',
-  styleUrl: './admin-books.css'
+  styleUrl: './admin-books.css',
 })
 export class AdminBooks implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
@@ -35,7 +52,7 @@ export class AdminBooks implements OnInit {
   readonly filterForm = this.fb.nonNullable.group({
     title: [''],
     author: [''],
-    genre: ['']
+    genre: [''],
   });
 
   readonly bookForm = this.fb.nonNullable.group({
@@ -48,7 +65,7 @@ export class AdminBooks implements OnInit {
     publicationDate: ['', Validators.required],
     publisher: ['', Validators.required],
     pages: [1, [Validators.required, Validators.min(1)]],
-    genre: ['', Validators.required]
+    genre: ['', Validators.required],
   });
 
   readonly editingBook = signal<BookModel | null>(null);
@@ -75,7 +92,7 @@ export class AdminBooks implements OnInit {
       animate(
         el,
         { opacity: [0, 1], transform: ['translateY(-8px)', 'translateY(0)'] },
-        reducedMotion ? { duration: 0.001 } : springStandard
+        reducedMotion ? { duration: 0.001 } : springStandard,
       );
     });
   }
@@ -126,7 +143,7 @@ export class AdminBooks implements OnInit {
       publicationDate: this.toDateInputValue(book.publicationDate),
       publisher: book.publisher,
       pages: book.pages,
-      genre: book.genre
+      genre: book.genre,
     });
     this.bookForm.controls.barcode.disable();
     this.showForm.set(true);
@@ -151,7 +168,7 @@ export class AdminBooks implements OnInit {
       publicationDate: raw.publicationDate,
       publisher: raw.publisher,
       pages: Number(raw.pages),
-      genre: raw.genre
+      genre: raw.genre,
     };
 
     const editing = this.editingBook();

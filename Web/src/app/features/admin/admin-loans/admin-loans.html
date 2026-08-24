@@ -17,12 +17,16 @@
   </div>
 
   @if (store.refDataError()) {
-    <p class="text-body-sm mt-4 rounded-sm border-l-2 border-danger-500 bg-danger-50 px-4 py-3 text-danger-700">
+    <p
+      class="text-body-sm mt-4 rounded-sm border-l-2 border-danger-500 bg-danger-50 px-4 py-3 text-danger-700"
+    >
       {{ store.refDataError() }}
     </p>
   }
   @if (store.actionError()) {
-    <p class="text-body-sm mt-4 rounded-sm border-l-2 border-danger-500 bg-danger-50 px-4 py-3 text-danger-700">
+    <p
+      class="text-body-sm mt-4 rounded-sm border-l-2 border-danger-500 bg-danger-50 px-4 py-3 text-danger-700"
+    >
       {{ store.actionError() }}
     </p>
   }
@@ -38,7 +42,9 @@
       <h2 class="text-h2 text-ink-900">New checkout</h2>
 
       @if (store.checkoutError()) {
-        <p class="text-body-sm rounded-sm border-l-2 border-danger-500 bg-danger-50 px-4 py-3 text-danger-700">
+        <p
+          class="text-body-sm rounded-sm border-l-2 border-danger-500 bg-danger-50 px-4 py-3 text-danger-700"
+        >
           {{ store.checkoutError() }}
         </p>
       }
@@ -49,7 +55,9 @@
           <select id="patron" formControlName="patron" class="field-input">
             <option value="" disabled>Select a patron…</option>
             @for (patron of patrons(); track patron.id) {
-              <option [value]="patron.id">{{ patron.firstname }} {{ patron.lastname }} · {{ patron.email }}</option>
+              <option [value]="patron.id">
+                {{ patron.firstname }} {{ patron.lastname }} · {{ patron.email }}
+              </option>
             }
           </select>
           @if (submitted() && checkoutForm.controls.patron.invalid) {
@@ -63,7 +71,8 @@
             <option value="" disabled>Select a book…</option>
             @for (book of store.books(); track book.id) {
               <option [value]="book.id">
-                {{ book.title }}{{ store.loanedBookIds().has(book.id) ? ' (currently loaned)' : '' }}
+                {{ book.title
+                }}{{ store.loanedBookIds().has(book.id) ? ' (currently loaned)' : '' }}
               </option>
             }
           </select>
@@ -116,7 +125,10 @@
                 <td class="text-ink-900">{{ bookTitle(loan) }}</td>
                 <td class="text-ink-600">{{ patronName(loan) }}</td>
                 <td class="text-ink-600">{{ loan.loanedDate | date: 'mediumDate' }}</td>
-                <td [class.text-danger-700]="isOverdue(loan)" [class.text-ink-600]="!isOverdue(loan)">
+                <td
+                  [class.text-danger-700]="isOverdue(loan)"
+                  [class.text-ink-600]="!isOverdue(loan)"
+                >
                   {{ loan.dueDate | date: 'mediumDate' }}{{ isOverdue(loan) ? ' · Overdue' : '' }}
                 </td>
                 <td>
@@ -135,7 +147,11 @@
                     @if (store.actionPendingId() === loan.id) {
                       <span class="text-body-sm text-ink-400">Working…</span>
                     } @else if (loan.status === 'LOANED') {
-                      <button type="button" (click)="onMarkReturned(loan)" class="btn btn-primary btn-xs">
+                      <button
+                        type="button"
+                        (click)="onMarkReturned(loan)"
+                        class="btn btn-primary btn-xs"
+                      >
                         Mark returned
                       </button>
                     }

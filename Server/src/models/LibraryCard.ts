@@ -1,3 +1,3 @@
 export interface ILibraryCard {
-    user : string;
+  user: string;
 }

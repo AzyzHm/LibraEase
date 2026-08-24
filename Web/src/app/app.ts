@@ -5,6 +5,6 @@ import { Shell } from './core/layout/shell/shell';
   selector: 'app-root',
   standalone: true,
   imports: [Shell],
-  templateUrl: './app.html'
+  templateUrl: './app.html',
 })
 export class App {}

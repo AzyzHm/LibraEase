@@ -11,7 +11,7 @@ import { ErrorState } from '../../shared/ui/error-state/error-state';
   standalone: true,
   imports: [DatePipe, LoadingState, EmptyState, ErrorState],
   templateUrl: './profile.html',
-  styleUrl: './profile.css'
+  styleUrl: './profile.css',
 })
 export class Profile implements OnInit {
   readonly authStore = inject(AuthStore);
@@ -23,8 +23,8 @@ export class Profile implements OnInit {
   readonly loans = computed(() =>
     this.store.loans().map((loan) => ({
       ...loan,
-      isOverdue: loan.status === 'LOANED' && new Date(loan.dueDate).getTime() < Date.now()
-    }))
+      isOverdue: loan.status === 'LOANED' && new Date(loan.dueDate).getTime() < Date.now(),
+    })),
   );
 
   ngOnInit(): void {

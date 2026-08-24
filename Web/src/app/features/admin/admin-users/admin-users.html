@@ -18,7 +18,9 @@
   </div>
 
   @if (store.actionError()) {
-    <p class="text-body-sm mt-4 rounded-sm border-l-2 border-danger-500 bg-danger-50 px-4 py-3 text-danger-700">
+    <p
+      class="text-body-sm mt-4 rounded-sm border-l-2 border-danger-500 bg-danger-50 px-4 py-3 text-danger-700"
+    >
       {{ store.actionError() }}
     </p>
   }
@@ -67,27 +69,51 @@
                       <span class="text-body-sm text-ink-400">Working…</span>
                     } @else if (confirmingDeleteId() === user.id) {
                       <span class="text-body-sm text-ink-600">Delete this user?</span>
-                      <button type="button" (click)="onDeleteConfirm(user)" class="btn btn-danger btn-xs">
+                      <button
+                        type="button"
+                        (click)="onDeleteConfirm(user)"
+                        class="btn btn-danger btn-xs"
+                      >
                         Confirm
                       </button>
-                      <button type="button" (click)="onDeleteCancel()" class="btn btn-secondary btn-xs">
+                      <button
+                        type="button"
+                        (click)="onDeleteCancel()"
+                        class="btn btn-secondary btn-xs"
+                      >
                         Cancel
                       </button>
                     } @else if (authStore.isAdmin()) {
                       @if (user.status === 'PENDING') {
-                        <button type="button" (click)="onApprove(user)" class="btn btn-primary btn-xs">
+                        <button
+                          type="button"
+                          (click)="onApprove(user)"
+                          class="btn btn-primary btn-xs"
+                        >
                           Approve
                         </button>
-                        <button type="button" (click)="onReject(user)" class="btn btn-secondary btn-xs">
+                        <button
+                          type="button"
+                          (click)="onReject(user)"
+                          class="btn btn-secondary btn-xs"
+                        >
                           Reject
                         </button>
                       }
                       @if (user.type === 'PATRON') {
-                        <button type="button" (click)="onPromote(user)" class="btn btn-secondary btn-xs">
+                        <button
+                          type="button"
+                          (click)="onPromote(user)"
+                          class="btn btn-secondary btn-xs"
+                        >
                           Make employee
                         </button>
                       } @else if (user.type === 'EMPLOYEE') {
-                        <button type="button" (click)="onDemote(user)" class="btn btn-secondary btn-xs">
+                        <button
+                          type="button"
+                          (click)="onDemote(user)"
+                          class="btn btn-secondary btn-xs"
+                        >
                           Make patron
                         </button>
                       }

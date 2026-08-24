@@ -11,7 +11,7 @@ import { ErrorState } from '../../../shared/ui/error-state/error-state';
   standalone: true,
   imports: [LoadingState, EmptyState, ErrorState],
   templateUrl: './admin-users.html',
-  styleUrl: './admin-users.css'
+  styleUrl: './admin-users.css',
 })
 export class AdminUsers implements OnInit {
   readonly store = inject(AdminUsersStore);
@@ -21,7 +21,7 @@ export class AdminUsers implements OnInit {
     { label: 'Pending', value: 'PENDING' },
     { label: 'Approved', value: 'APPROVED' },
     { label: 'Rejected', value: 'REJECTED' },
-    { label: 'All', value: 'ALL' }
+    { label: 'All', value: 'ALL' },
   ];
 
   /** Id of the user currently targeted by the delete confirmation, if any. */

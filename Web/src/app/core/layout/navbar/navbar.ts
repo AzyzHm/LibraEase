@@ -1,4 +1,12 @@
-import { Component, ElementRef, PLATFORM_ID, effect, inject, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  PLATFORM_ID,
+  effect,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { animate } from 'motion';
@@ -11,7 +19,7 @@ import { springStandard } from '../../../shared/motion/springs';
   standalone: true,
   imports: [RouterLink, RouterLinkActive, EditProfileModal],
   templateUrl: './navbar.html',
-  styleUrl: './navbar.css'
+  styleUrl: './navbar.css',
 })
 export class Navbar {
   private readonly router = inject(Router);
@@ -41,7 +49,7 @@ export class Navbar {
       animate(
         nav,
         { opacity: [0, 1], transform: ['translateY(-8px)', 'translateY(0)'] },
-        reducedMotion ? { duration: 0.001 } : springStandard
+        reducedMotion ? { duration: 0.001 } : springStandard,
       );
     });
   }

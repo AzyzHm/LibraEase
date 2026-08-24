@@ -1,5 +1,13 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, ElementRef, OnInit, PLATFORM_ID, effect, inject, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  PLATFORM_ID,
+  effect,
+  inject,
+  viewChild,
+} from '@angular/core';
 import { animate } from 'motion';
 import { AuthStore } from '../../core/state/auth-store';
 import { MyLibraryCardStore } from '../../core/state/my-library-card-store';
@@ -13,7 +21,7 @@ import { springStandard } from '../../shared/motion/springs';
   standalone: true,
   imports: [LoadingState, EmptyState, ErrorState],
   templateUrl: './library-card.html',
-  styleUrl: './library-card.css'
+  styleUrl: './library-card.css',
 })
 export class LibraryCardPage implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
@@ -37,7 +45,7 @@ export class LibraryCardPage implements OnInit {
       animate(
         el,
         { opacity: [0, 1], transform: ['translateY(8px)', 'translateY(0)'] },
-        reducedMotion ? { duration: 0.001 } : springStandard
+        reducedMotion ? { duration: 0.001 } : springStandard,
       );
     });
   }

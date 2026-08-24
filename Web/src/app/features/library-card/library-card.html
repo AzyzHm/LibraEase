@@ -15,7 +15,9 @@
       </div>
     } @else if (store.notIssued()) {
       <div class="no-print">
-        <app-empty-state message="You don't have a library card yet. Ask a librarian at the front desk to issue you one." />
+        <app-empty-state
+          message="You don't have a library card yet. Ask a librarian at the front desk to issue you one."
+        />
       </div>
     } @else if (store.card(); as card) {
       <div
@@ -32,7 +34,9 @@
 
         <div>
           <p class="text-caption text-ink-400">Cardholder</p>
-          <p class="text-h2 mt-0.5 text-ink-900">{{ card.userDetails.firstname }} {{ card.userDetails.lastname }}</p>
+          <p class="text-h2 mt-0.5 text-ink-900">
+            {{ card.userDetails.firstname }} {{ card.userDetails.lastname }}
+          </p>
           <p class="text-body-sm text-ink-600">{{ card.userDetails.email }}</p>
         </div>
 
@@ -43,7 +47,9 @@
       </div>
 
       <div class="no-print mt-6 flex justify-center">
-        <button type="button" (click)="onPrint()" class="btn btn-primary">Print / Save as PDF</button>
+        <button type="button" (click)="onPrint()" class="btn btn-primary">
+          Print / Save as PDF
+        </button>
       </div>
     }
   </div>

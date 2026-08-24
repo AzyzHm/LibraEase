@@ -9,7 +9,7 @@ import { ModalShell } from '../modal-shell/modal-shell';
   standalone: true,
   imports: [ReactiveFormsModule, ModalShell],
   templateUrl: './edit-profile-modal.html',
-  styleUrl: './edit-profile-modal.css'
+  styleUrl: './edit-profile-modal.css',
 })
 export class EditProfileModal implements OnInit {
   private readonly fb = inject(FormBuilder);
@@ -24,7 +24,7 @@ export class EditProfileModal implements OnInit {
   readonly form = this.fb.nonNullable.group({
     firstname: ['', Validators.required],
     lastname: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]]
+    email: ['', [Validators.required, Validators.email]],
   });
 
   ngOnInit(): void {

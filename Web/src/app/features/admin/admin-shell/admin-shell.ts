@@ -1,5 +1,13 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, ElementRef, PLATFORM_ID, effect, inject, viewChild, viewChildren } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  PLATFORM_ID,
+  effect,
+  inject,
+  viewChild,
+  viewChildren,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -11,15 +19,17 @@ import { springSnappy } from '../../../shared/motion/springs';
   standalone: true,
   imports: [RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './admin-shell.html',
-  styleUrl: './admin-shell.css'
+  styleUrl: './admin-shell.css',
 })
 export class AdminShell {
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
 
   private readonly navigationEnd = toSignal(
-    this.router.events.pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd)),
-    { initialValue: null }
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+    ),
+    { initialValue: null },
   );
 
   private readonly tabs = viewChildren<ElementRef<HTMLAnchorElement>>('tab');
@@ -42,7 +52,9 @@ export class AdminShell {
       // pass as the navigation, but on a fresh page load the tab elements
       // may not have their final layout yet - wait a frame before measuring.
       requestAnimationFrame(() => {
-        const activeTab = tabs.find((tab) => tab.nativeElement.classList.contains('admin-tab-active'))?.nativeElement;
+        const activeTab = tabs.find((tab) =>
+          tab.nativeElement.classList.contains('admin-tab-active'),
+        )?.nativeElement;
         if (!activeTab) {
           return;
         }
@@ -51,7 +63,7 @@ export class AdminShell {
         animate(
           indicatorEl,
           { left: `${activeTab.offsetLeft}px`, width: `${activeTab.offsetWidth}px` },
-          reducedMotion ? { duration: 0.001 } : springSnappy
+          reducedMotion ? { duration: 0.001 } : springSnappy,
         );
       });
     });

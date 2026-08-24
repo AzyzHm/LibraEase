@@ -9,7 +9,7 @@ import { PasswordVisibilityToggle } from '../../../shared/ui/password-visibility
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink, PasswordVisibilityToggle],
   templateUrl: './login.html',
-  styleUrls: ['./login.css']
+  styleUrls: ['./login.css'],
 })
 export class Login {
   private readonly fb = inject(FormBuilder);
@@ -26,7 +26,7 @@ export class Login {
 
   readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', Validators.required]
+    password: ['', Validators.required],
   });
 
   togglePasswordVisibility(): void {
@@ -41,7 +41,7 @@ export class Login {
     }
 
     this.authStore.login(this.form.getRawValue()).subscribe({
-      next: () => this.router.navigateByUrl(this.returnUrl() || '/')
+      next: () => this.router.navigateByUrl(this.returnUrl() || '/'),
     });
   }
 }

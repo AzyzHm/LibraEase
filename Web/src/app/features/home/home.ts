@@ -1,4 +1,12 @@
-import { Component, ElementRef, OnInit, afterNextRender, inject, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  afterNextRender,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { animate } from 'motion';
@@ -18,7 +26,7 @@ const FEATURED_LIMIT = 8;
   standalone: true,
   imports: [RouterLink, FormsModule, BookCard, LoadingState, ErrorState, EmptyState],
   templateUrl: './home.html',
-  styleUrl: './home.css'
+  styleUrl: './home.css',
 })
 export class Home implements OnInit {
   private readonly router = inject(Router);
@@ -43,7 +51,7 @@ export class Home implements OnInit {
       animate(
         el,
         { opacity: [0, 1], transform: ['translateY(12px)', 'translateY(0)'] },
-        reducedMotion ? { duration: 0.001 } : springStandard
+        reducedMotion ? { duration: 0.001 } : springStandard,
       );
     });
   }
@@ -64,7 +72,7 @@ export class Home implements OnInit {
       error: () => {
         this.featuredError.set("Couldn't load featured books.");
         this.featuredLoading.set(false);
-      }
+      },
     });
   }
 

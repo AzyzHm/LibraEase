@@ -20,7 +20,9 @@
 
   <div class="flex flex-1 flex-col gap-1.5 px-4 py-3.5">
     <h3 class="text-h3 line-clamp-2 text-ink-900">{{ book().title }}</h3>
-    <p class="text-body-sm line-clamp-1 text-ink-600">{{ book().authors.join(', ') || 'Unknown author' }}</p>
+    <p class="text-body-sm line-clamp-1 text-ink-600">
+      {{ book().authors.join(', ') || 'Unknown author' }}
+    </p>
 
     <div class="mt-auto flex items-center justify-between gap-2 pt-2">
       @if (book().genre) {

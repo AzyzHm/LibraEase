@@ -2,7 +2,9 @@
   <p modalSubtitle class="text-body-sm mt-1 truncate text-ink-600">{{ book().title }}</p>
 
   @if (success()) {
-    <p class="text-body-sm rounded-sm border-l-2 border-success-500 bg-success-50 px-3 py-2 text-success-700">
+    <p
+      class="text-body-sm rounded-sm border-l-2 border-success-500 bg-success-50 px-3 py-2 text-success-700"
+    >
       Checked out. It's yours until the due date below - you can see it any time under "My loans".
     </p>
     <div class="mt-4 flex justify-end">
@@ -12,14 +14,22 @@
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-4" novalidate>
       <div>
         <label for="checkout-due-date" class="field-label">Due date</label>
-        <input id="checkout-due-date" type="date" formControlName="dueDate" [min]="minDate" class="field-input" />
+        <input
+          id="checkout-due-date"
+          type="date"
+          formControlName="dueDate"
+          [min]="minDate"
+          class="field-input"
+        />
         @if (submitted() && form.controls.dueDate.invalid) {
           <p class="text-body-sm mt-1 text-danger-500">Pick a date after today.</p>
         }
       </div>
 
       @if (error()) {
-        <p class="text-body-sm rounded-sm border-l-2 border-danger-500 bg-danger-50 px-3 py-2 text-danger-700">
+        <p
+          class="text-body-sm rounded-sm border-l-2 border-danger-500 bg-danger-50 px-3 py-2 text-danger-700"
+        >
           {{ error() }}
         </p>
       }

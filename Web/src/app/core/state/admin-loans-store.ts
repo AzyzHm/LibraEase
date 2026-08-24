@@ -34,7 +34,12 @@ export class AdminLoansStore {
 
   /** ids of books that currently have an open (LOANED) record - used to flag them in the checkout picker. */
   readonly loanedBookIds = computed(
-    () => new Set(this.loans().filter((loan) => loan.status === 'LOANED').map((loan) => loan.item))
+    () =>
+      new Set(
+        this.loans()
+          .filter((loan) => loan.status === 'LOANED')
+          .map((loan) => loan.item),
+      ),
   );
 
   readonly filteredLoans = computed(() => {
@@ -62,8 +67,10 @@ export class AdminLoansStore {
         next: (response) => this.loans.set(response.records),
         error: (error: HttpErrorResponse) => {
           this.loans.set([]);
-          this.errorMessage.set(this.extractErrorMessage(error, 'Unable to load loan records right now.'));
-        }
+          this.errorMessage.set(
+            this.extractErrorMessage(error, 'Unable to load loan records right now.'),
+          );
+        },
       });
   }
 
@@ -73,7 +80,7 @@ export class AdminLoansStore {
 
     forkJoin({
       users: this.userApi.getAll(),
-      books: this.bookApi.getAll()
+      books: this.bookApi.getAll(),
     })
       .pipe(finalize(() => this.refDataLoading.set(false)))
       .subscribe({
@@ -82,8 +89,10 @@ export class AdminLoansStore {
           this.books.set(books.books);
         },
         error: (error: HttpErrorResponse) => {
-          this.refDataError.set(this.extractErrorMessage(error, 'Unable to load patrons and books right now.'));
-        }
+          this.refDataError.set(
+            this.extractErrorMessage(error, 'Unable to load patrons and books right now.'),
+          );
+        },
       });
   }
 
@@ -104,8 +113,10 @@ export class AdminLoansStore {
           onSuccess();
         },
         error: (error: HttpErrorResponse) => {
-          this.checkoutError.set(this.extractErrorMessage(error, 'Unable to check out this book right now.'));
-        }
+          this.checkoutError.set(
+            this.extractErrorMessage(error, 'Unable to check out this book right now.'),
+          );
+        },
       });
   }
 
@@ -123,7 +134,7 @@ export class AdminLoansStore {
       patron: loan.patron,
       employeeOut: loan.employeeOut,
       employeeIn: employeeInId,
-      item: loan.item
+      item: loan.item,
     };
 
     this.loanApi
@@ -131,11 +142,15 @@ export class AdminLoansStore {
       .pipe(finalize(() => this.actionPendingId.set(null)))
       .subscribe({
         next: (response) => {
-          this.loans.update((loans) => loans.map((existing) => (existing.id === loan.id ? response.record : existing)));
+          this.loans.update((loans) =>
+            loans.map((existing) => (existing.id === loan.id ? response.record : existing)),
+          );
         },
         error: (error: HttpErrorResponse) => {
-          this.actionError.set(this.extractErrorMessage(error, 'Unable to mark this loan returned right now.'));
-        }
+          this.actionError.set(
+            this.extractErrorMessage(error, 'Unable to mark this loan returned right now.'),
+          );
+        },
       });
   }
 

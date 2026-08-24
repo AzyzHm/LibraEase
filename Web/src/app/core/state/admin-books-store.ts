@@ -3,7 +3,13 @@ import { Injectable, inject, signal } from '@angular/core';
 import { finalize } from 'rxjs';
 import { BookApi } from '../api/book-api';
 import { ApiErrorBody } from '../models/auth.model';
-import { Book, BookCreatePayload, BookModel, BookQueryParams, BookUpdatePayload } from '../models/book.model';
+import {
+  Book,
+  BookCreatePayload,
+  BookModel,
+  BookQueryParams,
+  BookUpdatePayload,
+} from '../models/book.model';
 
 export interface AdminBookFilters {
   title: string;
@@ -38,7 +44,7 @@ export class AdminBooksStore {
     const params: BookQueryParams = {
       ...this.toQueryParams(this.filters()),
       page,
-      limit: PAGE_SIZE
+      limit: PAGE_SIZE,
     };
 
     this.bookApi
@@ -54,7 +60,7 @@ export class AdminBooksStore {
         error: (error: HttpErrorResponse) => {
           this.books.set([]);
           this.errorMessage.set(this.extractErrorMessage(error, 'Unable to load books right now.'));
-        }
+        },
       });
   }
 
@@ -88,8 +94,10 @@ export class AdminBooksStore {
           this.loadPage(1);
         },
         error: (error: HttpErrorResponse) => {
-          this.actionError.set(this.extractErrorMessage(error, 'Unable to create this book right now.'));
-        }
+          this.actionError.set(
+            this.extractErrorMessage(error, 'Unable to create this book right now.'),
+          );
+        },
       });
   }
 
@@ -107,8 +115,10 @@ export class AdminBooksStore {
           this.loadPage(this.currentPage());
         },
         error: (error: HttpErrorResponse) => {
-          this.actionError.set(this.extractErrorMessage(error, 'Unable to save this book right now.'));
-        }
+          this.actionError.set(
+            this.extractErrorMessage(error, 'Unable to save this book right now.'),
+          );
+        },
       });
   }
 
@@ -127,8 +137,10 @@ export class AdminBooksStore {
           this.loadPage(isLastRowOnPage ? this.currentPage() - 1 : this.currentPage());
         },
         error: (error: HttpErrorResponse) => {
-          this.actionError.set(this.extractErrorMessage(error, 'Unable to delete this book right now.'));
-        }
+          this.actionError.set(
+            this.extractErrorMessage(error, 'Unable to delete this book right now.'),
+          );
+        },
       });
   }
 
@@ -136,7 +148,7 @@ export class AdminBooksStore {
     return {
       title: filters.title.trim() || undefined,
       author: filters.author.trim() || undefined,
-      genre: filters.genre.trim() || undefined
+      genre: filters.genre.trim() || undefined,
     };
   }
 

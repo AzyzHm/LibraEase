@@ -12,7 +12,7 @@ import { ErrorState } from '../../shared/ui/error-state/error-state';
   standalone: true,
   imports: [ReactiveFormsModule, BookCard, LoadingState, EmptyState, ErrorState],
   templateUrl: './catalog.html',
-  styleUrl: './catalog.css'
+  styleUrl: './catalog.css',
 })
 export class Catalog implements OnInit {
   private readonly fb = inject(FormBuilder);
@@ -22,7 +22,7 @@ export class Catalog implements OnInit {
   readonly filterForm = this.fb.nonNullable.group({
     title: [''],
     author: [''],
-    genre: ['']
+    genre: [''],
   });
 
   /** Drives the empty-state "Clear filters" action - only useful when a filter is actually narrowing results. */

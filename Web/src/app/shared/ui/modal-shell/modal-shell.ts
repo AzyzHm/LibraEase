@@ -5,7 +5,7 @@ import { springStandard } from '../../motion/springs';
 @Component({
   selector: 'app-modal-shell',
   standalone: true,
-  templateUrl: './modal-shell.html'
+  templateUrl: './modal-shell.html',
 })
 export class ModalShell {
   readonly title = input.required<string>();
@@ -30,7 +30,7 @@ export class ModalShell {
       animate(
         el,
         { opacity: [0, 1], transform: ['scale(0.96) translateY(8px)', 'scale(1) translateY(0)'] },
-        reducedMotion ? { duration: 0.001 } : springStandard
+        reducedMotion ? { duration: 0.001 } : springStandard,
       );
     });
   }

@@ -16,17 +16,18 @@ export class SelfCheckoutStore {
     if (bookId in this.availability()) return;
 
     this.loanApi.checkAvailability(bookId).subscribe({
-      next: (response) => this.availability.update((map) => ({ ...map, [bookId]: response.available })),
+      next: (response) =>
+        this.availability.update((map) => ({ ...map, [bookId]: response.available })),
       // Leave the key unset on failure so a later re-check (e.g. revisiting the page) can retry,
       // instead of permanently guessing at a state we don't actually know.
-      error: () => {}
+      error: () => {},
     });
   }
 
   checkout(bookId: string, dueDateIso: string): Observable<SelfCheckoutResponse> {
-    return this.loanApi.selfCheckout({ item: bookId, dueDate: dueDateIso }).pipe(
-      tap(() => this.availability.update((map) => ({ ...map, [bookId]: false })))
-    );
+    return this.loanApi
+      .selfCheckout({ item: bookId, dueDate: dueDateIso })
+      .pipe(tap(() => this.availability.update((map) => ({ ...map, [bookId]: false }))));
   }
 
   extractErrorMessage(error: HttpErrorResponse): string {

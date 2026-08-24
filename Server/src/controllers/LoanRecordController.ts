@@ -90,12 +90,10 @@ async function getItemAvailability(req: Request, res: Response) {
     const available = await isItemAvailable(itemId);
     res.status(200).json({ message: 'Availability checked', available });
   } catch (error: unknown) {
-    res
-      .status(500)
-      .json({
-        message: 'Unable to check availability at this time',
-        error: getErrorMessage(error),
-      });
+    res.status(500).json({
+      message: 'Unable to check availability at this time',
+      error: getErrorMessage(error),
+    });
   }
 }
 

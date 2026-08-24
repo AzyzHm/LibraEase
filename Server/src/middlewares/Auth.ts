@@ -1,11 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyAuthToken, AuthTokenPayload } from '../utils/Jwt';
+import { getErrorMessage } from '../utils/errors';
 
-/**
- * Verifies the `Authorization: Bearer <token>` header and attaches the
- * decoded payload to `req.user`. Responds 401 if the header is missing or
- * the token is invalid/expired. Does not check role - use `authorize` for that.
- */
 export function authenticate(req: Request, res: Response, next: NextFunction): void {
   const header = req.headers.authorization;
 
@@ -19,19 +15,14 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
   try {
     req.user = verifyAuthToken(token);
     next();
-  } catch (error: any) {
-    res.status(401).json({ message: 'Invalid or expired token', error: error.message });
+  } catch (error: unknown) {
+    res.status(401).json({ message: 'Invalid or expired token', error: getErrorMessage(error) });
   }
 }
 
-/**
- * Role gate - must run after `authenticate`. Responds 403 if the
- * authenticated user's type isn't in the allowed list.
- */
 export function authorize(...allowedTypes: AuthTokenPayload['type'][]) {
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user) {
-      // Defensive - should never happen if `authenticate` ran first.
       res.status(401).json({ message: 'Not authenticated' });
       return;
     }

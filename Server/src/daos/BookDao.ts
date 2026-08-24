@@ -7,40 +7,44 @@ export interface IBookModel extends IBook {
 
 const TABLE = 'books';
 
-// DB columns are snake_case (publication_date); the app stays camelCase
-// (publicationDate). These two helpers do the translation at the boundary.
-function toRow(book: Partial<IBook>): Record<string, any> {
+type Row = Record<string, unknown>;
+
+function toRow(book: Partial<IBook>): Row {
   const { publicationDate, ...rest } = book;
-  const row: Record<string, any> = { ...rest };
+  const row: Row = { ...rest };
   if (publicationDate !== undefined) row.publication_date = publicationDate;
   return row;
 }
 
-function fromRow(row: any): IBookModel {
-  if (!row) return row;
+function fromRow(row: Row | null): IBookModel {
+  if (!row) return row as unknown as IBookModel;
   const { publication_date, ...rest } = row;
-  return { ...rest, publicationDate: publication_date, records: rest.records || [] } as IBookModel;
+  return {
+    ...rest,
+    publicationDate: publication_date,
+    records: (rest as { records?: unknown[] }).records || [],
+  } as unknown as IBookModel;
 }
 
 export async function find(): Promise<IBookModel[]> {
-  const rows = await unwrap<any[]>(supabase.from(TABLE).select('*'));
+  const rows = await unwrap<Row[]>(supabase.from(TABLE).select('*'));
   return (rows || []).map(fromRow);
 }
 
 export async function findById(id: string): Promise<IBookModel | null> {
-  const row = await unwrap<any>(supabase.from(TABLE).select('*').eq('id', id).maybeSingle());
+  const row = await unwrap<Row>(supabase.from(TABLE).select('*').eq('id', id).maybeSingle());
   return row ? fromRow(row) : null;
 }
 
 export async function findOneByBarcode(barcode: string): Promise<IBookModel | null> {
-  const row = await unwrap<any>(
+  const row = await unwrap<Row>(
     supabase.from(TABLE).select('*').eq('barcode', barcode).maybeSingle(),
   );
   return row ? fromRow(row) : null;
 }
 
 export async function insert(book: IBook): Promise<IBookModel> {
-  const row = await unwrap<any>(supabase.from(TABLE).insert(toRow(book)).select().single());
+  const row = await unwrap<Row>(supabase.from(TABLE).insert(toRow(book)).select().single());
   return fromRow(row);
 }
 
@@ -48,21 +52,19 @@ export async function updateByBarcode(
   barcode: string,
   book: Partial<IBook>,
 ): Promise<IBookModel | null> {
-  const row = await unwrap<any>(
+  const row = await unwrap<Row>(
     supabase.from(TABLE).update(toRow(book)).eq('barcode', barcode).select().maybeSingle(),
   );
   return row ? fromRow(row) : null;
 }
 
 export async function removeByBarcode(barcode: string): Promise<IBookModel | null> {
-  const row = await unwrap<any>(
+  const row = await unwrap<Row>(
     supabase.from(TABLE).delete().eq('barcode', barcode).select().maybeSingle(),
   );
   return row ? fromRow(row) : null;
 }
 
-// Real server-side filtering + pagination, replacing the old
-// "load everything into memory and filter with .includes()" approach.
 export async function search(params: {
   page: number;
   limit: number;

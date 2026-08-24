@@ -4,6 +4,7 @@ import { IUser } from '../models/User';
 import { IUserModel } from '../daos/UserDao';
 import { UnableToFetchUserError, AccountPendingApprovalError } from '../utils/LibraryErrors';
 import { signAuthToken } from '../utils/Jwt';
+import { getErrorMessage } from '../utils/errors';
 
 async function handleRegister(req: Request, res: Response): Promise<void> {
   const user: IUser = req.body;
@@ -21,13 +22,12 @@ async function handleRegister(req: Request, res: Response): Promise<void> {
         status: registedUser.status,
       },
     });
-  } catch (error: any) {
-    if (error.message.includes('already exists')) {
-      res.status(409).json({ message: 'User with email already exists!', error: error.message });
+  } catch (error: unknown) {
+    const message = getErrorMessage(error);
+    if (message.includes('already exists')) {
+      res.status(409).json({ message: 'User with email already exists!', error: message });
     } else {
-      res
-        .status(500)
-        .json({ message: 'Unable to register user at this time!', error: error.message });
+      res.status(500).json({ message: 'Unable to register user at this time!', error: message });
     }
   }
 }
@@ -48,13 +48,14 @@ async function handleLogin(req: Request, res: Response): Promise<void> {
         email: user.email,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof AccountPendingApprovalError) {
       res.status(403).json({ message: error.message, error: error.message });
     } else if (error instanceof UnableToFetchUserError) {
       res.status(401).json({ message: 'Incorrect email or password', error: error.message });
     } else {
-      res.status(500).json({ message: 'Unable to login user at this time', error: error.message });
+      const message = getErrorMessage(error);
+      res.status(500).json({ message: 'Unable to login user at this time', error: message });
     }
   }
 }

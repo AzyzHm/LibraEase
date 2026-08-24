@@ -12,7 +12,7 @@ async function getAllBooks(req: Request, res: Response) {
   try {
     const books = await findAllBooks();
     res.status(200).json({ message: 'Retrieved all books', count: books.length, books });
-  } catch (error: any) {
+  } catch (error: unknown) {
     res.status(500).json({ message: 'Unable to retrieve books at this time', error });
   }
 }
@@ -22,7 +22,7 @@ async function createBook(req: Request, res: Response) {
   try {
     const savedBook = await registerBook(book);
     res.status(201).json({ message: 'Book created successfully', savedBook });
-  } catch (error: any) {
+  } catch (error: unknown) {
     res.status(500).json({ message: 'Unable to save book at this time', error });
   }
 }
@@ -32,7 +32,7 @@ async function updateBook(req: Request, res: Response) {
   try {
     const updatedBook = await modifyBook(book);
     res.status(200).json({ message: 'Book updated successfully', updatedBook });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof BookDoesNotExistError) {
       res.status(404).json({ message: 'Cannot update book that does not exist', error });
     } else {
@@ -46,7 +46,7 @@ async function deleteBook(req: Request, res: Response) {
   try {
     const message = await removeBook(barcode);
     res.status(200).json({ message });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof BookDoesNotExistError) {
       res.status(404).json({ message: 'Cannot delete a book that does not exist', error });
     } else {
@@ -69,7 +69,7 @@ async function searchForBooksByQuery(req: Request, res: Response) {
       genre as string,
     );
     res.status(200).json({ message: 'Books retrieved successfully', page: books });
-  } catch (error: any) {
+  } catch (error: unknown) {
     res.status(500).json({ message: 'Unable to retrieve books at this time', error });
   }
 }

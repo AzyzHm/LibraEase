@@ -1,16 +1,3 @@
-/**
- * One-off script to bulk-insert books.json into the Supabase `books` table.
- *
- * Usage:
- *   1. Put books.json at the root of Server/ (or update BOOKS_JSON_PATH below).
- *   2. Make sure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in Server/.env
- *   3. npm run import:books
- *
- * NOTE: field names below (barcode, cover, title, authors, publicationDate, ...)
- * assume books.json matches the shape of IBook in src/models/Book.ts.
- * Once you share the actual books.json, adjust the `mapBook` function to match
- * its real field names.
- */
 import * as fs from "fs";
 import * as path from "path";
 import dotenv from "dotenv";
@@ -31,7 +18,9 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-function mapBook(raw: any) {
+type RawBook = Record<string, unknown>;
+
+function mapBook(raw: RawBook) {
     return {
         barcode: raw.barcode,
         cover: raw.cover,
@@ -53,7 +42,7 @@ async function run() {
     }
 
     const raw = JSON.parse(fs.readFileSync(BOOKS_JSON_PATH, "utf-8"));
-    const books: any[] = Array.isArray(raw) ? raw : raw.books;
+    const books: RawBook[] = Array.isArray(raw) ? raw : raw.books;
 
     if (!Array.isArray(books)) {
         console.error("Expected books.json to be an array (or an object with a top-level `books` array).");

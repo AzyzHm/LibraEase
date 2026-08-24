@@ -8,6 +8,7 @@ import {
   isItemAvailable,
 } from '../services/LoanRecordService';
 import { LoanRecordDoesNotExistError, BookAlreadyLoanedError } from '../utils/LibraryErrors';
+import { getErrorMessage } from '../utils/errors';
 
 async function createRecord(req: Request, res: Response) {
   const record = req.body;
@@ -71,11 +72,13 @@ async function createSelfCheckout(req: Request, res: Response) {
   try {
     const record = await selfCheckout(requester.id, item, dueDate);
     res.status(201).json({ message: 'Book checked out successfully', record });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof BookAlreadyLoanedError) {
       res.status(409).json({ message: error.message, error: error.message });
     } else {
-      res.status(500).json({ message: 'Unable to check out this book', error: error.message });
+      res
+        .status(500)
+        .json({ message: 'Unable to check out this book', error: getErrorMessage(error) });
     }
   }
 }
@@ -86,10 +89,10 @@ async function getItemAvailability(req: Request, res: Response) {
   try {
     const available = await isItemAvailable(itemId);
     res.status(200).json({ message: 'Availability checked', available });
-  } catch (error: any) {
+  } catch (error: unknown) {
     res
       .status(500)
-      .json({ message: 'Unable to check availability at this time', error: error.message });
+      .json({ message: 'Unable to check availability at this time', error: getErrorMessage(error) });
   }
 }
 

@@ -22,7 +22,7 @@ export function ValidateSchema(schema: ObjectSchema, property: string) {
           await schema.validateAsync(req.body);
       }
       next();
-    } catch (error: any) {
+    } catch {
       res.status(422).json({ message: 'Object Validation failed, please include a valid object' });
     }
   };

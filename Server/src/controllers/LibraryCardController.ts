@@ -10,10 +10,15 @@ import { findUserById } from '../services/UserService';
 import { ILibraryCard } from '../models/LibraryCard';
 import { ILibraryCardWithUser } from '../daos/LibraryCardDao';
 import { LibraryCardDoesNotExistError } from '../utils/LibraryErrors';
+import { getErrorMessage } from '../utils/errors';
 
-function sanitizeCard(card: ILibraryCardWithUser): any {
+type SafeLibraryCard = Omit<ILibraryCardWithUser, 'userDetails'> & {
+  userDetails: Omit<ILibraryCardWithUser['userDetails'], 'password'>;
+};
+
+function sanitizeCard(card: ILibraryCardWithUser): SafeLibraryCard | ILibraryCardWithUser {
   if (!card) return card;
-  const { password, ...safeUserDetails } = card.userDetails as any;
+  const { password: _password, ...safeUserDetails } = card.userDetails;
   return { ...card, userDetails: safeUserDetails };
 }
 
@@ -27,8 +32,10 @@ async function getAllLibraryCards(req: Request, res: Response) {
         count: cards.length,
         cards: cards.map(sanitizeCard),
       });
-  } catch (error: any) {
-    res.status(500).json({ message: 'Failed to retrieve library cards', error: error.message });
+  } catch (error: unknown) {
+    res
+      .status(500)
+      .json({ message: 'Failed to retrieve library cards', error: getErrorMessage(error) });
   }
 }
 
@@ -49,12 +56,12 @@ async function getLibraryCard(req: Request, res: Response) {
     }
 
     res.status(200).json({ message: 'Library Card found', card: sanitizeCard(card) });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof LibraryCardDoesNotExistError) {
       res.status(404).json({ message: 'Library Card not found', error: error.message });
       return;
     }
-    res.status(500).json({ message: 'Failed to get library card', error: error.message });
+    res.status(500).json({ message: 'Failed to get library card', error: getErrorMessage(error) });
   }
 }
 
@@ -78,8 +85,10 @@ async function createLibraryCard(req: Request, res: Response) {
     res
       .status(201)
       .json({ message: 'Library Card Generated Successfuly', savedCard: sanitizeCard(savedCard) });
-  } catch (error: any) {
-    res.status(500).json({ message: 'Failed to generate library card', error: error.message });
+  } catch (error: unknown) {
+    res
+      .status(500)
+      .json({ message: 'Failed to generate library card', error: getErrorMessage(error) });
   }
 }
 
@@ -89,7 +98,7 @@ async function getMyLibraryCard(req: Request, res: Response) {
   try {
     const card = await findLibraryCardByUserId(requester.id);
     res.status(200).json({ message: 'Library Card found', card: sanitizeCard(card) });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof LibraryCardDoesNotExistError) {
       res
         .status(404)
@@ -99,7 +108,7 @@ async function getMyLibraryCard(req: Request, res: Response) {
         });
       return;
     }
-    res.status(500).json({ message: 'Failed to get library card', error: error.message });
+    res.status(500).json({ message: 'Failed to get library card', error: getErrorMessage(error) });
   }
 }
 

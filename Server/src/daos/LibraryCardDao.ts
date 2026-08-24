@@ -6,7 +6,6 @@ export interface ILibraryCardModel extends ILibraryCard {
   id: string;
 }
 
-// user comes back joined/expanded, matching what `.populate('user')` used to give
 export interface ILibraryCardWithUser extends ILibraryCardModel {
   userDetails: IUserModel;
 }
@@ -14,29 +13,30 @@ export interface ILibraryCardWithUser extends ILibraryCardModel {
 const TABLE = 'library_cards';
 const SELECT_WITH_USER = '*, userDetails:users(*)';
 
+type Row = Record<string, unknown>;
+
 export async function find(): Promise<ILibraryCardWithUser[]> {
-  const rows = await unwrap<any[]>(supabase.from(TABLE).select(SELECT_WITH_USER));
-  return (rows || []).map((row) => ({ ...row, user: row.user_id }));
+  const rows = await unwrap<Row[]>(supabase.from(TABLE).select(SELECT_WITH_USER));
+  return (rows || []).map((row) => ({ ...row, user: row.user_id }) as ILibraryCardWithUser);
 }
 
 export async function insert(card: ILibraryCard): Promise<ILibraryCardModel> {
-  // ILibraryCard.user is the user's id; the DB column is user_id
-  const row = await unwrap<any>(
+  const row = await unwrap<Row>(
     supabase.from(TABLE).insert({ user_id: card.user }).select().single(),
   );
-  return { ...row, user: row.user_id };
+  return { ...row, user: row?.user_id } as ILibraryCardModel;
 }
 
 export async function findByUserId(userId: string): Promise<ILibraryCardWithUser | null> {
-  const row = await unwrap<any>(
+  const row = await unwrap<Row>(
     supabase.from(TABLE).select(SELECT_WITH_USER).eq('user_id', userId).maybeSingle(),
   );
-  return row ? { ...row, user: row.user_id } : null;
+  return row ? ({ ...row, user: row.user_id } as ILibraryCardWithUser) : null;
 }
 
 export async function findById(id: string): Promise<ILibraryCardWithUser | null> {
-  const row = await unwrap<any>(
+  const row = await unwrap<Row>(
     supabase.from(TABLE).select(SELECT_WITH_USER).eq('id', id).maybeSingle(),
   );
-  return row ? { ...row, user: row.user_id } : null;
+  return row ? ({ ...row, user: row.user_id } as ILibraryCardWithUser) : null;
 }

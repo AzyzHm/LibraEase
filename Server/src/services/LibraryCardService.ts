@@ -3,6 +3,7 @@ import { ILibraryCardWithUser } from '../daos/LibraryCardDao';
 
 import { ILibraryCard } from '../models/LibraryCard';
 import { LibraryCardDoesNotExistError } from '../utils/LibraryErrors';
+import { getErrorCode } from '../utils/errors';
 
 export async function findAllLibraryCards(): Promise<ILibraryCardWithUser[]> {
   return await LibraryCardDao.find();
@@ -14,9 +15,8 @@ export async function registerLibraryCard(card: ILibraryCard): Promise<ILibraryC
     const created = await LibraryCardDao.findByUserId(card.user);
     if (created) return created;
     throw new LibraryCardDoesNotExistError('Library Card not found after creation');
-  } catch (error: any) {
-    // Postgres unique-violation (23505) -> card already exists for this user
-    if (error.code === '23505') {
+  } catch (error: unknown) {
+    if (getErrorCode(error) === '23505') {
       const existing = await LibraryCardDao.findByUserId(card.user);
       if (existing) return existing;
     }

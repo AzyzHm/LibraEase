@@ -10,6 +10,7 @@ import {
   AccountPendingApprovalError,
   InvalidRoleTransitionError,
 } from '../utils/LibraryErrors';
+import { getErrorMessage, getErrorCode } from '../utils/errors';
 
 export async function register(user: IUser): Promise<IUserModel> {
   const ROUNDS = config.server.rounds;
@@ -23,11 +24,11 @@ export async function register(user: IUser): Promise<IUserModel> {
       status: 'PENDING',
     });
     return created;
-  } catch (error: any) {
-    if (error.code === '23505') {
+  } catch (error: unknown) {
+    if (getErrorCode(error) === '23505') {
       throw new UnableToSaveUserError('User with email already exists!');
     }
-    throw new UnableToSaveUserError(error.message);
+    throw new UnableToSaveUserError(getErrorMessage(error));
   }
 }
 
@@ -46,7 +47,7 @@ export async function login(credentials: { email: string; password: string }): P
       throw new AccountPendingApprovalError('Your account request was not approved');
 
     return user;
-  } catch (error: any) {
+  } catch (error: unknown) {
     throw error;
   }
 }
@@ -54,7 +55,7 @@ export async function login(credentials: { email: string; password: string }): P
 export async function findAllUsers(): Promise<IUserModel[]> {
   try {
     return await UserDao.find();
-  } catch (error) {
+  } catch {
     return [];
   }
 }
@@ -64,12 +65,12 @@ export async function findPendingUsers(): Promise<IUserModel[]> {
   return all.filter((u) => u.status === 'PENDING');
 }
 
-export async function findUserById(id: string): Promise<IUserModel | null> {
+export async function findUserById(id: string): Promise<IUserModel> {
   try {
     const user = await UserDao.findById(id);
     if (user) return user;
     throw new UserDoesNotExistError('No user exists with the given id');
-  } catch (error: any) {
+  } catch (error: unknown) {
     throw error;
   }
 }

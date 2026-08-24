@@ -92,7 +92,10 @@ async function getItemAvailability(req: Request, res: Response) {
   } catch (error: unknown) {
     res
       .status(500)
-      .json({ message: 'Unable to check availability at this time', error: getErrorMessage(error) });
+      .json({
+        message: 'Unable to check availability at this time',
+        error: getErrorMessage(error),
+      });
   }
 }
 

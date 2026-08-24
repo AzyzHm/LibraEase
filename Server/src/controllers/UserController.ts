@@ -45,12 +45,10 @@ async function getPendingUsers(req: Request, res: Response) {
       .status(200)
       .json({ message: 'Pending users retrieved successfully', users: users.map(sanitizeUser) });
   } catch (error: unknown) {
-    res
-      .status(500)
-      .json({
-        message: 'Unable to retrieve pending users at this time',
-        error: getErrorMessage(error),
-      });
+    res.status(500).json({
+      message: 'Unable to retrieve pending users at this time',
+      error: getErrorMessage(error),
+    });
   }
 }
 

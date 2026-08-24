@@ -30,9 +30,7 @@ function makeRecord(overrides: Partial<ILoanRecordModel> = {}): ILoanRecordModel
   };
 }
 
-function makeRecordWithItem(
-  overrides: Partial<ILoanRecordModel> = {},
-): ILoanRecordWithItem {
+function makeRecordWithItem(overrides: Partial<ILoanRecordModel> = {}): ILoanRecordWithItem {
   return {
     ...makeRecord(overrides),
     itemDetails: { barcode: 'n/a' } as IBookModel,

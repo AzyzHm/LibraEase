@@ -76,7 +76,7 @@ test.describe('Login', () => {
 
     await page.goto('/login');
     await page.getByLabel('Email').fill('jane@example.com');
-    await page.getByLabel('Password').fill('password123');
+    await page.getByLabel('Password', { exact: true }).fill('password123');
     await page.getByRole('button', { name: 'Sign in' }).click();
 
     await expect(page).toHaveURL('/');
@@ -93,7 +93,7 @@ test.describe('Login', () => {
 
     await page.goto('/login');
     await page.getByLabel('Email').fill('jane@example.com');
-    await page.getByLabel('Password').fill('wrong-password');
+    await page.getByLabel('Password', { exact: true }).fill('wrong-password');
     await page.getByRole('button', { name: 'Sign in' }).click();
 
     await expect(page.getByText('Invalid email or password.')).toBeVisible();

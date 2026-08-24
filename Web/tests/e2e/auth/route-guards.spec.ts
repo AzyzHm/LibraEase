@@ -30,7 +30,7 @@ test.describe('authGuard - protected patron routes', () => {
     await expect(page).toHaveURL(/\/login/);
 
     await page.getByLabel('Email').fill('jane@example.com');
-    await page.getByLabel('Password').fill('password123');
+    await page.getByLabel('Password', { exact: true }).fill('password123');
     await page.getByRole('button', { name: 'Sign in' }).click();
 
     await expect(page).toHaveURL('/profile');

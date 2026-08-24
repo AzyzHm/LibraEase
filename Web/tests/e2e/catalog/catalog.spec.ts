@@ -125,7 +125,7 @@ test.describe('Catalog - self-checkout as a signed-in patron', () => {
     });
 
     await page.goto('/catalog');
-    await page.getByRole('button', { name: 'Borrow this book' }).click();
+    await page.getByRole('button', { name: 'Borrow this book', exact: true }).click();
     await page.getByLabel('Due date').fill('2030-01-01');
     await page.getByRole('button', { name: 'Confirm' }).click();
 
@@ -147,6 +147,8 @@ test.describe('Catalog - self-checkout as a signed-in patron', () => {
 
     await page.goto('/catalog');
 
-    await expect(page.getByRole('button', { name: 'Currently loaned' })).toBeDisabled();
+    await expect(
+      page.getByRole('button', { name: 'Currently loaned', exact: true }),
+    ).toBeDisabled();
   });
 });

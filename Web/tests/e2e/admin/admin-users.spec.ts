@@ -16,9 +16,9 @@ test.describe('Admin - users', () => {
     await page.goto('/admin/users');
     await expect(page.getByText('Jane Doe')).toBeVisible();
 
-    await page.getByRole('button', { name: 'Approve' }).click();
+    await page.getByRole('button', { name: 'Approve', exact: true }).click();
 
-    await expect(page.getByRole('button', { name: 'Approve' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Approve', exact: true })).toHaveCount(0);
   });
 
   test('rejects a pending user', async ({ page }) => {
@@ -31,9 +31,9 @@ test.describe('Admin - users', () => {
     });
 
     await page.goto('/admin/users');
-    await page.getByRole('button', { name: 'Reject' }).click();
+    await page.getByRole('button', { name: 'Reject', exact: true }).click();
 
-    await expect(page.getByRole('button', { name: 'Reject' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Reject', exact: true })).toHaveCount(0);
   });
 
   test('promotes a patron to employee', async ({ page }) => {
@@ -61,6 +61,7 @@ test.describe('Admin - users', () => {
     });
 
     await page.goto('/admin/users');
+    await page.getByRole('button', { name: 'Approved', exact: true }).click();
     await page.getByRole('button', { name: 'Make patron' }).click();
 
     await expect(page.getByRole('button', { name: 'Make patron' })).toHaveCount(0);

@@ -19,6 +19,7 @@ test.describe('Admin - books', () => {
     await page.getByRole('button', { name: '+ New book' }).click();
 
     await page.getByLabel(/Barcode/).fill('0306406152');
+    await page.locator('#cover').fill('https://example.com/cover.jpg');
     await page.locator('#title').fill('New Title');
     await page.getByLabel(/Authors/).fill('Author One, Author Two');
     await page.getByLabel(/Subjects/).fill('Fiction, Classics');
@@ -71,7 +72,7 @@ test.describe('Admin - books', () => {
     });
 
     await page.goto('/admin/books');
-    await page.getByRole('button', { name: 'Edit' }).click();
+    await page.getByRole('button', { name: 'Edit', exact: true }).click();
 
     await expect(page.getByLabel(/Barcode/)).toBeDisabled();
     await page.locator('#title').fill('Updated Title');
@@ -83,13 +84,25 @@ test.describe('Admin - books', () => {
   test('deletes a book after confirming', async ({ page }) => {
     await loginAs(page, makeAuthUser({ type: 'ADMIN' }));
     const book = makeBook();
-    await mockApi(page, '/book/query**', {
-      method: 'GET',
-      body: { message: 'ok', page: makePagination([book]) },
+    let deleted = false;
+    await page.route('http://localhost:8000/book/query**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'ok', page: makePagination(deleted ? [] : [book]) }),
+      });
     });
-    await mockApi(page, `/book/${book.barcode}`, {
-      method: 'DELETE',
-      body: { message: 'Deleted' },
+    await page.route(`http://localhost:8000/book/${book.barcode}`, async (route) => {
+      if (route.request().method() !== 'DELETE') {
+        await route.fallback();
+        return;
+      }
+      deleted = true;
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'Deleted' }),
+      });
     });
 
     await page.goto('/admin/books');

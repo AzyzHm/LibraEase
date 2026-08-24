@@ -76,6 +76,7 @@ test.describe('Admin - books', () => {
 
     await expect(page.getByLabel(/Barcode/)).toBeDisabled();
     await page.locator('#title').fill('Updated Title');
+    await page.locator('#cover').fill('https://example.com/cover.jpg');
     await page.getByRole('button', { name: 'Save changes' }).click();
 
     await expect(page.getByRole('heading', { name: 'Edit book' })).toHaveCount(0);

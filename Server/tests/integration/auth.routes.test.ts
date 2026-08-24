@@ -1,6 +1,10 @@
 import request from 'supertest';
+import { Request, Response, NextFunction } from 'express';
 
-jest.mock('express-rate-limit', () => () => (req: any, res: any, next: any) => next());
+jest.mock(
+  'express-rate-limit',
+  () => () => (req: Request, res: Response, next: NextFunction) => next(),
+);
 
 import { createApp } from '../../src/app';
 import * as UserDao from '../../src/daos/UserDao';

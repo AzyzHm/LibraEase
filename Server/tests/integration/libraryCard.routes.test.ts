@@ -139,7 +139,7 @@ describe('POST /card', () => {
 
   it('creates a card for a patron', async () => {
     mockedUserDao.findById.mockResolvedValue(makeUser({ type: 'PATRON' }));
-    mockedLibraryCardDao.insert.mockResolvedValue(makeCard() as any);
+    mockedLibraryCardDao.insert.mockResolvedValue(makeCard());
     mockedLibraryCardDao.findByUserId.mockResolvedValue(makeCard());
 
     const res = await request(app)

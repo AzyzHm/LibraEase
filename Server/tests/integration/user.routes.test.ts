@@ -66,7 +66,7 @@ describe('GET /users', () => {
     const res = await request(app).get('/users').set('Authorization', authHeaderFor('ADMIN'));
 
     expect(res.status).toBe(200);
-    expect(res.body.users.map((u: any) => u.id)).toEqual(['u1', 'u2']);
+    expect(res.body.users.map((u: { id: string }) => u.id)).toEqual(['u1', 'u2']);
   });
 
   it('never leaks password fields', async () => {

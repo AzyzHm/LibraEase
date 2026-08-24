@@ -1,7 +1,8 @@
 import request from 'supertest';
 import { createApp } from '../../src/app';
 import * as LoanRecordDao from '../../src/daos/LoanRecordDao';
-import { ILoanRecordModel } from '../../src/daos/LoanRecordDao';
+import { ILoanRecordModel, ILoanRecordWithItem } from '../../src/daos/LoanRecordDao';
+import { IBookModel } from '../../src/daos/BookDao';
 import { authHeaderFor } from './helpers/authToken';
 
 jest.mock('../../src/daos/LoanRecordDao');
@@ -26,6 +27,15 @@ function makeRecord(overrides: Partial<ILoanRecordModel> = {}): ILoanRecordModel
     employeeIn: null,
     item: ITEM_UUID,
     ...overrides,
+  };
+}
+
+function makeRecordWithItem(
+  overrides: Partial<ILoanRecordModel> = {},
+): ILoanRecordWithItem {
+  return {
+    ...makeRecord(overrides),
+    itemDetails: { barcode: 'n/a' } as IBookModel,
   };
 }
 
@@ -148,7 +158,7 @@ describe('PUT /loan (mark-returned regression)', () => {
 
 describe('POST /loan/query', () => {
   it('lets a patron query their own records', async () => {
-    mockedLoanRecordDao.findByProperty.mockResolvedValue([makeRecord()] as any);
+    mockedLoanRecordDao.findByProperty.mockResolvedValue([makeRecordWithItem()]);
 
     const res = await request(app)
       .post('/loan/query')
@@ -179,7 +189,7 @@ describe('POST /loan/query', () => {
   });
 
   it('lets staff query by any allowed property', async () => {
-    mockedLoanRecordDao.findByProperty.mockResolvedValue([makeRecord()] as any);
+    mockedLoanRecordDao.findByProperty.mockResolvedValue([makeRecordWithItem()]);
 
     const res = await request(app)
       .post('/loan/query')
@@ -214,7 +224,7 @@ describe('POST /loan/self', () => {
 
   it('returns 409 when the item is already loaned out', async () => {
     mockedLoanRecordDao.findByItem.mockResolvedValue([
-      makeRecord({ status: 'LOANED', returnedDate: null }) as any,
+      makeRecordWithItem({ status: 'LOANED', returnedDate: null }),
     ]);
 
     const res = await request(app)

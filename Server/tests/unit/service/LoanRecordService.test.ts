@@ -1,5 +1,6 @@
 import * as LoanRecordDao from '../../../src/daos/LoanRecordDao';
-import { ILoanRecordModel } from '../../../src/daos/LoanRecordDao';
+import { ILoanRecordModel, ILoanRecordWithItem } from '../../../src/daos/LoanRecordDao';
+import { IBookModel } from '../../../src/daos/BookDao';
 import * as LoanRecordService from '../../../src/services/LoanRecordService';
 import { ILoanRecord } from '../../../src/models/LoanRecord';
 import {
@@ -23,6 +24,15 @@ function makeRecord(overrides: Partial<ILoanRecordModel> = {}): ILoanRecordModel
     employeeIn: null,
     item: 'book-1',
     ...overrides,
+  };
+}
+
+function makeRecordWithItem(
+  overrides: Partial<ILoanRecordModel> = {},
+): ILoanRecordWithItem {
+  return {
+    ...makeRecord(overrides),
+    itemDetails: { barcode: 'n/a' } as IBookModel,
   };
 }
 
@@ -70,10 +80,6 @@ describe('LoanRecordService.modifyRecord', () => {
     );
   });
 
-  // Regression: marking a book returned via self-service (no staff member
-  // involved) sends employeeOut through as null rather than omitting it.
-  // The service must pass that through untouched instead of dropping it
-  // or rejecting it before it reaches the DAO.
   it('passes through employeeOut: null unchanged when marking a book returned', async () => {
     const markedReturned = makeRecord({
       status: 'AVAILABLE',
@@ -110,8 +116,8 @@ describe('LoanRecordService.findAllRecords', () => {
 
 describe('LoanRecordService.queryRecords', () => {
   it('delegates to findByProperty with the given property/value pair', async () => {
-    const records = [makeRecord()];
-    mockedLoanRecordDao.findByProperty.mockResolvedValue(records as any);
+    const records = [makeRecordWithItem()];
+    mockedLoanRecordDao.findByProperty.mockResolvedValue(records);
 
     const result = await LoanRecordService.queryRecords({ property: 'patron', value: 'patron-1' });
 
@@ -123,7 +129,7 @@ describe('LoanRecordService.queryRecords', () => {
 describe('LoanRecordService.isItemAvailable', () => {
   it('returns true when there is no active (unreturned, LOANED) record for the item', async () => {
     mockedLoanRecordDao.findByItem.mockResolvedValue([
-      makeRecord({ status: 'AVAILABLE', returnedDate: new Date() }) as any,
+      makeRecordWithItem({ status: 'AVAILABLE', returnedDate: new Date() }),
     ]);
 
     const result = await LoanRecordService.isItemAvailable('book-1');
@@ -133,7 +139,7 @@ describe('LoanRecordService.isItemAvailable', () => {
 
   it('returns false when a LOANED record with no returnedDate exists', async () => {
     mockedLoanRecordDao.findByItem.mockResolvedValue([
-      makeRecord({ status: 'LOANED', returnedDate: null }) as any,
+      makeRecordWithItem({ status: 'LOANED', returnedDate: null }),
     ]);
 
     const result = await LoanRecordService.isItemAvailable('book-1');
@@ -171,7 +177,7 @@ describe('LoanRecordService.selfCheckout', () => {
 
   it('throws BookAlreadyLoanedError when the item is currently loaned out', async () => {
     mockedLoanRecordDao.findByItem.mockResolvedValue([
-      makeRecord({ status: 'LOANED', returnedDate: null }) as any,
+      makeRecordWithItem({ status: 'LOANED', returnedDate: null }),
     ]);
 
     await expect(

@@ -45,7 +45,7 @@ describe('LibraryCardService.registerLibraryCard', () => {
 
   it('inserts the card then re-fetches it by user id', async () => {
     const created = makeCard();
-    mockedLibraryCardDao.insert.mockResolvedValue(created as any);
+    mockedLibraryCardDao.insert.mockResolvedValue(created);
     mockedLibraryCardDao.findByUserId.mockResolvedValue(created);
 
     const result = await LibraryCardService.registerLibraryCard(payload);
@@ -56,7 +56,7 @@ describe('LibraryCardService.registerLibraryCard', () => {
   });
 
   it('throws LibraryCardDoesNotExistError if the re-fetch after insert finds nothing', async () => {
-    mockedLibraryCardDao.insert.mockResolvedValue(makeCard() as any);
+    mockedLibraryCardDao.insert.mockResolvedValue(makeCard());
     mockedLibraryCardDao.findByUserId.mockResolvedValue(null);
 
     await expect(LibraryCardService.registerLibraryCard(payload)).rejects.toThrow(

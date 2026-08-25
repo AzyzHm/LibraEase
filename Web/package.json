@@ -43,13 +43,13 @@
     "motion": "^13.1.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
-    "zone.js": "~0.15.0"
+    "zone.js": "~0.16.2"
   },
   "devDependencies": {
     "@angular-eslint/builder": "^20.7.0",
     "@angular-eslint/schematics": "^20.7.0",
     "@angular/build": "^20.3.34",
-    "@angular/cli": "^20.3.34",
+    "@angular/cli": "^22.1.5",
     "@angular/compiler-cli": "^20.3.0",
     "@playwright/test": "^1.48.0",
     "@tailwindcss/postcss": "^4.3.3",

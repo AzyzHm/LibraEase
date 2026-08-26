@@ -18,12 +18,11 @@ export class BookApi {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiBaseUrl}/book`;
 
-  /** GET /book - full unpaginated list, used sparingly (e.g. "recently added"). */
-  getAll(): Observable<BookListResponse> {
-    return this.http.get<BookListResponse>(this.baseUrl);
+  getAll(page = 1, limit = 25): Observable<BookListResponse> {
+    const httpParams = new HttpParams().set('page', String(page)).set('limit', String(limit));
+    return this.http.get<BookListResponse>(this.baseUrl, { params: httpParams });
   }
 
-  /** GET /book/query - server-side filtering + pagination, used for catalog browsing. */
   search(params: BookQueryParams): Observable<BookQueryResponse> {
     let httpParams = new HttpParams();
 
@@ -37,17 +36,14 @@ export class BookApi {
     return this.http.get<BookQueryResponse>(`${this.baseUrl}/query`, { params: httpParams });
   }
 
-  /** POST /book - admin/employee only. */
   create(payload: BookCreatePayload): Observable<BookCreateResponse> {
     return this.http.post<BookCreateResponse>(this.baseUrl, payload);
   }
 
-  /** PUT /book - admin/employee only. Backend keys the update off `payload.barcode`. */
   update(payload: BookUpdatePayload): Observable<BookUpdateResponse> {
     return this.http.put<BookUpdateResponse>(this.baseUrl, payload);
   }
 
-  /** DELETE /book/:barcode - admin/employee only. */
   remove(barcode: string): Observable<BookDeleteResponse> {
     return this.http.delete<BookDeleteResponse>(`${this.baseUrl}/${barcode}`);
   }

@@ -179,9 +179,3 @@ npm run e2e:ui                 # Playwright UI mode, for debugging
 - **E2E tests** (`tests/e2e/`) are Playwright specs that run against a real dev server and a real backend, covering full user flows (login, browsing the catalog, admin CRUD, route guards). These require a running `Server` instance, see the backend docs for the seed-admin credentials needed to exercise admin-only flows.
 
 Jest is configured to run against `environment.ts` (the non-production environment file) in every case, since Angular's build-time file replacement doesn't apply to the Jest test runner.
-
-## Known Quirks
-
-- **The production `apiBaseUrl` is a placeholder.** `environment.production.ts` ships with `https://api.libraease.example.com`, which doesn't resolve to anything. Anyone cutting a production build needs to edit this file first, it isn't overridable via an environment variable at build time.
-- **The session persists in `localStorage`, not a cookie.** This means the JWT is readable by any script running on the page (standard XSS exposure for `localStorage`-based auth), and `isJwtExpired`'s client-side decode is a UX nicety, not a security boundary, the backend still validates every token itself.
-- **Client-side role checks (`isAdmin`/`isStaff`/`isPatron`) are for UI purposes only.** Hiding an admin button or route doesn't prevent a request from reaching the backend, the actual authorization always happens server-side, so this isn't a gap so much as a reminder not to treat frontend role checks as the source of truth.

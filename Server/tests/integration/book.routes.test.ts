@@ -31,14 +31,14 @@ beforeEach(() => {
 });
 
 describe('GET /book', () => {
-  it('returns all books with no authentication required', async () => {
-    mockedBookDao.find.mockResolvedValue([makeBook()]);
+  it('returns a paginated list of books with no authentication required', async () => {
+    mockedBookDao.search.mockResolvedValue({ items: [makeBook()], totalCount: 1 });
 
     const res = await request(app).get('/book');
 
     expect(res.status).toBe(200);
-    expect(res.body.count).toBe(1);
-    expect(res.body.books).toHaveLength(1);
+    expect(res.body.page.totalCount).toBe(1);
+    expect(res.body.page.items).toHaveLength(1);
   });
 });
 

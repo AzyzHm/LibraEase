@@ -1,16 +1,27 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyAuthToken, AuthTokenPayload } from '../utils/Jwt';
 import { getErrorMessage } from '../utils/errors';
+import { AUTH_COOKIE_NAME } from '../utils/Cookies';
 
-export function authenticate(req: Request, res: Response, next: NextFunction): void {
+function extractToken(req: Request): string | null {
+  const cookieToken = req.cookies?.[AUTH_COOKIE_NAME];
+  if (cookieToken) return cookieToken;
+
   const header = req.headers.authorization;
-
-  if (!header || !header.startsWith('Bearer ')) {
-    res.status(401).json({ message: 'Missing or malformed Authorization header' });
-    return;
+  if (header && header.startsWith('Bearer ')) {
+    return header.slice('Bearer '.length).trim();
   }
 
-  const token = header.slice('Bearer '.length).trim();
+  return null;
+}
+
+export function authenticate(req: Request, res: Response, next: NextFunction): void {
+  const token = extractToken(req);
+
+  if (!token) {
+    res.status(401).json({ message: 'Missing or invalid authentication' });
+    return;
+  }
 
   try {
     req.user = verifyAuthToken(token);

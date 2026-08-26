@@ -21,6 +21,7 @@ function resolveJwtSecret(): string {
       'JWT_SECRET environment variable is required in production, refusing to start with an insecure default',
     );
   }
+
   console.warn(
     '[config] JWT_SECRET is not set, falling back to an insecure development-only secret. ' +
       'This must never happen in a real deployment.',
@@ -31,6 +32,11 @@ function resolveJwtSecret(): string {
 const jwtSecret: string = resolveJwtSecret();
 
 const JWT_EXPIRES_IN: string = process.env.JWT_EXPIRES_IN || '7d';
+
+const CORS_ORIGIN: string[] = (process.env.CORS_ORIGIN || 'http://localhost:4200')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 export const config = {
   supabase: {
@@ -43,4 +49,5 @@ export const config = {
   },
   jwtSecret,
   jwtExpiresIn: JWT_EXPIRES_IN,
+  corsOrigin: CORS_ORIGIN,
 };

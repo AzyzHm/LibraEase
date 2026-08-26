@@ -1,10 +1,21 @@
 import { Request, Response } from 'express';
-import { login, register } from '../services/UserService';
+import { login, register, findUserById } from '../services/UserService';
 import { IUser } from '../models/User';
 import { IUserModel } from '../daos/UserDao';
 import { UnableToFetchUserError, AccountPendingApprovalError } from '../utils/LibraryErrors';
 import { signAuthToken } from '../utils/Jwt';
+import { setAuthCookies, clearAuthCookies } from '../utils/Cookies';
 import { getErrorMessage } from '../utils/errors';
+
+function publicUser(user: IUserModel) {
+  return {
+    id: user.id,
+    type: user.type,
+    firstname: user.firstname,
+    lastname: user.lastname,
+    email: user.email,
+  };
+}
 
 async function handleRegister(req: Request, res: Response): Promise<void> {
   const user: IUser = req.body;
@@ -13,14 +24,7 @@ async function handleRegister(req: Request, res: Response): Promise<void> {
     res.status(201).json({
       message:
         'Registration submitted. An admin needs to approve your account before you can log in.',
-      user: {
-        id: registedUser.id,
-        type: registedUser.type,
-        firstname: registedUser.firstname,
-        lastname: registedUser.lastname,
-        email: registedUser.email,
-        status: registedUser.status,
-      },
+      user: { ...publicUser(registedUser), status: registedUser.status },
     });
   } catch (error: unknown) {
     const message = getErrorMessage(error);
@@ -37,16 +41,10 @@ async function handleLogin(req: Request, res: Response): Promise<void> {
   try {
     const user: IUserModel = await login(credentials);
     const token = signAuthToken(user);
+    setAuthCookies(res, token);
     res.status(200).json({
       message: 'User logged in successfully',
-      token,
-      user: {
-        id: user.id,
-        type: user.type,
-        firstname: user.firstname,
-        lastname: user.lastname,
-        email: user.email,
-      },
+      user: publicUser(user),
     });
   } catch (error: unknown) {
     if (error instanceof AccountPendingApprovalError) {
@@ -60,7 +58,26 @@ async function handleLogin(req: Request, res: Response): Promise<void> {
   }
 }
 
+function handleLogout(req: Request, res: Response): void {
+  clearAuthCookies(res);
+  res.status(200).json({ message: 'Logged out successfully' });
+}
+
+async function handleMe(req: Request, res: Response): Promise<void> {
+  const requester = req.user!;
+  try {
+    const user = await findUserById(requester.id);
+    res.status(200).json({ message: 'Current user retrieved successfully', user: publicUser(user) });
+  } catch (error: unknown) {
+    res
+      .status(401)
+      .json({ message: 'Unable to retrieve current user', error: getErrorMessage(error) });
+  }
+}
+
 export default {
   handleRegister,
   handleLogin,
+  handleLogout,
+  handleMe,
 };

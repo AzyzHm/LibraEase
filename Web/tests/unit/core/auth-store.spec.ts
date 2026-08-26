@@ -47,7 +47,10 @@ describe('AuthStore.restoreSession', () => {
   });
 
   it('stays unauthenticated and clears restoring when GET /auth/me fails (no valid cookie)', (done) => {
-    const httpError = new HttpErrorResponse({ status: 401, error: { message: 'Not authenticated' } });
+    const httpError = new HttpErrorResponse({
+      status: 401,
+      error: { message: 'Not authenticated' },
+    });
     const store = setup({ me: () => throwError(() => httpError) });
 
     store.restoreSession().subscribe((user) => {

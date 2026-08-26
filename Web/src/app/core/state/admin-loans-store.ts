@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { finalize, forkJoin } from 'rxjs';
+import { Observable, finalize, forkJoin, map, of, switchMap } from 'rxjs';
 import { BookApi } from '../api/book-api';
 import { LoanApi } from '../api/loan-api';
 import { UserApi } from '../api/user-api';
@@ -23,7 +23,6 @@ export class AdminLoansStore {
 
   readonly statusFilter = signal<LoanStatusFilter>('LOANED');
 
-  /** Reference data used to resolve the raw ids on each loan record to display names. */
   readonly users = signal<AdminUser[]>([]);
   readonly books = signal<BookModel[]>([]);
   readonly refDataLoading = signal(false);
@@ -32,7 +31,6 @@ export class AdminLoansStore {
   readonly userById = computed(() => new Map(this.users().map((user) => [user.id, user])));
   readonly bookById = computed(() => new Map(this.books().map((book) => [book.id, book])));
 
-  /** ids of books that currently have an open (LOANED) record - used to flag them in the checkout picker. */
   readonly loanedBookIds = computed(
     () =>
       new Set(
@@ -48,11 +46,9 @@ export class AdminLoansStore {
     return filter === 'ALL' ? loans : loans.filter((loan) => loan.status === filter);
   });
 
-  /** True while a checkout (create) call is in flight. */
   readonly checkingOut = signal(false);
   readonly checkoutError = signal<string | null>(null);
 
-  /** Id of the loan record currently being marked returned, so only that row shows a spinner. */
   readonly actionPendingId = signal<string | null>(null);
   readonly actionError = signal<string | null>(null);
 
@@ -80,13 +76,13 @@ export class AdminLoansStore {
 
     forkJoin({
       users: this.userApi.getAll(),
-      books: this.bookApi.getAll(),
+      books: this.loadAllBooks(),
     })
       .pipe(finalize(() => this.refDataLoading.set(false)))
       .subscribe({
         next: ({ users, books }) => {
           this.users.set(users.users);
-          this.books.set(books.books);
+          this.books.set(books);
         },
         error: (error: HttpErrorResponse) => {
           this.refDataError.set(
@@ -94,6 +90,25 @@ export class AdminLoansStore {
           );
         },
       });
+  }
+
+  private loadAllBooks(): Observable<BookModel[]> {
+    const PAGE_LIMIT = 100;
+
+    return this.bookApi.getAll(1, PAGE_LIMIT).pipe(
+      switchMap((first) => {
+        const { items, totalPages } = first.page;
+        if (totalPages <= 1) return of(items);
+
+        const remainingPages = Array.from({ length: totalPages - 1 }, (_, index) =>
+          this.bookApi.getAll(index + 2, PAGE_LIMIT),
+        );
+
+        return forkJoin(remainingPages).pipe(
+          map((rest) => [...items, ...rest.flatMap((response) => response.page.items)]),
+        );
+      }),
+    );
   }
 
   setStatusFilter(filter: LoanStatusFilter): void {
@@ -120,7 +135,6 @@ export class AdminLoansStore {
       });
   }
 
-  /** Marks a loan returned: full-record replace with status/returnedDate/employeeIn updated. */
   markReturned(loan: LoanRecordModel, employeeInId: string): void {
     this.actionPendingId.set(loan.id);
     this.actionError.set(null);

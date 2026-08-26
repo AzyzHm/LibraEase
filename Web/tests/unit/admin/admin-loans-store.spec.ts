@@ -82,22 +82,28 @@ describe('AdminLoansStore.loadReferenceData', () => {
         getAll: () =>
           of({
             message: 'ok',
-            count: 1,
-            books: [
-              {
-                id: 'b1',
-                barcode: '123',
-                cover: '',
-                title: 'T',
-                authors: [],
-                description: '',
-                subjects: [],
-                publicationDate: '2020-01-01',
-                publisher: 'P',
-                pages: 1,
-                genre: 'G',
-              },
-            ],
+            page: {
+              totalCount: 1,
+              currentPage: 1,
+              totalPages: 1,
+              limit: 100,
+              pageCount: 1,
+              items: [
+                {
+                  id: 'b1',
+                  barcode: '123',
+                  cover: '',
+                  title: 'T',
+                  authors: [],
+                  description: '',
+                  subjects: [],
+                  publicationDate: '2020-01-01',
+                  publisher: 'P',
+                  pages: 1,
+                  genre: 'G',
+                },
+              ],
+            },
           }),
       },
     });
@@ -113,7 +119,20 @@ describe('AdminLoansStore.loadReferenceData', () => {
     const httpError = new HttpErrorResponse({ status: 500, error: { message: 'users down' } });
     const store = setup({
       userApi: { getAll: () => throwError(() => httpError) },
-      bookApi: { getAll: () => of({ message: 'ok', count: 0, books: [] }) },
+      bookApi: {
+        getAll: () =>
+          of({
+            message: 'ok',
+            page: {
+              totalCount: 0,
+              currentPage: 1,
+              totalPages: 1,
+              limit: 100,
+              pageCount: 0,
+              items: [],
+            },
+          }),
+      },
     });
 
     store.loadReferenceData();
@@ -141,7 +160,20 @@ describe('AdminLoansStore derived signals', () => {
             ],
           }),
       },
-      bookApi: { getAll: () => of({ message: 'ok', count: 0, books: [] }) },
+      bookApi: {
+        getAll: () =>
+          of({
+            message: 'ok',
+            page: {
+              totalCount: 0,
+              currentPage: 1,
+              totalPages: 1,
+              limit: 100,
+              pageCount: 0,
+              items: [],
+            },
+          }),
+      },
     });
     store.loadReferenceData();
 

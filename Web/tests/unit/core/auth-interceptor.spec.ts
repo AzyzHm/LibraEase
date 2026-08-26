@@ -10,14 +10,27 @@ import { provideRouter, Router } from '@angular/router';
 import { authInterceptor } from '../../../src/app/core/interceptors/auth-interceptor';
 import { AuthStore } from '../../../src/app/core/state/auth-store';
 
+function setDocumentCookie(value: string): void {
+  document.cookie = value;
+}
+
+function clearCookies(): void {
+  document.cookie.split(';').forEach((cookie) => {
+    const name = cookie.split('=')[0].trim();
+    if (name) {
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+    }
+  });
+}
+
 describe('authInterceptor', () => {
   let httpMock: HttpTestingController;
   let http: HttpClient;
   let router: Router;
-  let authStoreStub: { token: jest.Mock; logout: jest.Mock };
+  let authStoreStub: { logout: jest.Mock };
 
-  function setup(token: string | null) {
-    authStoreStub = { token: jest.fn(() => token), logout: jest.fn() };
+  function setup() {
+    authStoreStub = { logout: jest.fn() };
 
     TestBed.configureTestingModule({
       providers: [
@@ -35,30 +48,53 @@ describe('authInterceptor', () => {
 
   afterEach(() => {
     httpMock.verify();
+    clearCookies();
   });
 
-  it('does not add an Authorization header when there is no token', () => {
-    setup(null);
+  it('sends withCredentials on every request so the auth cookie is attached', () => {
+    setup();
 
     http.get('/api/books').subscribe();
 
     const req = httpMock.expectOne('/api/books');
-    expect(req.request.headers.has('Authorization')).toBe(false);
+    expect(req.request.withCredentials).toBe(true);
     req.flush({});
   });
 
-  it('adds a Bearer Authorization header when a token is present', () => {
-    setup('the-jwt-token');
+  it('does not add an X-CSRF-Token header on safe (GET) requests', () => {
+    setup();
+    setDocumentCookie('csrf_token=some-csrf-value');
 
     http.get('/api/books').subscribe();
 
     const req = httpMock.expectOne('/api/books');
-    expect(req.request.headers.get('Authorization')).toBe('Bearer the-jwt-token');
+    expect(req.request.headers.has('X-CSRF-Token')).toBe(false);
+    req.flush({});
+  });
+
+  it('adds the X-CSRF-Token header on mutating requests when the cookie is present', () => {
+    setup();
+    setDocumentCookie('csrf_token=some-csrf-value');
+
+    http.post('/api/books', {}).subscribe();
+
+    const req = httpMock.expectOne('/api/books');
+    expect(req.request.headers.get('X-CSRF-Token')).toBe('some-csrf-value');
+    req.flush({});
+  });
+
+  it('omits the X-CSRF-Token header on mutating requests when there is no CSRF cookie', () => {
+    setup();
+
+    http.post('/api/books', {}).subscribe();
+
+    const req = httpMock.expectOne('/api/books');
+    expect(req.request.headers.has('X-CSRF-Token')).toBe(false);
     req.flush({});
   });
 
   it('logs out and redirects to /login on a 401 response', () => {
-    setup('expired-token');
+    setup();
     const navigateSpy = jest.spyOn(router, 'navigate').mockResolvedValue(true);
 
     http.get('/api/books').subscribe({
@@ -75,7 +111,7 @@ describe('authInterceptor', () => {
   });
 
   it('does not log out on non-401 errors', () => {
-    setup('the-jwt-token');
+    setup();
 
     http.get('/api/books').subscribe({
       error: () => {},
@@ -88,7 +124,7 @@ describe('authInterceptor', () => {
   });
 
   it('re-throws the original error so callers still see it', (done) => {
-    setup('the-jwt-token');
+    setup();
 
     http.get('/api/books').subscribe({
       next: () => done.fail('expected an error'),

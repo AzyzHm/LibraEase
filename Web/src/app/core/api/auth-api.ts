@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import {
   LoginCredentials,
   LoginResponse,
+  MeResponse,
   RegisterPayload,
   RegisterResponse,
 } from '../models/auth.model';
@@ -20,5 +21,13 @@ export class AuthApi {
 
   register(payload: RegisterPayload): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>(`${this.baseUrl}/register`, payload);
+  }
+
+  me(): Observable<MeResponse> {
+    return this.http.get<MeResponse>(`${this.baseUrl}/me`);
+  }
+
+  logout(): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.baseUrl}/logout`, {});
   }
 }

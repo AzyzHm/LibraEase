@@ -8,8 +8,7 @@ export interface AuthTokenPayload {
   email: string;
 }
 
-const EXPIRES_IN: SignOptions['expiresIn'] =
-  (process.env.JWT_EXPIRES_IN as SignOptions['expiresIn']) || '7d';
+const EXPIRES_IN: SignOptions['expiresIn'] = config.jwtExpiresIn as SignOptions['expiresIn'];
 
 export function signAuthToken(user: IUserModel): string {
   const payload: AuthTokenPayload = {
@@ -22,7 +21,5 @@ export function signAuthToken(user: IUserModel): string {
 }
 
 export function verifyAuthToken(token: string): AuthTokenPayload {
-  // jwt.verify throws (TokenExpiredError / JsonWebTokenError) on any
-  // invalid/expired token - callers are expected to catch that.
   return jwt.verify(token, config.jwtSecret) as AuthTokenPayload;
 }

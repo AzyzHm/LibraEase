@@ -293,12 +293,3 @@ All three projects load `tests/setup/env.setup.ts` first, which fills in placeho
 ## Scripts
 
 - **`npm run import:books`** : runs `scripts/import-books.ts`, which reads `Server/books.json` and inserts it into the `books` table in chunks of 500. Requires `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY` to be set, since it talks to Supabase directly rather than through the app.
-
-## Known Quirks
-
-A few things in the current backend are worth flagging rather than working around silently:
-
-- **`JWT_SECRET` has a hardcoded fallback.** If the environment variable isn't set, `src/config/index.ts` falls back to a fixed string in source. Fine for local development, but this must be overridden in any real deployment, anyone with the source can otherwise forge tokens.
-- **`ROUNDS` defaults to a random value, chosen once per process start.** If you don't set it, `src/config/index.ts` picks a random number between 1 and 10 every time the server starts, meaning the bcrypt cost factor for password hashing is inconsistent across restarts (and quite low, production bcrypt is typically 10+). Set `ROUNDS` explicitly outside of local/test use.
-- **`JWT_EXPIRES_IN` isn't read through the shared config module.** Every other environment variable goes through `src/config/index.ts`, but `src/utils/Jwt.ts` reads `process.env.JWT_EXPIRES_IN` directly. Functionally fine, just inconsistent if you're looking for where env vars are wired up.
-- **`GET /book` has no pagination**, unlike `GET /book/query`. On a large catalog this returns every row in one response.

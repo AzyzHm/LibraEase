@@ -81,9 +81,9 @@ describe('POST /auth/login', () => {
     expect(res.body.user.email).toBe('jane@example.com');
 
     const cookies = res.headers['set-cookie'] as unknown as string[];
-    expect(cookies.some((cookie) => cookie.startsWith('auth_token=') && /HttpOnly/i.test(cookie))).toBe(
-      true,
-    );
+    expect(
+      cookies.some((cookie) => cookie.startsWith('auth_token=') && /HttpOnly/i.test(cookie)),
+    ).toBe(true);
     expect(cookies.some((cookie) => cookie.startsWith('csrf_token='))).toBe(true);
   });
 

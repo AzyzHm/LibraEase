@@ -1,10 +1,5 @@
 import { Request, Response } from 'express';
-import {
-  registerBook,
-  modifyBook,
-  removeBook,
-  queryBooks,
-} from '../services/BookService';
+import { registerBook, modifyBook, removeBook, queryBooks } from '../services/BookService';
 import { BookDoesNotExistError } from '../utils/LibraryErrors';
 
 async function getAllBooks(req: Request, res: Response) {

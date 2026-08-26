@@ -67,7 +67,9 @@ async function handleMe(req: Request, res: Response): Promise<void> {
   const requester = req.user!;
   try {
     const user = await findUserById(requester.id);
-    res.status(200).json({ message: 'Current user retrieved successfully', user: publicUser(user) });
+    res
+      .status(200)
+      .json({ message: 'Current user retrieved successfully', user: publicUser(user) });
   } catch (error: unknown) {
     res
       .status(401)

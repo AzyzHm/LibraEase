@@ -3,9 +3,15 @@ import { AUTH_COOKIE_NAME, CSRF_COOKIE_NAME } from '../utils/Cookies';
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 const CSRF_HEADER = 'x-csrf-token';
+const CSRF_EXEMPT_PATHS = new Set(['/auth/login', '/auth/register', '/auth/logout']);
 
 export function verifyCsrf(req: Request, res: Response, next: NextFunction): void {
   if (SAFE_METHODS.has(req.method)) {
+    next();
+    return;
+  }
+
+  if (CSRF_EXEMPT_PATHS.has(req.path)) {
     next();
     return;
   }

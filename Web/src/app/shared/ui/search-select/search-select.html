@@ -1,0 +1,66 @@
+<div class="relative">
+  @if (selectedOption() && !open()) {
+    <button
+      type="button"
+      [id]="inputId()"
+      (click)="onOpenSearch()"
+      [disabled]="disabled()"
+      class="field-input flex w-full items-center justify-between gap-2 text-left"
+    >
+      <span class="min-w-0">
+        <span class="block truncate text-ink-900">{{ selectedOption()!.label }}</span>
+        @if (selectedOption()!.sublabel) {
+          <span class="block truncate text-caption text-ink-400">{{
+            selectedOption()!.sublabel
+          }}</span>
+        }
+      </span>
+      <span class="text-body-sm shrink-0 text-ink-400">Change</span>
+    </button>
+  } @else {
+    <input
+      #searchInput
+      [id]="inputId()"
+      type="text"
+      [placeholder]="placeholder()"
+      [value]="query()"
+      [disabled]="disabled()"
+      (input)="onQueryInput(searchInput.value)"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      role="combobox"
+      aria-autocomplete="list"
+      [attr.aria-expanded]="open()"
+      autocomplete="off"
+      class="field-input w-full"
+    />
+
+    @if (open()) {
+      <ul
+        role="listbox"
+        class="shadow-modal absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md border border-border bg-white"
+      >
+        @if (filteredOptions().length === 0) {
+          <li class="text-body-sm px-3 py-2 text-ink-400">{{ emptyMessage() }}</li>
+        } @else {
+          @for (option of filteredOptions(); track option.id) {
+            <li>
+              <button
+                type="button"
+                role="option"
+                (mousedown)="$event.preventDefault()"
+                (click)="onSelect(option)"
+                class="flex w-full flex-col items-start px-3 py-2 text-left hover:bg-cream-100"
+              >
+                <span class="text-body-sm text-ink-900">{{ option.label }}</span>
+                @if (option.sublabel) {
+                  <span class="text-caption text-ink-400">{{ option.sublabel }}</span>
+                }
+              </button>
+            </li>
+          }
+        }
+      </ul>
+    }
+  }
+</div>

@@ -261,7 +261,7 @@ describe('AdminLoans - mark returned', () => {
 });
 
 describe('AdminLoans - checkout form', () => {
-  it('opens the checkout form on "+ New checkout" with patrons and books listed', async () => {
+  it('opens the checkout modal on "+ New checkout" with patrons and books searchable', async () => {
     const user = userEvent.setup();
     const stubs = setup({
       users: [makePatron(), makePatron({ id: 'patron-2', firstname: 'Bob', lastname: 'Smith' })],
@@ -272,9 +272,13 @@ describe('AdminLoans - checkout form', () => {
     await user.click(screen.getByRole('button', { name: '+ New checkout' }));
 
     expect(screen.getByRole('heading', { name: 'New checkout' })).toBeInTheDocument();
+
+    await user.click(screen.getByLabelText('Patron'));
     expect(screen.getByRole('option', { name: /Jane Doe/ })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: /Bob Smith/ })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: 'The Pragmatic Programmer' })).toBeInTheDocument();
+
+    await user.click(screen.getByLabelText('Book'));
+    expect(screen.getByRole('option', { name: /The Pragmatic Programmer/ })).toBeInTheDocument();
   });
 
   it('excludes non-PATRON users from the patron picker', async () => {
@@ -288,11 +292,26 @@ describe('AdminLoans - checkout form', () => {
     await render(AdminLoans, { providers: providersFor(stubs) });
 
     await user.click(screen.getByRole('button', { name: '+ New checkout' }));
+    await user.click(screen.getByLabelText('Patron'));
 
     expect(screen.queryByRole('option', { name: /Staff Member/ })).not.toBeInTheDocument();
   });
 
-  it('flags a currently-loaned book in the picker', async () => {
+  it('narrows the patron list as you type', async () => {
+    const user = userEvent.setup();
+    const stubs = setup({
+      users: [makePatron(), makePatron({ id: 'patron-2', firstname: 'Bob', lastname: 'Smith' })],
+    });
+    await render(AdminLoans, { providers: providersFor(stubs) });
+
+    await user.click(screen.getByRole('button', { name: '+ New checkout' }));
+    await user.type(screen.getByLabelText('Patron'), 'Bob');
+
+    expect(screen.getByRole('option', { name: /Bob Smith/ })).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: /Jane Doe/ })).not.toBeInTheDocument();
+  });
+
+  it('excludes a currently-loaned book from the picker entirely', async () => {
     const user = userEvent.setup();
     const stubs = setup({
       books: [makeBook({ id: 'book-1', title: 'The Pragmatic Programmer' })],
@@ -301,10 +320,12 @@ describe('AdminLoans - checkout form', () => {
     await render(AdminLoans, { providers: providersFor(stubs) });
 
     await user.click(screen.getByRole('button', { name: '+ New checkout' }));
+    await user.click(screen.getByLabelText('Book'));
 
     expect(
-      screen.getByRole('option', { name: 'The Pragmatic Programmer (currently loaned)' }),
-    ).toBeInTheDocument();
+      screen.queryByRole('option', { name: /The Pragmatic Programmer/ }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText('No available books match your search.')).toBeInTheDocument();
   });
 
   it('shows validation errors and does not call checkout when submitted empty', async () => {
@@ -317,7 +338,20 @@ describe('AdminLoans - checkout form', () => {
 
     expect(screen.getByText('Select a patron.')).toBeInTheDocument();
     expect(screen.getByText('Select a book.')).toBeInTheDocument();
-    expect(screen.getByText('Required.')).toBeInTheDocument();
+    expect(screen.getByText('Pick a date after today.')).toBeInTheDocument();
+    expect(stubs.storeStub.checkout).not.toHaveBeenCalled();
+  });
+
+  it('rejects a due date in the past', async () => {
+    const user = userEvent.setup();
+    const stubs = setup({});
+    await render(AdminLoans, { providers: providersFor(stubs) });
+
+    await user.click(screen.getByRole('button', { name: '+ New checkout' }));
+    await user.type(screen.getByLabelText('Due date'), '2020-01-01');
+    await user.click(screen.getByRole('button', { name: 'Check out' }));
+
+    expect(screen.getByText('Pick a date after today.')).toBeInTheDocument();
     expect(stubs.storeStub.checkout).not.toHaveBeenCalled();
   });
 
@@ -327,8 +361,13 @@ describe('AdminLoans - checkout form', () => {
     await render(AdminLoans, { providers: providersFor(stubs) });
 
     await user.click(screen.getByRole('button', { name: '+ New checkout' }));
-    await user.selectOptions(screen.getByLabelText('Patron'), 'patron-1');
-    await user.selectOptions(screen.getByLabelText('Book'), 'book-1');
+
+    await user.click(screen.getByLabelText('Patron'));
+    await user.click(screen.getByRole('option', { name: /Jane Doe/ }));
+
+    await user.click(screen.getByLabelText('Book'));
+    await user.click(screen.getByRole('option', { name: /The Pragmatic Programmer/ }));
+
     await user.type(screen.getByLabelText('Due date'), '2030-01-01');
     await user.click(screen.getByRole('button', { name: 'Check out' }));
 
@@ -349,8 +388,13 @@ describe('AdminLoans - checkout form', () => {
     await render(AdminLoans, { providers: providersFor(stubs) });
 
     await user.click(screen.getByRole('button', { name: '+ New checkout' }));
-    await user.selectOptions(screen.getByLabelText('Patron'), 'patron-1');
-    await user.selectOptions(screen.getByLabelText('Book'), 'book-1');
+
+    await user.click(screen.getByLabelText('Patron'));
+    await user.click(screen.getByRole('option', { name: /Jane Doe/ }));
+
+    await user.click(screen.getByLabelText('Book'));
+    await user.click(screen.getByRole('option', { name: /The Pragmatic Programmer/ }));
+
     await user.type(screen.getByLabelText('Due date'), '2030-01-01');
     await user.click(screen.getByRole('button', { name: 'Check out' }));
 

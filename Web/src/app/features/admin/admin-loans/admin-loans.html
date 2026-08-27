@@ -33,7 +33,12 @@
 
   @if (showForm()) {
     <app-modal-shell title="New checkout" (closed)="onCancelCheckout()">
-      <form [formGroup]="checkoutForm" (ngSubmit)="onSubmitCheckout()" class="flex flex-col gap-4" novalidate>
+      <form
+        [formGroup]="checkoutForm"
+        (ngSubmit)="onSubmitCheckout()"
+        class="flex flex-col gap-4"
+        novalidate
+      >
         @if (store.checkoutError()) {
           <p
             class="text-body-sm rounded-sm border-l-2 border-danger-500 bg-danger-50 px-4 py-3 text-danger-700"
@@ -85,7 +90,9 @@
         </div>
 
         <div class="flex items-center justify-end gap-2 pt-1">
-          <button type="button" (click)="onCancelCheckout()" class="btn btn-secondary">Cancel</button>
+          <button type="button" (click)="onCancelCheckout()" class="btn btn-secondary">
+            Cancel
+          </button>
           <button type="submit" [disabled]="store.checkingOut()" class="btn btn-primary">
             {{ store.checkingOut() ? 'Checking out…' : 'Check out' }}
           </button>

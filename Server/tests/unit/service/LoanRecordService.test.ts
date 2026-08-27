@@ -48,6 +48,7 @@ describe('LoanRecordService.generateRecord', () => {
       employeeOut: 'employee-1',
       item: 'book-1',
     };
+    mockedLoanRecordDao.findByItem.mockResolvedValue([]);
     const created = makeRecord();
     mockedLoanRecordDao.insert.mockResolvedValue(created);
 

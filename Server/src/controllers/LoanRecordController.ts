@@ -17,7 +17,11 @@ async function createRecord(req: Request, res: Response) {
     const createdRecord = await generateRecord(record);
     res.status(201).json({ message: 'New record generated', record: createdRecord });
   } catch (error) {
-    res.status(500).json({ message: 'Something went wrong', error });
+    if (error instanceof BookAlreadyLoanedError) {
+      res.status(409).json({ message: error.message, error: error.message });
+    } else {
+      res.status(500).json({ message: 'Something went wrong', error });
+    }
   }
 }
 

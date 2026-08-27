@@ -4,6 +4,13 @@ import { ILoanRecord } from '../models/LoanRecord';
 import { LoanRecordDoesNotExistError, BookAlreadyLoanedError } from '../utils/LibraryErrors';
 
 export async function generateRecord(record: ILoanRecord): Promise<ILoanRecordModel> {
+  if (record.status === 'LOANED') {
+    const available = await isItemAvailable(record.item);
+    if (!available) {
+      throw new BookAlreadyLoanedError('This book is currently loaned out');
+    }
+  }
+
   return await LoanRecordDao.insert(record);
 }
 

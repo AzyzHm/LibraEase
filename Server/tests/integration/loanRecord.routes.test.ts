@@ -62,13 +62,14 @@ describe('POST /loan', () => {
   const validPayload = {
     status: 'LOANED',
     loanedDate: '2026-01-01',
-    dueDate: '2026-01-15',
+    dueDate: '2099-01-15',
     patron: PATRON_UUID,
     employeeOut: EMPLOYEE_UUID,
     item: ITEM_UUID,
   };
 
   it('creates a record for an authorized EMPLOYEE', async () => {
+    mockedLoanRecordDao.findByItem.mockResolvedValue([]);
     mockedLoanRecordDao.insert.mockResolvedValue(makeRecord());
 
     const res = await request(app)

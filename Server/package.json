@@ -22,7 +22,7 @@
     "test:integration": "jest --selectProjects integration --runInBand --passWithNoTests",
     "test:e2e": "jest --selectProjects e2e --runInBand --passWithNoTests",
     "test:cov": "jest --runInBand --coverage --passWithNoTests",
-    "prepare": "husky"
+    "prepare": "node -e \"process.env.RENDER ? process.exit(0) : require('child_process').execSync('husky', { stdio: 'inherit' })\""
   },
   "author": "AzyzHm",
   "license": "ISC",

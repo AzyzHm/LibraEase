@@ -246,29 +246,13 @@
         </table>
       </div>
 
-      <div class="mt-4 flex items-center justify-between">
-        <span class="text-body-sm text-ink-600">
-          Page {{ store.currentPage() }} of {{ store.totalPages() }} ·
-          {{ store.totalCount() }} books
-        </span>
-        <div class="flex gap-2">
-          <button
-            type="button"
-            (click)="onPrevious()"
-            [disabled]="store.currentPage() <= 1"
-            class="btn btn-secondary"
-          >
-            Previous
-          </button>
-          <button
-            type="button"
-            (click)="onNext()"
-            [disabled]="store.currentPage() >= store.totalPages()"
-            class="btn btn-secondary"
-          >
-            Next
-          </button>
-        </div>
+      <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+        <span class="text-body-sm text-ink-600"> {{ store.totalCount() }} books </span>
+        <app-pagination
+          [currentPage]="store.currentPage()"
+          [totalPages]="store.totalPages()"
+          (pageChange)="store.goToPage($event)"
+        />
       </div>
     }
   </div>

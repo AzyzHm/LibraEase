@@ -32,7 +32,7 @@ API server for LibraEase, a library management system. Handles user accounts, bo
 - **Database**: Supabase (Postgres), accessed through `@supabase/supabase-js`
 - **Validation**: Joi
 - **Auth**: JSON Web Tokens (`jsonwebtoken`), passwords hashed with `bcryptjs`
-- **Testing**: Jest (unit, integration, and an internal e2e project) with `supertest` and `ts-jest`
+- **Testing**: Jest (unit and integration, plus a reserved but currently empty e2e project) with `supertest` and `ts-jest`
 - **Linting/formatting**: ESLint (flat config) + Prettier, enforced on commit via Husky/lint-staged
 
 ## Project Structure
@@ -88,12 +88,13 @@ All variables are read via `dotenv` in [`src/config/index.ts`](../src/config/ind
 
 | Variable | Required | Default | Notes |
 |---|---|---|---|
-| `SUPABASE_URL` | Yes | — | Supabase project URL |
-| `SUPABASE_SERVICE_ROLE_KEY` | Yes | — | Service role key; the client is created with `persistSession: false` |
+| `SUPABASE_URL` | Yes | None | Supabase project URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes | None | Service role key; the client is created with `persistSession: false` |
 | `JWT_SECRET` | Recommended | a hardcoded string in source | Always set this outside local development, see [Known Quirks](#known-quirks) |
 | `JWT_EXPIRES_IN` | No | `7d` | Any value accepted by `jsonwebtoken`'s `expiresIn` |
 | `PORT` | No | `8000` | HTTP port |
-| `ROUNDS` | No | random 1–10 | bcrypt cost factor, see [Known Quirks](#known-quirks) |
+| `ROUNDS` | No | random 1-10 | bcrypt cost factor, see [Known Quirks](#known-quirks) |
+| `CORS_ORIGIN` | No | `http://localhost:4200` | Comma-separated list of allowed origins, checked in [`src/config/index.ts`](../src/config/index.ts). In production, this is kept in sync with the live frontend URL automatically by the CD pipeline (see [`cd.yml`](../.github/workflows/cd.yml)), not set by hand |
 | `SEED_ADMIN_EMAIL` | No | `admin@libraease.local` | Used only when no admin exists yet |
 | `SEED_ADMIN_PASSWORD` | No | randomly generated | Set this to pin a known admin password |
 | `SEED_ADMIN_FIRSTNAME` | No | `Library` | |
@@ -156,9 +157,9 @@ Rate-limited by `authLimiter`.
 |---|---|---|---|---|
 | GET | `/users` | Yes | ADMIN, EMPLOYEE | Lists users. Employees only see `PATRON`s; admins see everyone except other admins |
 | GET | `/users/pending` | Yes | ADMIN | Lists users with `status: PENDING` |
-| GET | `/users/:userId` | Yes | — | Admin/employee can view anyone; a patron can only view their own record |
-| DELETE | `/users/:userId` | Yes | — | Admin can delete anyone; a non-admin can only delete their own account |
-| PUT | `/users` | Yes | — | Updates the caller's own profile. Non-admins can't change their own `type`, the controller silently restores the existing value if they try |
+| GET | `/users/:userId` | Yes | Any | Admin/employee can view anyone; a patron can only view their own record |
+| DELETE | `/users/:userId` | Yes | Any | Admin can delete anyone; a non-admin can only delete their own account |
+| PUT | `/users` | Yes | Any | Updates the caller's own profile. Non-admins can't change their own `type`, the controller silently restores the existing value if they try |
 | PUT | `/users/:userId/approve` | Yes | ADMIN | Sets `status: APPROVED` |
 | PUT | `/users/:userId/reject` | Yes | ADMIN | Sets `status: REJECTED` |
 | PUT | `/users/:userId/promote` | Yes | ADMIN | `PATRON` → `EMPLOYEE`. 409 if already an employee or if the target is an admin |
@@ -170,8 +171,8 @@ All user responses strip the `password` field before returning.
 
 | Method | Path | Auth | Roles | Description |
 |---|---|---|---|---|
-| GET | `/book` | No | — | Returns every book (no pagination) |
-| GET | `/book/query` | No | — | Paginated search. Query params: `page`, `limit` (defaults 1/25), plus optional `title`, `barcode`, `description`, `genre` (substring match) and `author`, `subject` (exact match against the array column) |
+| GET | `/book` | No | N/A | Returns every book (no pagination) |
+| GET | `/book/query` | No | N/A | Paginated search. Query params: `page`, `limit` (defaults 1/25), plus optional `title`, `barcode`, `description`, `genre` (substring match) and `author`, `subject` (exact match against the array column) |
 | POST | `/book` | Yes | ADMIN, EMPLOYEE | Creates a book. Body validated against `Schemas.book.create` |
 | PUT | `/book` | Yes | ADMIN, EMPLOYEE | Updates a book by `barcode` in the body. 404 if no book has that barcode |
 | DELETE | `/book/:barcode` | Yes | ADMIN, EMPLOYEE | Deletes a book by barcode. 404 if it doesn't exist |
@@ -183,9 +184,9 @@ All user responses strip the `password` field before returning.
 | Method | Path | Auth | Roles | Description |
 |---|---|---|---|---|
 | GET | `/card` | Yes | ADMIN, EMPLOYEE | Lists all library cards, each with its owner's user record attached |
-| GET | `/card/me` | Yes | — | Returns the caller's own card, 404 if they don't have one |
-| GET | `/card/:cardId` | Yes | — | Admin/employee can view any card; a patron can only view their own |
-| POST | `/card` | Yes | — | Issues a card for the `user` id in the body. Admin/employee can issue for anyone; a patron can only request their own. 400 if the target user is an `ADMIN`. If a card already exists for that user, the existing card is returned instead of erroring |
+| GET | `/card/me` | Yes | Any | Returns the caller's own card, 404 if they don't have one |
+| GET | `/card/:cardId` | Yes | Any | Admin/employee can view any card; a patron can only view their own |
+| POST | `/card` | Yes | Any | Issues a card for the `user` id in the body. Admin/employee can issue for anyone; a patron can only request their own. 400 if the target user is an `ADMIN`. If a card already exists for that user, the existing card is returned instead of erroring |
 
 Card responses embed `userDetails` (the owner's user record, minus `password`) rather than a bare `user` id.
 
@@ -194,11 +195,11 @@ Card responses embed `userDetails` (the owner's user record, minus `password`) r
 | Method | Path | Auth | Roles | Description |
 |---|---|---|---|---|
 | GET | `/loan` | Yes | ADMIN, EMPLOYEE | Lists all loan records |
-| POST | `/loan` | Yes | ADMIN, EMPLOYEE | Creates a loan record directly (staff-driven checkout/checkin flow) |
+| POST | `/loan` | Yes | ADMIN, EMPLOYEE | Creates a loan record directly (staff-driven checkout/checkin flow). For a `LOANED` record, 409 if the item is currently loaned out, 404 if the patron doesn't exist, 403 if the patron's account isn't `APPROVED` |
 | PUT | `/loan` | Yes | ADMIN, EMPLOYEE | Updates a loan record by `id` in the body |
-| POST | `/loan/query` | Yes | — | Looks up records by a single `{ property, value }` pair. A patron can only query `property: 'patron'` with their own id, anything else returns 403 |
+| POST | `/loan/query` | Yes | Any | Looks up records by a single `{ property, value }` pair. A patron can only query `property: 'patron'` with their own id, anything else returns 403 |
 | POST | `/loan/self` | Yes | PATRON | Self-checkout: body is `{ item, dueDate }`. 409 if the item is currently loaned out and not yet returned |
-| GET | `/loan/availability/:itemId` | Yes | — | Returns `{ available: boolean }` for a given book id |
+| GET | `/loan/availability/:itemId` | Yes | Any | Returns `{ available: boolean }` for a given book id |
 
 ## Data Models
 
@@ -278,27 +279,18 @@ Request validation failures (Joi) are handled separately, in the `ValidateSchema
 
 ## Testing
 
-Tests live under `Server/tests/`, split into three Jest projects defined in `jest.config.js`:
+Tests live under `Server/tests/`, split into Jest projects defined in `jest.config.js`. Only `unit` and `integration` currently have test files, `integration` is already HTTP-level (via `supertest` against the Express app, not a live server), it's not a separate lighter-weight layer sitting on top of unit tests. An `e2e` project is also declared in `jest.config.js` for a future `tests/e2e` suite, but that directory has no test files yet, so `npm run test:e2e` currently no-ops (`--passWithNoTests`).
 
 ```sh
-npm test               # everything, in band
+npm test               # unit + integration, in band
 npm run test:unit       # tests/unit only
-npm run test:integration # tests/integration only
-npm run test:e2e         # tests/e2e only (HTTP-level, via supertest — separate from the Playwright e2e suite in Web/)
+npm run test:integration # tests/integration only, HTTP-level via supertest
+npm run test:e2e         # tests/e2e only, no-ops for now, see above
 npm run test:cov          # full run with coverage
 ```
 
-All three projects load `tests/setup/env.setup.ts` first, which fills in placeholder env vars (`test-jwt-secret`, a fake Supabase URL, `SERVER_ROUNDS=4`, etc.) so tests don't need a real `.env` file or a live Supabase project.
+Both active projects load `tests/setup/env.setup.ts` first, which fills in placeholder env vars (`test-jwt-secret`, a fake Supabase URL, `SERVER_ROUNDS=4`, etc.) so tests don't need a real `.env` file or a live Supabase project.
 
 ## Scripts
 
 - **`npm run import:books`** : runs `scripts/import-books.ts`, which reads `Server/books.json` and inserts it into the `books` table in chunks of 500. Requires `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY` to be set, since it talks to Supabase directly rather than through the app.
-
-## Known Quirks
-
-A few things in the current backend are worth flagging rather than working around silently:
-
-- **`JWT_SECRET` has a hardcoded fallback.** If the environment variable isn't set, `src/config/index.ts` falls back to a fixed string in source. Fine for local development, but this must be overridden in any real deployment, anyone with the source can otherwise forge tokens.
-- **`ROUNDS` defaults to a random value, chosen once per process start.** If you don't set it, `src/config/index.ts` picks a random number between 1 and 10 every time the server starts, meaning the bcrypt cost factor for password hashing is inconsistent across restarts (and quite low, production bcrypt is typically 10+). Set `ROUNDS` explicitly outside of local/test use.
-- **`JWT_EXPIRES_IN` isn't read through the shared config module.** Every other environment variable goes through `src/config/index.ts`, but `src/utils/Jwt.ts` reads `process.env.JWT_EXPIRES_IN` directly. Functionally fine, just inconsistent if you're looking for where env vars are wired up.
-- **`GET /book` has no pagination**, unlike `GET /book/query`. On a large catalog this returns every row in one response.

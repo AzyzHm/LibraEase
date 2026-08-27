@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { mockApi } from '../helpers/mock-api';
+import { mockApi, CORS_RESPONSE_HEADERS } from '../helpers/mock-api';
 import { loginAs, makeAuthUser } from '../helpers/auth';
 import { makeBook, makePagination } from '../helpers/fixtures';
 
@@ -23,6 +23,7 @@ test.describe('Catalog - guest browsing', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
+        headers: CORS_RESPONSE_HEADERS,
         body: JSON.stringify({
           message: 'ok',
           page: makePagination(lastQuery ? [makeBook({ title: 'Filtered Result' })] : [makeBook()]),
@@ -59,6 +60,7 @@ test.describe('Catalog - guest browsing', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
+        headers: CORS_RESPONSE_HEADERS,
         body: JSON.stringify({
           message: 'ok',
           page: makePagination([makeBook({ title: `Page ${requestedPage} Book` })], {

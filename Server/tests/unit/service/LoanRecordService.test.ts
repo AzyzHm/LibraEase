@@ -1,16 +1,22 @@
 import * as LoanRecordDao from '../../../src/daos/LoanRecordDao';
 import { ILoanRecordModel, ILoanRecordWithItem } from '../../../src/daos/LoanRecordDao';
 import { IBookModel } from '../../../src/daos/BookDao';
+import * as UserDao from '../../../src/daos/UserDao';
+import { IUserModel } from '../../../src/daos/UserDao';
 import * as LoanRecordService from '../../../src/services/LoanRecordService';
 import { ILoanRecord } from '../../../src/models/LoanRecord';
 import {
   LoanRecordDoesNotExistError,
   BookAlreadyLoanedError,
+  UserDoesNotExistError,
+  AccountPendingApprovalError,
 } from '../../../src/utils/LibraryErrors';
 
 jest.mock('../../../src/daos/LoanRecordDao');
+jest.mock('../../../src/daos/UserDao');
 
 const mockedLoanRecordDao = LoanRecordDao as jest.Mocked<typeof LoanRecordDao>;
+const mockedUserDao = UserDao as jest.Mocked<typeof UserDao>;
 
 function makeRecord(overrides: Partial<ILoanRecordModel> = {}): ILoanRecordModel {
   return {
@@ -34,6 +40,19 @@ function makeRecordWithItem(overrides: Partial<ILoanRecordModel> = {}): ILoanRec
   };
 }
 
+function makePatron(overrides: Partial<IUserModel> = {}): IUserModel {
+  return {
+    id: 'patron-1',
+    type: 'PATRON',
+    firstname: 'Jane',
+    lastname: 'Doe',
+    email: 'jane@example.com',
+    password: 'hashed',
+    status: 'APPROVED',
+    ...overrides,
+  };
+}
+
 beforeEach(() => {
   jest.clearAllMocks();
 });
@@ -48,13 +67,71 @@ describe('LoanRecordService.generateRecord', () => {
       employeeOut: 'employee-1',
       item: 'book-1',
     };
+    mockedLoanRecordDao.findByItem.mockResolvedValue([]);
+    mockedUserDao.findById.mockResolvedValue(makePatron());
     const created = makeRecord();
     mockedLoanRecordDao.insert.mockResolvedValue(created);
 
     const result = await LoanRecordService.generateRecord(payload);
 
+    expect(mockedUserDao.findById).toHaveBeenCalledWith('patron-1');
     expect(mockedLoanRecordDao.insert).toHaveBeenCalledWith(payload);
     expect(result).toEqual(created);
+  });
+
+  it('throws UserDoesNotExistError when the patron does not exist', async () => {
+    mockedLoanRecordDao.findByItem.mockResolvedValue([]);
+    mockedUserDao.findById.mockResolvedValue(null);
+
+    const payload: ILoanRecord = {
+      status: 'LOANED',
+      loanedDate: new Date('2026-01-01'),
+      dueDate: new Date('2026-01-15'),
+      patron: 'patron-1',
+      employeeOut: 'employee-1',
+      item: 'book-1',
+    };
+
+    await expect(LoanRecordService.generateRecord(payload)).rejects.toThrow(UserDoesNotExistError);
+    expect(mockedLoanRecordDao.insert).not.toHaveBeenCalled();
+  });
+
+  it('throws AccountPendingApprovalError when the patron is not APPROVED', async () => {
+    mockedLoanRecordDao.findByItem.mockResolvedValue([]);
+    mockedUserDao.findById.mockResolvedValue(makePatron({ status: 'PENDING' }));
+
+    const payload: ILoanRecord = {
+      status: 'LOANED',
+      loanedDate: new Date('2026-01-01'),
+      dueDate: new Date('2026-01-15'),
+      patron: 'patron-1',
+      employeeOut: 'employee-1',
+      item: 'book-1',
+    };
+
+    await expect(LoanRecordService.generateRecord(payload)).rejects.toThrow(
+      AccountPendingApprovalError,
+    );
+    expect(mockedLoanRecordDao.insert).not.toHaveBeenCalled();
+  });
+
+  it('does not look up the patron when the record is not LOANED', async () => {
+    const payload: ILoanRecord = {
+      status: 'AVAILABLE',
+      loanedDate: new Date('2026-01-01'),
+      dueDate: new Date('2026-01-15'),
+      returnedDate: new Date('2026-01-10'),
+      patron: 'patron-1',
+      employeeOut: 'employee-1',
+      employeeIn: 'employee-1',
+      item: 'book-1',
+    };
+    mockedLoanRecordDao.insert.mockResolvedValue(makeRecord({ status: 'AVAILABLE' }));
+
+    await LoanRecordService.generateRecord(payload);
+
+    expect(mockedUserDao.findById).not.toHaveBeenCalled();
+    expect(mockedLoanRecordDao.insert).toHaveBeenCalledWith(payload);
   });
 });
 

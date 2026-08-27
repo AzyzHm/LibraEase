@@ -68,7 +68,7 @@ describe('POST /auth/register', () => {
 });
 
 describe('POST /auth/login', () => {
-  it('logs in with correct credentials and returns a token', async () => {
+  it('logs in with correct credentials and sets an httpOnly auth cookie', async () => {
     const hashed = await bcrypt.hash('correct-password', 4);
     mockedUserDao.findByEmail.mockResolvedValue(makeUser({ password: hashed, status: 'APPROVED' }));
 
@@ -77,8 +77,14 @@ describe('POST /auth/login', () => {
       .send({ email: 'jane@example.com', password: 'correct-password' });
 
     expect(res.status).toBe(200);
-    expect(typeof res.body.token).toBe('string');
+    expect(res.body.token).toBeUndefined();
     expect(res.body.user.email).toBe('jane@example.com');
+
+    const cookies = res.headers['set-cookie'] as unknown as string[];
+    expect(
+      cookies.some((cookie) => cookie.startsWith('auth_token=') && /HttpOnly/i.test(cookie)),
+    ).toBe(true);
+    expect(cookies.some((cookie) => cookie.startsWith('csrf_token='))).toBe(true);
   });
 
   it('returns 401 for an unknown email', async () => {

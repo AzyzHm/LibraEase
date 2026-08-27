@@ -3,17 +3,12 @@ import { of, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthStore } from '../../../src/app/core/state/auth-store';
 import { AuthApi } from '../../../src/app/core/api/auth-api';
-import { AuthUser, LoginResponse, RegisterResponse } from '../../../src/app/core/models/auth.model';
-
-const TOKEN_KEY = 'libraease.token';
-const USER_KEY = 'libraease.user';
-
-function makeToken(expSeconds: number | undefined): string {
-  const base64url = (obj: Record<string, unknown>) =>
-    btoa(JSON.stringify(obj)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  const payload = expSeconds === undefined ? {} : { exp: expSeconds };
-  return `${base64url({ alg: 'HS256' })}.${base64url(payload)}.sig`;
-}
+import {
+  AuthUser,
+  LoginResponse,
+  MeResponse,
+  RegisterResponse,
+} from '../../../src/app/core/models/auth.model';
 
 const testUser: AuthUser = {
   id: 'user-1',
@@ -30,66 +25,54 @@ function setup(authApiStub: Partial<AuthApi>) {
   return TestBed.inject(AuthStore);
 }
 
-beforeEach(() => {
-  localStorage.clear();
-});
+describe('AuthStore.restoreSession', () => {
+  it('starts with restoring true and no user before restoreSession resolves', () => {
+    const store = setup({ me: () => of({ message: 'ok', user: testUser } as MeResponse) });
 
-describe('AuthStore - session restoration on construction', () => {
-  it('starts unauthenticated when localStorage has nothing stored', () => {
-    const store = setup({});
-
+    expect(store.restoring()).toBe(true);
     expect(store.isAuthenticated()).toBe(false);
     expect(store.user()).toBeNull();
-    expect(store.token()).toBeNull();
   });
 
-  it('restores the session when a valid, non-expired token and user are stored', () => {
-    const futureExp = Math.floor((Date.now() + 60_000) / 1000);
-    localStorage.setItem(TOKEN_KEY, makeToken(futureExp));
-    localStorage.setItem(USER_KEY, JSON.stringify(testUser));
+  it('sets the user and clears restoring when GET /auth/me succeeds', (done) => {
+    const response: MeResponse = { message: 'ok', user: testUser };
+    const store = setup({ me: () => of(response) });
 
-    const store = setup({});
-
-    expect(store.isAuthenticated()).toBe(true);
-    expect(store.user()).toEqual(testUser);
+    store.restoreSession().subscribe(() => {
+      expect(store.isAuthenticated()).toBe(true);
+      expect(store.user()).toEqual(testUser);
+      expect(store.restoring()).toBe(false);
+      done();
+    });
   });
 
-  it('clears storage and stays unauthenticated when the stored token is expired', () => {
-    const pastExp = Math.floor((Date.now() - 60_000) / 1000);
-    localStorage.setItem(TOKEN_KEY, makeToken(pastExp));
-    localStorage.setItem(USER_KEY, JSON.stringify(testUser));
+  it('stays unauthenticated and clears restoring when GET /auth/me fails (no valid cookie)', (done) => {
+    const httpError = new HttpErrorResponse({
+      status: 401,
+      error: { message: 'Not authenticated' },
+    });
+    const store = setup({ me: () => throwError(() => httpError) });
 
-    const store = setup({});
-
-    expect(store.isAuthenticated()).toBe(false);
-    expect(localStorage.getItem(TOKEN_KEY)).toBeNull();
-    expect(localStorage.getItem(USER_KEY)).toBeNull();
-  });
-
-  it('clears storage and stays unauthenticated when the stored user JSON is corrupt', () => {
-    const futureExp = Math.floor((Date.now() + 60_000) / 1000);
-    localStorage.setItem(TOKEN_KEY, makeToken(futureExp));
-    localStorage.setItem(USER_KEY, '{not-valid-json');
-
-    const store = setup({});
-
-    expect(store.isAuthenticated()).toBe(false);
-    expect(localStorage.getItem(TOKEN_KEY)).toBeNull();
+    store.restoreSession().subscribe((user) => {
+      expect(user).toBeNull();
+      expect(store.isAuthenticated()).toBe(false);
+      expect(store.user()).toBeNull();
+      expect(store.restoring()).toBe(false);
+      done();
+    });
   });
 });
 
 describe('AuthStore.login', () => {
   it('sets the session and clears loading/error on success', (done) => {
-    const response: LoginResponse = { message: 'ok', token: 'jwt-token', user: testUser };
+    const response: LoginResponse = { message: 'ok', user: testUser };
     const store = setup({ login: () => of(response) });
 
     store.login({ email: testUser.email, password: 'secret' }).subscribe(() => {
       expect(store.isAuthenticated()).toBe(true);
       expect(store.user()).toEqual(testUser);
-      expect(store.token()).toBe('jwt-token');
       expect(store.loading()).toBe(false);
       expect(store.errorMessage()).toBeNull();
-      expect(localStorage.getItem(TOKEN_KEY)).toBe('jwt-token');
       done();
     });
   });
@@ -154,23 +137,38 @@ describe('AuthStore.register', () => {
 });
 
 describe('AuthStore.logout', () => {
-  it('clears the session signals and localStorage', () => {
-    localStorage.setItem(TOKEN_KEY, 'some-token');
-    localStorage.setItem(USER_KEY, JSON.stringify(testUser));
-    const store = setup({});
+  it('clears the session signal and calls the backend logout endpoint', () => {
+    const logoutFn = jest.fn(() => of({ message: 'Logged out successfully' }));
+    const store = setup({
+      login: () => of({ message: 'ok', user: testUser }),
+      logout: logoutFn,
+    });
 
-    store.logout();
+    store.login({ email: testUser.email, password: 'secret' }).subscribe(() => {
+      store.logout();
 
-    expect(store.isAuthenticated()).toBe(false);
-    expect(store.user()).toBeNull();
-    expect(localStorage.getItem(TOKEN_KEY)).toBeNull();
-    expect(localStorage.getItem(USER_KEY)).toBeNull();
+      expect(store.isAuthenticated()).toBe(false);
+      expect(store.user()).toBeNull();
+      expect(logoutFn).toHaveBeenCalled();
+    });
+  });
+
+  it('still clears local state if the backend logout call fails', () => {
+    const store = setup({
+      login: () => of({ message: 'ok', user: testUser }),
+      logout: () => throwError(() => new HttpErrorResponse({ status: 500 })),
+    });
+
+    store.login({ email: testUser.email, password: 'secret' }).subscribe(() => {
+      expect(() => store.logout()).not.toThrow();
+      expect(store.isAuthenticated()).toBe(false);
+    });
   });
 });
 
 describe('AuthStore.updateUser', () => {
-  it('updates the cached user without touching the token', (done) => {
-    const response: LoginResponse = { message: 'ok', token: 'jwt-token', user: testUser };
+  it('updates the cached user without touching the session', (done) => {
+    const response: LoginResponse = { message: 'ok', user: testUser };
     const store = setup({ login: () => of(response) });
 
     store.login({ email: testUser.email, password: 'secret' }).subscribe(() => {
@@ -178,8 +176,7 @@ describe('AuthStore.updateUser', () => {
       store.updateUser(updated);
 
       expect(store.user()).toEqual(updated);
-      expect(store.token()).toBe('jwt-token');
-      expect(JSON.parse(localStorage.getItem(USER_KEY)!)).toEqual(updated);
+      expect(store.isAuthenticated()).toBe(true);
       done();
     });
   });
@@ -188,7 +185,7 @@ describe('AuthStore.updateUser', () => {
 describe('AuthStore role computed signals', () => {
   it('isAdmin/isPatron/isStaff reflect the current user type', (done) => {
     const adminUser: AuthUser = { ...testUser, type: 'ADMIN' };
-    const store = setup({ login: () => of({ message: 'ok', token: 't', user: adminUser }) });
+    const store = setup({ login: () => of({ message: 'ok', user: adminUser }) });
 
     store.login({ email: adminUser.email, password: 'x' }).subscribe(() => {
       expect(store.isAdmin()).toBe(true);

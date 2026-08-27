@@ -1,17 +1,12 @@
 import { Request, Response } from 'express';
-import {
-  findAllBooks,
-  registerBook,
-  modifyBook,
-  removeBook,
-  queryBooks,
-} from '../services/BookService';
+import { registerBook, modifyBook, removeBook, queryBooks } from '../services/BookService';
 import { BookDoesNotExistError } from '../utils/LibraryErrors';
 
 async function getAllBooks(req: Request, res: Response) {
+  const { page = 1, limit = 25 } = req.query;
   try {
-    const books = await findAllBooks();
-    res.status(200).json({ message: 'Retrieved all books', count: books.length, books });
+    const books = await queryBooks(Number(page), Number(limit));
+    res.status(200).json({ message: 'Retrieved all books', page: books });
   } catch (error: unknown) {
     res.status(500).json({ message: 'Unable to retrieve books at this time', error });
   }

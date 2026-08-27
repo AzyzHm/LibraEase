@@ -36,12 +36,36 @@ describe('BookApi', () => {
     httpMock.verify();
   });
 
-  it('getAll() issues a GET to /book', () => {
+  it('getAll() issues a GET to /book with page/limit defaults', () => {
     api.getAll().subscribe();
 
-    const req = httpMock.expectOne(baseUrl);
+    const req = httpMock.expectOne(
+      (r) => r.url === baseUrl && r.params.get('page') === '1' && r.params.get('limit') === '25',
+    );
     expect(req.request.method).toBe('GET');
-    req.flush({ message: 'ok', count: 1, books: [bookModel] });
+    req.flush({
+      message: 'ok',
+      page: {
+        totalCount: 1,
+        currentPage: 1,
+        totalPages: 1,
+        limit: 25,
+        pageCount: 1,
+        items: [bookModel],
+      },
+    });
+  });
+
+  it('getAll() forwards an explicit page/limit instead of the defaults', () => {
+    api.getAll(2, 10).subscribe();
+
+    const req = httpMock.expectOne(
+      (r) => r.url === baseUrl && r.params.get('page') === '2' && r.params.get('limit') === '10',
+    );
+    req.flush({
+      message: 'ok',
+      page: { totalCount: 0, currentPage: 2, totalPages: 1, limit: 10, pageCount: 0, items: [] },
+    });
   });
 
   it('search() only sets query params that were actually provided, plus page/limit defaults', () => {

@@ -65,26 +65,12 @@
         }
       </div>
 
-      <div class="mt-8 flex items-center justify-center gap-4">
-        <button
-          type="button"
-          (click)="onPrevious()"
-          [disabled]="store.currentPage() <= 1"
-          class="btn btn-secondary"
-        >
-          Previous
-        </button>
-        <span class="text-body-sm text-ink-600"
-          >Page {{ store.currentPage() }} of {{ store.totalPages() }}</span
-        >
-        <button
-          type="button"
-          (click)="onNext()"
-          [disabled]="store.currentPage() >= store.totalPages()"
-          class="btn btn-secondary"
-        >
-          Next
-        </button>
+      <div class="mt-8">
+        <app-pagination
+          [currentPage]="store.currentPage()"
+          [totalPages]="store.totalPages()"
+          (pageChange)="store.goToPage($event)"
+        />
       </div>
     }
   </div>

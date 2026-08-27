@@ -116,7 +116,7 @@ export const Schemas = {
     create: Joi.object<ILoanRecord>({
       status: Joi.string().valid('AVAILABLE', 'LOANED').required(),
       loanedDate: Joi.date().required(),
-      dueDate: Joi.date().required(),
+      dueDate: Joi.date().greater('now').required(),
       returnedDate: Joi.date(),
       patron: Joi.string().guid({ version: 'uuidv4' }).required(),
       employeeOut: Joi.string().guid({ version: 'uuidv4' }).required(),

@@ -40,7 +40,7 @@ jobs:
         run: npm test
 
   web:
-    name: Web (lint, typecheck, tests)
+    name: Web (lint, typecheck, tests, build)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -67,6 +67,16 @@ jobs:
 
       - name: Test (unit + integration)
         run: npm test
+
+      - name: Verify API_BASE_URL injection
+        run: |
+          API_BASE_URL="https://ci-injection-check.invalid" node scripts/generate-env.js
+          grep -q "https://ci-injection-check.invalid" src/environments/environment.production.ts
+
+      - name: Build (production)
+        env:
+          API_BASE_URL: 'https://ci-build-check.invalid'
+        run: npm run build:prod
 
   web-e2e:
     name: Web (e2e)

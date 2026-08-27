@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { mockApi } from '../helpers/mock-api';
+import { mockApi, CORS_RESPONSE_HEADERS } from '../helpers/mock-api';
 import { loginAs, makeAuthUser } from '../helpers/auth';
 import { makeBook, makePagination } from '../helpers/fixtures';
 
@@ -90,6 +90,7 @@ test.describe('Admin - books', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
+        headers: CORS_RESPONSE_HEADERS,
         body: JSON.stringify({ message: 'ok', page: makePagination(deleted ? [] : [book]) }),
       });
     });
@@ -102,6 +103,7 @@ test.describe('Admin - books', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
+        headers: CORS_RESPONSE_HEADERS,
         body: JSON.stringify({ message: 'Deleted' }),
       });
     });
@@ -122,6 +124,7 @@ test.describe('Admin - books', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
+        headers: CORS_RESPONSE_HEADERS,
         body: JSON.stringify({
           message: 'ok',
           page: makePagination(lastTitle ? [makeBook({ title: 'Matched Book' })] : []),

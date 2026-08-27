@@ -1,34 +1,37 @@
-import { DatePipe, isPlatformBrowser } from '@angular/common';
+import { DatePipe } from '@angular/common';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import {
-  Component,
-  ElementRef,
-  OnInit,
-  PLATFORM_ID,
-  computed,
-  effect,
-  inject,
-  signal,
-  viewChild,
-} from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { animate } from 'motion';
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { AdminLoansStore, LoanStatusFilter } from '../../../core/state/admin-loans-store';
 import { AuthStore } from '../../../core/state/auth-store';
 import { LoanPayload, LoanRecordModel } from '../../../core/models/loan.model';
 import { LoadingState } from '../../../shared/ui/loading-state/loading-state';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { ErrorState } from '../../../shared/ui/error-state/error-state';
-import { springStandard } from '../../../shared/motion/springs';
+import { ModalShell } from '../../../shared/ui/modal-shell/modal-shell';
+import { SearchSelect, SearchSelectOption } from '../../../shared/ui/search-select/search-select';
 
 @Component({
   selector: 'app-admin-loans',
   standalone: true,
-  imports: [ReactiveFormsModule, DatePipe, LoadingState, EmptyState, ErrorState],
+  imports: [
+    ReactiveFormsModule,
+    DatePipe,
+    LoadingState,
+    EmptyState,
+    ErrorState,
+    ModalShell,
+    SearchSelect,
+  ],
   templateUrl: './admin-loans.html',
   styleUrl: './admin-loans.css',
 })
 export class AdminLoans implements OnInit {
-  private readonly platformId = inject(PLATFORM_ID);
   private readonly fb = inject(FormBuilder);
   private readonly authStore = inject(AuthStore);
   readonly store = inject(AdminLoansStore);
@@ -42,33 +45,31 @@ export class AdminLoans implements OnInit {
   readonly showForm = signal(false);
   readonly submitted = signal(false);
 
+  readonly minDate = this.isoDate(this.addDays(new Date(), 1));
+
   readonly checkoutForm = this.fb.nonNullable.group({
     patron: ['', Validators.required],
     item: ['', Validators.required],
-    dueDate: ['', Validators.required],
+    dueDate: ['', [Validators.required, this.futureDateValidator]],
   });
 
-  /** Only PATRON accounts can borrow books - staff shouldn't see themselves/other staff in the picker. */
   readonly patrons = computed(() => this.store.users().filter((user) => user.type === 'PATRON'));
 
-  private readonly formPanel = viewChild<ElementRef<HTMLElement>>('formPanel');
+  readonly patronOptions = computed<SearchSelectOption[]>(() =>
+    this.patrons().map((patron) => ({
+      id: patron.id,
+      label: `${patron.firstname} ${patron.lastname}`,
+      sublabel: patron.email,
+    })),
+  );
 
-  constructor() {
-    // Same inline-expand treatment as the admin-books create/edit form.
-    effect(() => {
-      const el = this.formPanel()?.nativeElement;
-      if (!el || !isPlatformBrowser(this.platformId)) {
-        return;
-      }
-
-      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      animate(
-        el,
-        { opacity: [0, 1], transform: ['translateY(-8px)', 'translateY(0)'] },
-        reducedMotion ? { duration: 0.001 } : springStandard,
-      );
-    });
-  }
+  readonly bookOptions = computed<SearchSelectOption[]>(() => {
+    const loanedIds = this.store.loanedBookIds();
+    return this.store
+      .books()
+      .filter((book) => !loanedIds.has(book.id))
+      .map((book) => ({ id: book.id, label: book.title, sublabel: book.authors.join(', ') }));
+  });
 
   ngOnInit(): void {
     this.store.load();
@@ -104,7 +105,7 @@ export class AdminLoans implements OnInit {
     const payload: LoanPayload = {
       status: 'LOANED',
       loanedDate: new Date().toISOString(),
-      dueDate: new Date(raw.dueDate).toISOString(),
+      dueDate: new Date(`${raw.dueDate}T00:00:00`).toISOString(),
       patron: raw.patron,
       employeeOut: currentUser.id,
       item: raw.item,
@@ -130,5 +131,21 @@ export class AdminLoans implements OnInit {
 
   isOverdue(loan: LoanRecordModel): boolean {
     return loan.status === 'LOANED' && new Date(loan.dueDate).getTime() < Date.now();
+  }
+
+  private futureDateValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) return null;
+    const chosen = new Date(`${control.value}T00:00:00`);
+    return chosen.getTime() > Date.now() ? null : { notFuture: true };
+  }
+
+  private addDays(date: Date, days: number): Date {
+    const copy = new Date(date);
+    copy.setDate(copy.getDate() + days);
+    return copy;
+  }
+
+  private isoDate(date: Date): string {
+    return date.toISOString().slice(0, 10);
   }
 }

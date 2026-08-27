@@ -6,11 +6,12 @@ import { BookCard } from '../../shared/ui/book-card/book-card';
 import { LoadingState } from '../../shared/ui/loading-state/loading-state';
 import { EmptyState } from '../../shared/ui/empty-state/empty-state';
 import { ErrorState } from '../../shared/ui/error-state/error-state';
+import { Pagination } from '../../shared/ui/pagination/pagination';
 
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [ReactiveFormsModule, BookCard, LoadingState, EmptyState, ErrorState],
+  imports: [ReactiveFormsModule, BookCard, LoadingState, EmptyState, ErrorState, Pagination],
   templateUrl: './catalog.html',
   styleUrl: './catalog.css',
 })
@@ -25,15 +26,12 @@ export class Catalog implements OnInit {
     genre: [''],
   });
 
-  /** Drives the empty-state "Clear filters" action - only useful when a filter is actually narrowing results. */
   readonly hasActiveFilters = computed(() => {
     const filters = this.store.filters();
     return Boolean(filters.title || filters.author || filters.genre);
   });
 
   ngOnInit(): void {
-    // A ?title= query param (from the home page search box) takes priority over
-    // whatever filters were already sitting in the store.
     const queryTitle = this.route.snapshot.queryParamMap.get('title');
 
     if (queryTitle) {
@@ -54,14 +52,6 @@ export class Catalog implements OnInit {
   onClear(): void {
     this.filterForm.reset({ title: '', author: '', genre: '' });
     this.store.clearFilters();
-  }
-
-  onPrevious(): void {
-    this.store.goToPage(this.store.currentPage() - 1);
-  }
-
-  onNext(): void {
-    this.store.goToPage(this.store.currentPage() + 1);
   }
 
   onRetry(): void {

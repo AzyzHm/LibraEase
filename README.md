@@ -95,9 +95,10 @@ npm run test:integration
 npm run test:e2e
 
 # Web
-npm test               # unit + integration, with coverage
+npm test               # unit + integration
 npm run test:unit
 npm run test:integration
+npm run test:coverage  # unit + integration, with coverage
 npm run e2e            # Playwright, requires a dev server
 ```
 
@@ -105,7 +106,7 @@ See each package's docs for what's covered at each test level.
 
 ## Continuous Integration
 
-Every pull request runs through [`ci.yml`](.github/workflows/ci.yml): a `server` job (lint, typecheck, test), a `web` job (lint, typecheck, test), and a separate `web-e2e` job (Playwright across Chromium, Firefox, and WebKit) so a slow or flaky e2e run doesn't block fast feedback on the rest. Dependency updates are proposed automatically by [Dependabot](.github/dependabot.yml).
+Every pull request runs through [`ci.yml`](.github/workflows/ci.yml): a `server` job (lint, typecheck, test), a `web` job (lint, typecheck, test, then a production build with a dummy `API_BASE_URL` to catch build-time regressions), and a separate `web-e2e` job (Playwright across Chromium, Firefox, and WebKit) so a slow or flaky e2e run doesn't block fast feedback on the rest. On merge to `main`, a separate [`cd.yml`](.github/workflows/cd.yml) workflow syncs `CORS_ORIGIN` (Render) and `API_BASE_URL` (Vercel) between the two live deployments and triggers their deploy hooks, see each package's docs for details. Dependency updates are proposed automatically by [Dependabot](.github/dependabot.yml).
 
 ## Contributing
 

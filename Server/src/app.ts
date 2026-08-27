@@ -8,6 +8,7 @@ import { config } from './config';
 
 export function createApp(): Express {
   const app: Express = express();
+  app.set('trust proxy', 1);
   app.use(express.json());
   app.use(cookieParser());
   app.use(

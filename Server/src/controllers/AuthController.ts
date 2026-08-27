@@ -4,7 +4,7 @@ import { IUser } from '../models/User';
 import { IUserModel } from '../daos/UserDao';
 import { UnableToFetchUserError, AccountPendingApprovalError } from '../utils/LibraryErrors';
 import { signAuthToken } from '../utils/Jwt';
-import { setAuthCookies, clearAuthCookies } from '../utils/Cookies';
+import { setAuthCookies, clearAuthCookies, CSRF_COOKIE_NAME } from '../utils/Cookies';
 import { getErrorMessage } from '../utils/errors';
 
 function publicUser(user: IUserModel) {
@@ -41,10 +41,11 @@ async function handleLogin(req: Request, res: Response): Promise<void> {
   try {
     const user: IUserModel = await login(credentials);
     const token = signAuthToken(user);
-    setAuthCookies(res, token);
+    const csrfToken = setAuthCookies(res, token);
     res.status(200).json({
       message: 'User logged in successfully',
       user: publicUser(user),
+      csrfToken,
     });
   } catch (error: unknown) {
     if (error instanceof AccountPendingApprovalError) {
@@ -67,9 +68,11 @@ async function handleMe(req: Request, res: Response): Promise<void> {
   const requester = req.user!;
   try {
     const user = await findUserById(requester.id);
-    res
-      .status(200)
-      .json({ message: 'Current user retrieved successfully', user: publicUser(user) });
+    res.status(200).json({
+      message: 'Current user retrieved successfully',
+      user: publicUser(user),
+      csrfToken: req.cookies?.[CSRF_COOKIE_NAME],
+    });
   } catch (error: unknown) {
     res
       .status(401)

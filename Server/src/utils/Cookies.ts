@@ -33,11 +33,13 @@ function baseCookieOptions() {
   };
 }
 
-export function setAuthCookies(res: Response, token: string): void {
+export function setAuthCookies(res: Response, token: string): string {
   res.cookie(AUTH_COOKIE_NAME, token, { ...baseCookieOptions(), httpOnly: true });
 
   const csrfToken = crypto.randomBytes(32).toString('hex');
   res.cookie(CSRF_COOKIE_NAME, csrfToken, { ...baseCookieOptions(), httpOnly: false });
+
+  return csrfToken;
 }
 
 export function clearAuthCookies(res: Response): void {

@@ -17,11 +17,15 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     withCredentials: true,
     setHeaders: csrfToken ? { 'X-CSRF-Token': csrfToken } : {},
   });
-  const isSessionCheck = req.url.endsWith('/auth/me');
+
+  const isAuthEndpoint =
+    req.url.endsWith('/auth/me') ||
+    req.url.endsWith('/auth/login') ||
+    req.url.endsWith('/auth/register');
 
   return next(authedReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && !isSessionCheck) {
+      if (error.status === 401 && !isAuthEndpoint) {
         const returnUrl = router.routerState.snapshot.url;
         authStore.logout();
         router.navigate(['/login'], { queryParams: { returnUrl } });

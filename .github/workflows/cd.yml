@@ -42,6 +42,18 @@ jobs:
       github.event.workflow_run.head_branch == 'main' &&
       github.event.workflow_run.event == 'push'
     steps:
+      - name: Sync API_BASE_URL on Vercel
+        run: |
+          curl --fail --silent --show-error -X POST \
+            "https://api.vercel.com/v10/projects/${VERCEL_PROJECT_ID}/env?upsert=true" \
+            -H "Authorization: Bearer ${VERCEL_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "[{\"key\": \"API_BASE_URL\", \"value\": \"${RENDER_BACKEND_URL}\", \"type\": \"plain\", \"target\": [\"production\"]}]"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          RENDER_BACKEND_URL: ${{ secrets.RENDER_BACKEND_URL }}
+
       - name: Trigger Vercel deploy hook
         run: curl --fail --silent --show-error -X POST "$DEPLOY_HOOK_URL"
         env:

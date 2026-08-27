@@ -3,11 +3,15 @@ import { createApp } from '../../src/app';
 import * as LoanRecordDao from '../../src/daos/LoanRecordDao';
 import { ILoanRecordModel, ILoanRecordWithItem } from '../../src/daos/LoanRecordDao';
 import { IBookModel } from '../../src/daos/BookDao';
+import * as UserDao from '../../src/daos/UserDao';
+import { IUserModel } from '../../src/daos/UserDao';
 import { authHeaderFor } from './helpers/authToken';
 
 jest.mock('../../src/daos/LoanRecordDao');
+jest.mock('../../src/daos/UserDao');
 
 const mockedLoanRecordDao = LoanRecordDao as jest.Mocked<typeof LoanRecordDao>;
+const mockedUserDao = UserDao as jest.Mocked<typeof UserDao>;
 const app = createApp();
 
 const RECORD_UUID = '11111111-1111-4111-8111-111111111111';
@@ -34,6 +38,19 @@ function makeRecordWithItem(overrides: Partial<ILoanRecordModel> = {}): ILoanRec
   return {
     ...makeRecord(overrides),
     itemDetails: { barcode: 'n/a' } as IBookModel,
+  };
+}
+
+function makePatron(overrides: Partial<IUserModel> = {}): IUserModel {
+  return {
+    id: PATRON_UUID,
+    type: 'PATRON',
+    firstname: 'Jane',
+    lastname: 'Doe',
+    email: 'jane@example.com',
+    password: 'hashed',
+    status: 'APPROVED',
+    ...overrides,
   };
 }
 
@@ -70,6 +87,7 @@ describe('POST /loan', () => {
 
   it('creates a record for an authorized EMPLOYEE', async () => {
     mockedLoanRecordDao.findByItem.mockResolvedValue([]);
+    mockedUserDao.findById.mockResolvedValue(makePatron());
     mockedLoanRecordDao.insert.mockResolvedValue(makeRecord());
 
     const res = await request(app)
@@ -89,6 +107,32 @@ describe('POST /loan', () => {
       .send(incomplete);
 
     expect(res.status).toBe(422);
+  });
+
+  it('returns 404 when the patron does not exist', async () => {
+    mockedLoanRecordDao.findByItem.mockResolvedValue([]);
+    mockedUserDao.findById.mockResolvedValue(null);
+
+    const res = await request(app)
+      .post('/loan')
+      .set('Authorization', authHeaderFor('EMPLOYEE'))
+      .send(validPayload);
+
+    expect(res.status).toBe(404);
+    expect(mockedLoanRecordDao.insert).not.toHaveBeenCalled();
+  });
+
+  it('returns 403 when the patron is not APPROVED', async () => {
+    mockedLoanRecordDao.findByItem.mockResolvedValue([]);
+    mockedUserDao.findById.mockResolvedValue(makePatron({ status: 'PENDING' }));
+
+    const res = await request(app)
+      .post('/loan')
+      .set('Authorization', authHeaderFor('EMPLOYEE'))
+      .send(validPayload);
+
+    expect(res.status).toBe(403);
+    expect(mockedLoanRecordDao.insert).not.toHaveBeenCalled();
   });
 });
 

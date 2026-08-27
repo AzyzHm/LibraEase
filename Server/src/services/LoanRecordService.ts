@@ -1,13 +1,29 @@
 import * as LoanRecordDao from '../daos/LoanRecordDao';
 import { ILoanRecordModel } from '../daos/LoanRecordDao';
+import * as UserDao from '../daos/UserDao';
 import { ILoanRecord } from '../models/LoanRecord';
-import { LoanRecordDoesNotExistError, BookAlreadyLoanedError } from '../utils/LibraryErrors';
+import {
+  LoanRecordDoesNotExistError,
+  BookAlreadyLoanedError,
+  UserDoesNotExistError,
+  AccountPendingApprovalError,
+} from '../utils/LibraryErrors';
 
 export async function generateRecord(record: ILoanRecord): Promise<ILoanRecordModel> {
   if (record.status === 'LOANED') {
     const available = await isItemAvailable(record.item);
     if (!available) {
       throw new BookAlreadyLoanedError('This book is currently loaned out');
+    }
+
+    const patron = await UserDao.findById(record.patron);
+    if (!patron) {
+      throw new UserDoesNotExistError('Patron does not exist');
+    }
+    if (patron.status !== 'APPROVED') {
+      throw new AccountPendingApprovalError(
+        "This patron's account is not approved, they cannot check out books",
+      );
     }
   }
 

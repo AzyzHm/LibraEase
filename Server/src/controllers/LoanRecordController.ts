@@ -7,7 +7,12 @@ import {
   selfCheckout,
   isItemAvailable,
 } from '../services/LoanRecordService';
-import { LoanRecordDoesNotExistError, BookAlreadyLoanedError } from '../utils/LibraryErrors';
+import {
+  LoanRecordDoesNotExistError,
+  BookAlreadyLoanedError,
+  UserDoesNotExistError,
+  AccountPendingApprovalError,
+} from '../utils/LibraryErrors';
 import { getErrorMessage } from '../utils/errors';
 
 async function createRecord(req: Request, res: Response) {
@@ -19,6 +24,10 @@ async function createRecord(req: Request, res: Response) {
   } catch (error) {
     if (error instanceof BookAlreadyLoanedError) {
       res.status(409).json({ message: error.message, error: error.message });
+    } else if (error instanceof UserDoesNotExistError) {
+      res.status(404).json({ message: error.message, error: error.message });
+    } else if (error instanceof AccountPendingApprovalError) {
+      res.status(403).json({ message: error.message, error: error.message });
     } else {
       res.status(500).json({ message: 'Something went wrong', error });
     }

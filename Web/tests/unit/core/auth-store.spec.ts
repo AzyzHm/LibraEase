@@ -67,7 +67,11 @@ describe('AuthStore.restoreSession', () => {
 
 describe('AuthStore.login', () => {
   it('sets the session and clears loading/error on success', (done) => {
-    const response: LoginResponse = { message: 'ok', user: testUser, csrfToken: 'csrf-token-value' };
+    const response: LoginResponse = {
+      message: 'ok',
+      user: testUser,
+      csrfToken: 'csrf-token-value',
+    };
     const store = setup({ login: () => of(response) });
 
     store.login({ email: testUser.email, password: 'secret' }).subscribe(() => {
@@ -170,7 +174,11 @@ describe('AuthStore.logout', () => {
 
 describe('AuthStore.updateUser', () => {
   it('updates the cached user without touching the session', (done) => {
-    const response: LoginResponse = { message: 'ok', user: testUser, csrfToken: 'csrf-token-value' };
+    const response: LoginResponse = {
+      message: 'ok',
+      user: testUser,
+      csrfToken: 'csrf-token-value',
+    };
     const store = setup({ login: () => of(response) });
 
     store.login({ email: testUser.email, password: 'secret' }).subscribe(() => {

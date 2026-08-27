@@ -92,9 +92,7 @@ describe('LoanRecordService.generateRecord', () => {
       item: 'book-1',
     };
 
-    await expect(LoanRecordService.generateRecord(payload)).rejects.toThrow(
-      UserDoesNotExistError,
-    );
+    await expect(LoanRecordService.generateRecord(payload)).rejects.toThrow(UserDoesNotExistError);
     expect(mockedLoanRecordDao.insert).not.toHaveBeenCalled();
   });
 

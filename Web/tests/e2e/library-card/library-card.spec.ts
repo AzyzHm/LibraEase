@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { mockApi } from '../helpers/mock-api';
+import { mockApi, CORS_RESPONSE_HEADERS } from '../helpers/mock-api';
 import { loginAs, makeAuthUser } from '../helpers/auth';
 import { makeCard } from '../helpers/fixtures';
 
@@ -62,6 +62,7 @@ test.describe('Library card - errors', () => {
         await route.fulfill({
           status: 500,
           contentType: 'application/json',
+          headers: CORS_RESPONSE_HEADERS,
           body: JSON.stringify({ message: 'Server error' }),
         });
         return;
@@ -69,6 +70,7 @@ test.describe('Library card - errors', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
+        headers: CORS_RESPONSE_HEADERS,
         body: JSON.stringify({ message: 'ok', card: makeCard() }),
       });
     });

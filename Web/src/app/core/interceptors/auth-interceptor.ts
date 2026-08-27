@@ -3,7 +3,6 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AuthStore } from '../state/auth-store';
-import { readCsrfToken } from '../utils/csrf.util';
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
@@ -11,7 +10,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authStore = inject(AuthStore);
   const router = inject(Router);
 
-  const csrfToken = SAFE_METHODS.has(req.method) ? null : readCsrfToken();
+  const csrfToken = SAFE_METHODS.has(req.method) ? null : authStore.csrfToken();
 
   const authedReq = req.clone({
     withCredentials: true,

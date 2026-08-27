@@ -34,6 +34,7 @@ describe('AuthApi', () => {
         lastname: 'Doe',
         email: credentials.email,
       },
+      csrfToken: 'csrf-token-value',
     };
 
     let result: LoginResponse | undefined;

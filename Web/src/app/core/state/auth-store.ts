@@ -16,12 +16,14 @@ export class AuthStore {
   private readonly authApi = inject(AuthApi);
 
   private readonly userSignal = signal<AuthUser | null>(null);
+  private readonly csrfTokenSignal = signal<string | null>(null);
 
   readonly loading = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly restoring = signal(true);
 
   readonly user = this.userSignal.asReadonly();
+  readonly csrfToken = this.csrfTokenSignal.asReadonly();
   readonly isAuthenticated = computed(() => this.userSignal() !== null);
   readonly isAdmin = computed(() => this.userSignal()?.type === 'ADMIN');
   readonly isPatron = computed(() => this.userSignal()?.type === 'PATRON');
@@ -32,13 +34,15 @@ export class AuthStore {
 
   restoreSession(): Observable<AuthUser | null> {
     return this.authApi.me().pipe(
-      map((response) => response.user),
-      tap((user) => {
-        this.userSignal.set(user);
+      tap((response) => {
+        this.userSignal.set(response.user);
+        this.csrfTokenSignal.set(response.csrfToken ?? null);
         this.restoring.set(false);
       }),
+      map((response) => response.user),
       catchError(() => {
         this.userSignal.set(null);
+        this.csrfTokenSignal.set(null);
         this.restoring.set(false);
         return of(null);
       }),
@@ -52,6 +56,7 @@ export class AuthStore {
     return this.authApi.login(credentials).pipe(
       tap((response) => {
         this.userSignal.set(response.user);
+        this.csrfTokenSignal.set(response.csrfToken ?? null);
         this.loading.set(false);
       }),
       catchError((error: HttpErrorResponse) => {
@@ -82,6 +87,7 @@ export class AuthStore {
 
   logout(): void {
     this.userSignal.set(null);
+    this.csrfTokenSignal.set(null);
     this.authApi.logout().subscribe({ error: () => undefined });
   }
 

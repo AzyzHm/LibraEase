@@ -23,11 +23,13 @@ export interface RegisterPayload {
 export interface LoginResponse {
   message: string;
   user: AuthUser;
+  csrfToken: string;
 }
 
 export interface MeResponse {
   message: string;
   user: AuthUser;
+  csrfToken: string;
 }
 
 export interface RegisterResponse {

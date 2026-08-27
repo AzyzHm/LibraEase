@@ -10,27 +10,14 @@ import { provideRouter, Router } from '@angular/router';
 import { authInterceptor } from '../../../src/app/core/interceptors/auth-interceptor';
 import { AuthStore } from '../../../src/app/core/state/auth-store';
 
-function setDocumentCookie(value: string): void {
-  document.cookie = value;
-}
-
-function clearCookies(): void {
-  document.cookie.split(';').forEach((cookie) => {
-    const name = cookie.split('=')[0].trim();
-    if (name) {
-      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
-    }
-  });
-}
-
 describe('authInterceptor', () => {
   let httpMock: HttpTestingController;
   let http: HttpClient;
   let router: Router;
-  let authStoreStub: { logout: jest.Mock };
+  let authStoreStub: { logout: jest.Mock; csrfToken: jest.Mock };
 
-  function setup() {
-    authStoreStub = { logout: jest.fn() };
+  function setup(csrfToken: string | null = null) {
+    authStoreStub = { logout: jest.fn(), csrfToken: jest.fn(() => csrfToken) };
 
     TestBed.configureTestingModule({
       providers: [
@@ -48,7 +35,6 @@ describe('authInterceptor', () => {
 
   afterEach(() => {
     httpMock.verify();
-    clearCookies();
   });
 
   it('sends withCredentials on every request so the auth cookie is attached', () => {
@@ -62,8 +48,7 @@ describe('authInterceptor', () => {
   });
 
   it('does not add an X-CSRF-Token header on safe (GET) requests', () => {
-    setup();
-    setDocumentCookie('csrf_token=some-csrf-value');
+    setup('some-csrf-value');
 
     http.get('/api/books').subscribe();
 
@@ -72,9 +57,8 @@ describe('authInterceptor', () => {
     req.flush({});
   });
 
-  it('adds the X-CSRF-Token header on mutating requests when the cookie is present', () => {
-    setup();
-    setDocumentCookie('csrf_token=some-csrf-value');
+  it('adds the X-CSRF-Token header on mutating requests when AuthStore has a token', () => {
+    setup('some-csrf-value');
 
     http.post('/api/books', {}).subscribe();
 
@@ -83,8 +67,8 @@ describe('authInterceptor', () => {
     req.flush({});
   });
 
-  it('omits the X-CSRF-Token header on mutating requests when there is no CSRF cookie', () => {
-    setup();
+  it('omits the X-CSRF-Token header on mutating requests when AuthStore has no token', () => {
+    setup(null);
 
     http.post('/api/books', {}).subscribe();
 

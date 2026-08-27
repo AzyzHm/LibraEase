@@ -1,0 +1,41 @@
+<div class="flex flex-wrap items-center justify-center gap-4">
+  <button
+    type="button"
+    (click)="onPrevious()"
+    [disabled]="currentPage() <= 1"
+    class="btn btn-secondary"
+  >
+    Previous
+  </button>
+
+  <span class="text-body-sm text-ink-600">Page {{ currentPage() }} of {{ totalPages() }}</span>
+
+  <button
+    type="button"
+    (click)="onNext()"
+    [disabled]="currentPage() >= totalPages()"
+    class="btn btn-secondary"
+  >
+    Next
+  </button>
+
+  <div class="flex items-center gap-2">
+    <label for="go-to-page" class="text-body-sm text-ink-600">Go to page</label>
+    <input
+      #pageInput
+      id="go-to-page"
+      type="number"
+      min="1"
+      [max]="totalPages()"
+      class="field-input w-20"
+      (keydown.enter)="onGoToPage(pageInput.value); pageInput.value = ''"
+    />
+    <button
+      type="button"
+      (click)="onGoToPage(pageInput.value); pageInput.value = ''"
+      class="btn btn-secondary"
+    >
+      Go
+    </button>
+  </div>
+</div>

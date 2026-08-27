@@ -24,6 +24,7 @@ import { Book, BookModel } from '../../../core/models/book.model';
 import { LoadingState } from '../../../shared/ui/loading-state/loading-state';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { ErrorState } from '../../../shared/ui/error-state/error-state';
+import { Pagination } from '../../../shared/ui/pagination/pagination';
 import { springStandard } from '../../../shared/motion/springs';
 
 const barcodeValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
@@ -40,7 +41,7 @@ const barcodeValidator: ValidatorFn = (control: AbstractControl): ValidationErro
 @Component({
   selector: 'app-admin-books',
   standalone: true,
-  imports: [ReactiveFormsModule, LoadingState, EmptyState, ErrorState],
+  imports: [ReactiveFormsModule, LoadingState, EmptyState, ErrorState, Pagination],
   templateUrl: './admin-books.html',
   styleUrl: './admin-books.css',
 })
@@ -112,14 +113,6 @@ export class AdminBooks implements OnInit {
   onFilterClear(): void {
     this.filterForm.reset({ title: '', author: '', genre: '' });
     this.store.clearFilters();
-  }
-
-  onPrevious(): void {
-    this.store.goToPage(this.store.currentPage() - 1);
-  }
-
-  onNext(): void {
-    this.store.goToPage(this.store.currentPage() + 1);
   }
 
   onOpenCreate(): void {
@@ -199,7 +192,6 @@ export class AdminBooks implements OnInit {
       .filter((item) => item.length > 0);
   }
 
-  /** ISO date/datetime string -> yyyy-MM-dd for the native date input. */
   private toDateInputValue(value: string): string {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return '';

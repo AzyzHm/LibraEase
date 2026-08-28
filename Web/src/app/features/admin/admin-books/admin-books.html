@@ -39,7 +39,12 @@
       maxWidthClass="max-w-2xl"
       (closed)="onCancelForm()"
     >
-      <form [formGroup]="bookForm" (ngSubmit)="onSubmitForm()" class="flex flex-col gap-4" novalidate>
+      <form
+        [formGroup]="bookForm"
+        (ngSubmit)="onSubmitForm()"
+        class="flex flex-col gap-4"
+        novalidate
+      >
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label for="barcode" class="field-label">Barcode (ISBN-10 or ISBN-13)</label>
@@ -104,7 +109,12 @@
 
         <div>
           <label for="description" class="field-label">Description</label>
-          <textarea id="description" formControlName="description" rows="3" class="field-input"></textarea>
+          <textarea
+            id="description"
+            formControlName="description"
+            rows="3"
+            class="field-input"
+          ></textarea>
           @if (submitted() && bookForm.controls.description.invalid) {
             <p class="text-body-sm mt-1 text-danger-500">Required.</p>
           }
@@ -153,7 +163,9 @@
             <label for="pages" class="field-label">Pages</label>
             <input id="pages" type="number" min="1" formControlName="pages" class="field-input" />
             @if (submitted() && bookForm.controls.pages.invalid) {
-              <p class="text-body-sm mt-1 text-danger-500">Enter a whole page count of at least 1.</p>
+              <p class="text-body-sm mt-1 text-danger-500">
+                Enter a whole page count of at least 1.
+              </p>
             }
           </div>
         </div>

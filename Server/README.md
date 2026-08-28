@@ -84,7 +84,7 @@ On startup, the server checks whether any `ADMIN` user exists in the database. I
 
 ## Environment Variables
 
-All variables are read via `dotenv` in [`src/config/index.ts`](../src/config/index.ts) (JWT expiry and the seed-admin values are read directly from `process.env` elsewhere, see [Known Quirks](#known-quirks)).
+All variables are read via `dotenv` in [`src/config/index.ts`](../src/config/index.ts) (the seed-admin values are the one exception, read directly from `process.env` elsewhere, see [Known Quirks](#known-quirks)).
 
 | Variable | Required | Default | Notes |
 |---|---|---|---|
@@ -93,7 +93,7 @@ All variables are read via `dotenv` in [`src/config/index.ts`](../src/config/ind
 | `JWT_SECRET` | Recommended | a hardcoded string in source | Always set this outside local development, see [Known Quirks](#known-quirks) |
 | `JWT_EXPIRES_IN` | No | `7d` | Any value accepted by `jsonwebtoken`'s `expiresIn` |
 | `PORT` | No | `8000` | HTTP port |
-| `ROUNDS` | No | random 1-10 | bcrypt cost factor, see [Known Quirks](#known-quirks) |
+| `ROUNDS` | No | `10` | bcrypt cost factor, see [Known Quirks](#known-quirks) |
 | `CORS_ORIGIN` | No | `http://localhost:4200` | Comma-separated list of allowed origins, checked in [`src/config/index.ts`](../src/config/index.ts). In production, this is kept in sync with the live frontend URL automatically by the CD pipeline (see [`cd.yml`](../.github/workflows/cd.yml)), not set by hand |
 | `SEED_ADMIN_EMAIL` | No | `admin@libraease.local` | Used only when no admin exists yet |
 | `SEED_ADMIN_PASSWORD` | No | randomly generated | Set this to pin a known admin password |
@@ -113,11 +113,15 @@ The Supabase client itself is a singleton created once in `src/config/supabaseCl
 
 ## Authentication & Authorization
 
-Auth is stateless JWT-based:
+Auth is JWT-based, delivered as an httpOnly cookie rather than handed to the client in the response body:
 
-- `POST /auth/login` returns a signed token containing `{ id, type, email }`.
-- Protected routes use the `authenticate` middleware, which reads the `Authorization: Bearer <token>` header, verifies it against `JWT_SECRET`, and attaches the payload to `req.user`.
+- `POST /auth/login` signs a token containing `{ id, type, email }` and sets it as the `auth_token` cookie (`src/utils/Cookies.ts`). The response body carries the user record and a separate `csrfToken`, not the auth token itself, see below.
+- The `authenticate` middleware (`src/middlewares/Auth.ts`) reads the token from the `auth_token` cookie first, falling back to an `Authorization: Bearer <token>` header if no cookie is present, verifies it against `JWT_SECRET`, and attaches the payload to `req.user`.
 - Role-gated routes additionally use `authorize('ADMIN', 'EMPLOYEE', ...)`, which checks `req.user.type` against the allowed list.
+
+Alongside `auth_token`, login also sets a second, non-httpOnly `csrf_token` cookie and echoes its value as `csrfToken` in the JSON body of both `/auth/login` and `/auth/me`. Any non-safe request (anything but `GET`/`HEAD`/`OPTIONS`) from a session that already has an `auth_token` cookie must send that value back as an `X-CSRF-Token` header, enforced by `verifyCsrf` in `src/middlewares/Csrf.ts`. `/auth/login`, `/auth/register`, and `/auth/logout` are exempt from this check, a client that isn't logged in yet has no CSRF token to send.
+
+`app.set('trust proxy', 1)` in `src/app.ts` is required for this whole setup to work correctly behind Render's proxy. Without it, the `secure`/`sameSite` cookie flags and `express-rate-limit`'s IP detection both misbehave.
 
 There are three roles: `ADMIN`, `EMPLOYEE`, and `PATRON`. Every new registration is created as a `PATRON` with `status: 'PENDING'`. An admin has to approve the account (`PUT /users/:userId/approve`) before that user can log in, logging in while `PENDING` or `REJECTED` returns a 403.
 
@@ -134,7 +138,7 @@ Both send `RateLimit-*` standard headers and a JSON `{ message }` body on the 42
 
 ## API Reference
 
-Unless noted otherwise, request and response bodies are JSON. Routes marked **Auth** require a valid Bearer token; **Roles** lists which `type` values `authorize` accepts for that route (no list means any authenticated user).
+Unless noted otherwise, request and response bodies are JSON. Routes marked **Auth** require a valid session, normally the `auth_token` cookie set on login, with an `Authorization: Bearer <token>` header accepted as a fallback; **Roles** lists which `type` values `authorize` accepts for that route (no list means any authenticated user).
 
 ### Health
 
@@ -149,7 +153,9 @@ Rate-limited by `authLimiter`.
 | Method | Path | Auth | Description |
 |---|---|---|---|
 | POST | `/auth/register` | No | Creates a `PATRON` account with `status: PENDING`. Body validated against `Schemas.user.create` |
-| POST | `/auth/login` | No | Returns a JWT on success. 403 if the account is `PENDING`/`REJECTED`, 401 on bad credentials |
+| POST | `/auth/login` | No | Sets the `auth_token` and `csrf_token` cookies on success and returns `{ user, csrfToken }`. 403 if the account is `PENDING`/`REJECTED`, 401 on bad credentials |
+| POST | `/auth/logout` | No | Clears both auth cookies, returns `{ message }` |
+| GET | `/auth/me` | Yes | Returns the current user and a fresh `csrfToken`, used by the frontend to restore session state on load |
 
 ### Users
 
@@ -294,3 +300,9 @@ Both active projects load `tests/setup/env.setup.ts` first, which fills in place
 ## Scripts
 
 - **`npm run import:books`** : runs `scripts/import-books.ts`, which reads `Server/books.json` and inserts it into the `books` table in chunks of 500. Requires `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY` to be set, since it talks to Supabase directly rather than through the app.
+
+## Known Quirks
+
+- If `JWT_SECRET` isn't set, `src/config/index.ts` refuses to start when `NODE_ENV=production`, but falls back to a hardcoded development-only secret everywhere else, logging a warning. Always set `JWT_SECRET` outside local development, the fallback is fine for `npm run dev` but not for a shared or public deployment.
+- The `SEED_ADMIN_*` values are read straight off `process.env` in `src/startup/seedAdminUser.ts` rather than through the `config` object in `src/config/index.ts` like every other variable, worth knowing if you're tracing where a value comes from.
+- On startup with no `SEED_ADMIN_PASSWORD` set, the generated admin password is written once to `.seed-admin-credentials.txt` in `Server/`. That file isn't deleted automatically, remove it yourself after logging in.

@@ -21,7 +21,7 @@ export class AdminLoansStore {
   readonly loading = signal(false);
   readonly errorMessage = signal<string | null>(null);
 
-  readonly statusFilter = signal<LoanStatusFilter>('LOANED');
+  readonly statusFilter = signal<LoanStatusFilter>('ALL');
 
   readonly users = signal<AdminUser[]>([]);
   readonly books = signal<BookModel[]>([]);

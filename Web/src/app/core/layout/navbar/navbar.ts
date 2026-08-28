@@ -26,19 +26,13 @@ export class Navbar {
   private readonly platformId = inject(PLATFORM_ID);
   protected readonly authStore = inject(AuthStore);
 
-  /** Whether the collapsed (mobile, <md) menu is expanded. */
   readonly menuOpen = signal(false);
 
-  /** Whether the edit-profile modal is open. */
   readonly editProfileOpen = signal(false);
 
-  /** Reference to the mobile menu panel, present only while `menuOpen()`. */
   private readonly mobileNav = viewChild<ElementRef<HTMLElement>>('mobileNav');
 
   constructor() {
-    // Entrance animation for the mobile menu panel. Runs whenever the panel
-    // is (re)created, i.e. whenever menuOpen flips to true - the @if that
-    // renders it means there's nothing to animate on close, only on open.
     effect(() => {
       const nav = this.mobileNav()?.nativeElement;
       if (!nav || !isPlatformBrowser(this.platformId)) {
@@ -74,6 +68,6 @@ export class Navbar {
   onSignOut(): void {
     this.closeMenu();
     this.authStore.logout();
-    this.router.navigateByUrl('/');
+    this.router.navigateByUrl('/login');
   }
 }

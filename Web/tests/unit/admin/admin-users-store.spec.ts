@@ -44,7 +44,7 @@ describe('AdminUsersStore.load', () => {
 });
 
 describe('AdminUsersStore derived signals', () => {
-  it('filteredUsers defaults to the PENDING filter', () => {
+  it('filteredUsers defaults to the ALL filter', () => {
     const store = setup({
       getAll: () =>
         of({
@@ -57,7 +57,7 @@ describe('AdminUsersStore derived signals', () => {
     });
     store.load();
 
-    expect(store.filteredUsers().map((u) => u.id)).toEqual(['u1']);
+    expect(store.filteredUsers().map((u) => u.id)).toEqual(['u1', 'u2']);
   });
 
   it('filteredUsers returns everyone when the filter is ALL', () => {

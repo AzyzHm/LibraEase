@@ -51,3 +51,9 @@ export class BookAlreadyLoanedError extends Error {
     super(message);
   }
 }
+
+export class BookHasLoanHistoryError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
+}

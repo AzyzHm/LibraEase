@@ -34,142 +34,148 @@
   }
 
   @if (showForm()) {
-    <form
-      #formPanel
-      [formGroup]="bookForm"
-      (ngSubmit)="onSubmitForm()"
-      class="card-surface mt-6 flex flex-col gap-4 p-6"
-      novalidate
+    <app-modal-shell
+      [title]="editingBook() ? 'Edit book' : 'New book'"
+      maxWidthClass="max-w-2xl"
+      (closed)="onCancelForm()"
     >
-      <h2 class="text-h2 text-ink-900">{{ editingBook() ? 'Edit book' : 'New book' }}</h2>
+      <form [formGroup]="bookForm" (ngSubmit)="onSubmitForm()" class="flex flex-col gap-4" novalidate>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label for="barcode" class="field-label">Barcode (ISBN-10 or ISBN-13)</label>
+            <input id="barcode" type="text" formControlName="barcode" class="field-input" />
+            @if (submitted() && bookForm.controls.barcode.invalid) {
+              <p class="text-body-sm mt-1 text-danger-500">Enter a valid 10 or 13-digit barcode.</p>
+            }
+          </div>
 
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div>
-          <label for="barcode" class="field-label">Barcode (ISBN-10 or ISBN-13)</label>
-          <input id="barcode" type="text" formControlName="barcode" class="field-input" />
-          @if (submitted() && bookForm.controls.barcode.invalid) {
-            <p class="text-body-sm mt-1 text-danger-500">Enter a valid 10 or 13-digit barcode.</p>
-          }
+          <div>
+            <label for="cover" class="field-label">Cover image URL</label>
+            <input id="cover" type="text" formControlName="cover" class="field-input" />
+            @if (submitted() && bookForm.controls.cover.invalid) {
+              <p class="text-body-sm mt-1 text-danger-500">
+                {{
+                  bookForm.controls.cover.errors?.['coverUrl']
+                    ? 'Enter a valid http(s) URL.'
+                    : 'Required.'
+                }}
+              </p>
+            }
+          </div>
         </div>
 
         <div>
-          <label for="cover" class="field-label">Cover image URL</label>
-          <input id="cover" type="text" formControlName="cover" class="field-input" />
-          @if (submitted() && bookForm.controls.cover.invalid) {
-            <p class="text-body-sm mt-1 text-danger-500">Required.</p>
-          }
-        </div>
-      </div>
-
-      <div>
-        <label for="title" class="field-label">Title</label>
-        <input id="title" type="text" formControlName="title" class="field-input" />
-        @if (submitted() && bookForm.controls.title.invalid) {
-          <p class="text-body-sm mt-1 text-danger-500">Required.</p>
-        }
-      </div>
-
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div>
-          <label for="authors" class="field-label">Authors (comma-separated)</label>
-          <input
-            id="authors"
-            type="text"
-            formControlName="authors"
-            placeholder="Jane Austen, ..."
-            class="field-input"
-          />
-          @if (submitted() && bookForm.controls.authors.invalid) {
-            <p class="text-body-sm mt-1 text-danger-500">At least one author is required.</p>
-          }
-        </div>
-
-        <div>
-          <label for="subjects" class="field-label">Subjects (comma-separated)</label>
-          <input
-            id="subjects"
-            type="text"
-            formControlName="subjects"
-            placeholder="Fiction, Classics, ..."
-            class="field-input"
-          />
-          @if (submitted() && bookForm.controls.subjects.invalid) {
-            <p class="text-body-sm mt-1 text-danger-500">At least one subject is required.</p>
-          }
-        </div>
-      </div>
-
-      <div>
-        <label for="description" class="field-label">Description</label>
-        <textarea
-          id="description"
-          formControlName="description"
-          rows="3"
-          class="field-input"
-        ></textarea>
-        @if (submitted() && bookForm.controls.description.invalid) {
-          <p class="text-body-sm mt-1 text-danger-500">Required.</p>
-        }
-      </div>
-
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div>
-          <label for="publisher" class="field-label">Publisher</label>
-          <input id="publisher" type="text" formControlName="publisher" class="field-input" />
-          @if (submitted() && bookForm.controls.publisher.invalid) {
+          <label for="title" class="field-label">Title</label>
+          <input id="title" type="text" formControlName="title" class="field-input" />
+          @if (submitted() && bookForm.controls.title.invalid) {
             <p class="text-body-sm mt-1 text-danger-500">Required.</p>
           }
         </div>
 
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label for="authors" class="field-label">Authors (comma-separated)</label>
+            <input
+              id="authors"
+              type="text"
+              formControlName="authors"
+              placeholder="Jane Austen, ..."
+              class="field-input"
+            />
+            @if (submitted() && bookForm.controls.authors.invalid) {
+              <p class="text-body-sm mt-1 text-danger-500">At least one author is required.</p>
+            }
+          </div>
+
+          <div>
+            <label for="subjects" class="field-label">Subjects (comma-separated)</label>
+            <input
+              id="subjects"
+              type="text"
+              formControlName="subjects"
+              placeholder="Fiction, Classics, ..."
+              class="field-input"
+            />
+            @if (submitted() && bookForm.controls.subjects.invalid) {
+              <p class="text-body-sm mt-1 text-danger-500">At least one subject is required.</p>
+            }
+          </div>
+        </div>
+
         <div>
-          <label for="genre" class="field-label">Genre</label>
-          <input id="genre" type="text" formControlName="genre" class="field-input" />
-          @if (submitted() && bookForm.controls.genre.invalid) {
+          <label for="description" class="field-label">Description</label>
+          <textarea id="description" formControlName="description" rows="3" class="field-input"></textarea>
+          @if (submitted() && bookForm.controls.description.invalid) {
             <p class="text-body-sm mt-1 text-danger-500">Required.</p>
           }
         </div>
-      </div>
 
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div>
-          <label for="publicationDate" class="field-label">Publication date</label>
-          <input
-            id="publicationDate"
-            type="date"
-            formControlName="publicationDate"
-            class="field-input"
-          />
-          @if (submitted() && bookForm.controls.publicationDate.invalid) {
-            <p class="text-body-sm mt-1 text-danger-500">Required.</p>
-          }
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label for="publisher" class="field-label">Publisher</label>
+            <input id="publisher" type="text" formControlName="publisher" class="field-input" />
+            @if (submitted() && bookForm.controls.publisher.invalid) {
+              <p class="text-body-sm mt-1 text-danger-500">Required.</p>
+            }
+          </div>
+
+          <div>
+            <label for="genre" class="field-label">Genre</label>
+            <input id="genre" type="text" formControlName="genre" class="field-input" />
+            @if (submitted() && bookForm.controls.genre.invalid) {
+              <p class="text-body-sm mt-1 text-danger-500">Required.</p>
+            }
+          </div>
         </div>
 
-        <div>
-          <label for="pages" class="field-label">Pages</label>
-          <input id="pages" type="number" min="1" formControlName="pages" class="field-input" />
-          @if (submitted() && bookForm.controls.pages.invalid) {
-            <p class="text-body-sm mt-1 text-danger-500">Enter a page count of at least 1.</p>
-          }
-        </div>
-      </div>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label for="publicationDate" class="field-label">Publication date</label>
+            <input
+              id="publicationDate"
+              type="date"
+              formControlName="publicationDate"
+              [max]="maxPublicationDate"
+              class="field-input"
+            />
+            @if (submitted() && bookForm.controls.publicationDate.invalid) {
+              <p class="text-body-sm mt-1 text-danger-500">
+                {{
+                  bookForm.controls.publicationDate.errors?.['notPast']
+                    ? 'Publication date must be in the past.'
+                    : 'Required.'
+                }}
+              </p>
+            }
+          </div>
 
-      <div class="flex gap-3">
-        <button
-          type="submit"
-          [disabled]="store.actionPendingBarcode() !== null"
-          class="btn btn-primary"
-        >
-          {{
-            store.actionPendingBarcode()
-              ? 'Saving…'
-              : editingBook()
-                ? 'Save changes'
-                : 'Create book'
-          }}
-        </button>
-        <button type="button" (click)="onCancelForm()" class="btn btn-secondary">Cancel</button>
-      </div>
-    </form>
+          <div>
+            <label for="pages" class="field-label">Pages</label>
+            <input id="pages" type="number" min="1" formControlName="pages" class="field-input" />
+            @if (submitted() && bookForm.controls.pages.invalid) {
+              <p class="text-body-sm mt-1 text-danger-500">Enter a whole page count of at least 1.</p>
+            }
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-1">
+          <button type="button" (click)="onCancelForm()" class="btn btn-secondary">Cancel</button>
+          <button
+            type="submit"
+            [disabled]="store.actionPendingBarcode() !== null"
+            class="btn btn-primary"
+          >
+            {{
+              store.actionPendingBarcode()
+                ? 'Saving…'
+                : editingBook()
+                  ? 'Save changes'
+                  : 'Create book'
+            }}
+          </button>
+        </div>
+      </form>
+    </app-modal-shell>
   }
 
   <div class="mt-6">

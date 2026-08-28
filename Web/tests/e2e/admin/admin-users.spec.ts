@@ -101,11 +101,21 @@ test.describe('Admin - users', () => {
 
     await page.goto('/admin/users');
     await expect(page.getByText('Pending One')).toBeVisible();
+    await expect(page.getByText('Approved Two')).toBeVisible();
+
+    await page.getByRole('button', { name: 'Pending' }).click();
+
+    await expect(page.getByText('Pending One')).toBeVisible();
     await expect(page.getByText('Approved Two')).toHaveCount(0);
 
     await page.getByRole('button', { name: 'Approved' }).click();
 
     await expect(page.getByText('Approved Two')).toBeVisible();
     await expect(page.getByText('Pending One')).toHaveCount(0);
+
+    await page.getByRole('button', { name: 'All' }).click();
+
+    await expect(page.getByText('Pending One')).toBeVisible();
+    await expect(page.getByText('Approved Two')).toBeVisible();
   });
 });

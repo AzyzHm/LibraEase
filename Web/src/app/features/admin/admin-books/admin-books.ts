@@ -1,15 +1,4 @@
-import { isPlatformBrowser } from '@angular/common';
-import {
-  Component,
-  ElementRef,
-  OnInit,
-  PLATFORM_ID,
-  computed,
-  effect,
-  inject,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -18,14 +7,13 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { animate } from 'motion';
 import { AdminBooksStore } from '../../../core/state/admin-books-store';
 import { Book, BookModel } from '../../../core/models/book.model';
 import { LoadingState } from '../../../shared/ui/loading-state/loading-state';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { ErrorState } from '../../../shared/ui/error-state/error-state';
 import { Pagination } from '../../../shared/ui/pagination/pagination';
-import { springStandard } from '../../../shared/motion/springs';
+import { ModalShell } from '../../../shared/ui/modal-shell/modal-shell';
 
 const barcodeValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const value = (control.value ?? '') as string;
@@ -38,15 +26,54 @@ const barcodeValidator: ValidatorFn = (control: AbstractControl): ValidationErro
   return isIsbn10 || isIsbn13 ? null : { barcode: true };
 };
 
+const coverUrlValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  const value = (control.value ?? '') as string;
+  if (!value) return null;
+
+  try {
+    const url = new URL(value);
+    return url.protocol === 'http:' || url.protocol === 'https:' ? null : { coverUrl: true };
+  } catch {
+    return { coverUrl: true };
+  }
+};
+
+const pastPublicationDateValidator: ValidatorFn = (
+  control: AbstractControl,
+): ValidationErrors | null => {
+  const value = (control.value ?? '') as string;
+  if (!value) return null;
+
+  const chosen = new Date(`${value}T00:00:00`);
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
+  return chosen.getTime() < startOfToday.getTime() ? null : { notPast: true };
+};
+
+const integerValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  const value = control.value;
+  if (value === null || value === undefined || value === '') return null;
+  return Number.isInteger(Number(value)) ? null : { integer: true };
+};
+
+const nonEmptyListValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  const value = (control.value ?? '') as string;
+  const hasEntry = value
+    .split(',')
+    .map((item) => item.trim())
+    .some((item) => item.length > 0);
+  return hasEntry ? null : { required: true };
+};
+
 @Component({
   selector: 'app-admin-books',
   standalone: true,
-  imports: [ReactiveFormsModule, LoadingState, EmptyState, ErrorState, Pagination],
+  imports: [ReactiveFormsModule, LoadingState, EmptyState, ErrorState, Pagination, ModalShell],
   templateUrl: './admin-books.html',
   styleUrl: './admin-books.css',
 })
 export class AdminBooks implements OnInit {
-  private readonly platformId = inject(PLATFORM_ID);
   private readonly fb = inject(FormBuilder);
   readonly store = inject(AdminBooksStore);
 
@@ -58,14 +85,14 @@ export class AdminBooks implements OnInit {
 
   readonly bookForm = this.fb.nonNullable.group({
     barcode: ['', [Validators.required, barcodeValidator]],
-    cover: ['', Validators.required],
+    cover: ['', [Validators.required, coverUrlValidator]],
     title: ['', Validators.required],
-    authors: ['', Validators.required],
+    authors: ['', [Validators.required, nonEmptyListValidator]],
     description: ['', Validators.required],
-    subjects: ['', Validators.required],
-    publicationDate: ['', Validators.required],
+    subjects: ['', [Validators.required, nonEmptyListValidator]],
+    publicationDate: ['', [Validators.required, pastPublicationDateValidator]],
     publisher: ['', Validators.required],
-    pages: [1, [Validators.required, Validators.min(1)]],
+    pages: [1, [Validators.required, Validators.min(1), integerValidator]],
     genre: ['', Validators.required],
   });
 
@@ -75,28 +102,12 @@ export class AdminBooks implements OnInit {
 
   readonly confirmingDeleteBarcode = signal<string | null>(null);
 
+  readonly maxPublicationDate = this.isoDate(this.addDays(new Date(), -1));
+
   readonly hasActiveFilters = computed(() => {
     const filters = this.store.filters();
     return Boolean(filters.title || filters.author || filters.genre);
   });
-
-  private readonly formPanel = viewChild<ElementRef<HTMLElement>>('formPanel');
-
-  constructor() {
-    effect(() => {
-      const el = this.formPanel()?.nativeElement;
-      if (!el || !isPlatformBrowser(this.platformId)) {
-        return;
-      }
-
-      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      animate(
-        el,
-        { opacity: [0, 1], transform: ['translateY(-8px)', 'translateY(0)'] },
-        reducedMotion ? { duration: 0.001 } : springStandard,
-      );
-    });
-  }
 
   ngOnInit(): void {
     this.store.loadPage(1);
@@ -195,6 +206,16 @@ export class AdminBooks implements OnInit {
   private toDateInputValue(value: string): string {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return '';
+    return date.toISOString().slice(0, 10);
+  }
+
+  private addDays(date: Date, days: number): Date {
+    const copy = new Date(date);
+    copy.setDate(copy.getDate() + days);
+    return copy;
+  }
+
+  private isoDate(date: Date): string {
     return date.toISOString().slice(0, 10);
   }
 }

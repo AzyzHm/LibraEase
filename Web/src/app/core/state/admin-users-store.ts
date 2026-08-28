@@ -15,10 +15,8 @@ export class AdminUsersStore {
   readonly loading = signal(false);
   readonly errorMessage = signal<string | null>(null);
 
-  /** Which status tab is active. Defaults to PENDING since that's the actionable queue. */
-  readonly statusFilter = signal<StatusFilter>('PENDING');
+  readonly statusFilter = signal<StatusFilter>('ALL');
 
-  /** Id of the row currently running an approve/reject/delete call, so only that row shows a spinner. */
   readonly actionPendingId = signal<string | null>(null);
   readonly actionError = signal<string | null>(null);
 
@@ -40,9 +38,6 @@ export class AdminUsersStore {
       .getAll()
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
-        // The backend already scopes this list by the requester's role
-        // (admins see everyone but other admins; employees see patrons
-        // only), so no further filtering is needed here.
         next: (response) => this.users.set(response.users),
         error: (error: HttpErrorResponse) => {
           this.users.set([]);
@@ -88,7 +83,6 @@ export class AdminUsersStore {
       });
   }
 
-  /** Shared plumbing for approve/reject: both PUT a status change and splice the updated row back in. */
   private runAction(
     userId: string,
     request: ReturnType<UserApi['approve']>,

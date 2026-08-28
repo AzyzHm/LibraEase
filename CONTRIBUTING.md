@@ -27,7 +27,7 @@ Each package has its own `package.json`, lints and tests independently, and is d
 ## Making Changes
 
 - Keep pull requests focused. A PR that fixes a bug shouldn't also reformat unrelated files or bundle in an unrelated feature.
-- Match the existing code style rather than introducing a new one 4-space indentation, existing naming conventions (function-exported DAOs on the backend, signal-based stores on the frontend), and the patterns already used in neighboring files.
+- Match the existing code style rather than introducing a new one, 2-space indentation, existing naming conventions (function-exported DAOs on the backend, signal-based stores on the frontend), and the patterns already used in neighboring files.
 - If you're touching backend business logic (`Server/src/services/`) or a domain rule, check whether it changes anything documented in `Server/README.md` and update the doc alongside the code.
 - If you find a pre-existing bug while working on something else, prefer flagging it (in the PR description or a new issue) over silently fixing it as a drive-by change, unless it's directly blocking your PR.
 
@@ -42,8 +42,8 @@ Every change that touches application behavior needs test coverage unit and/or i
 **Server** (`Server/`):
 ```sh
 npm run test:unit         # tests/unit
-npm run test:integration  # tests/integration
-npm run test:e2e          # tests/e2e (HTTP-level, via supertest)
+npm run test:integration  # tests/integration (HTTP-level, via supertest)
+npm run test:e2e          # tests/e2e, no test files yet, no-ops for now
 npm test                  # everything
 ```
 
@@ -76,7 +76,7 @@ npm run format
 ## Submitting a Pull Request
 
 1. Push your branch and open a PR against `main`.
-2. Fill in what the PR does and why link any related issue.
+2. Fill in what the PR does and why, and link any related issue.
 3. Make sure CI is green (lint, typecheck, unit/integration tests, and e2e for `Web`).
 4. Be responsive to review feedback. Small, incremental commits in response to review are easier to follow than force-pushed rewrites, but either is fine as long as the final diff is clean.
 

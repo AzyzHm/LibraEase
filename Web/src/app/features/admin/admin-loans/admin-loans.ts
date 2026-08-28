@@ -53,7 +53,9 @@ export class AdminLoans implements OnInit {
     dueDate: ['', [Validators.required, this.futureDateValidator]],
   });
 
-  readonly patrons = computed(() => this.store.users().filter((user) => user.type === 'PATRON'));
+  readonly patrons = computed(() =>
+    this.store.users().filter((user) => user.type === 'PATRON' && user.status === 'APPROVED'),
+  );
 
   readonly patronOptions = computed<SearchSelectOption[]>(() =>
     this.patrons().map((patron) => ({

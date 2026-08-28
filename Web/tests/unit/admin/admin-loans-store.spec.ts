@@ -198,7 +198,7 @@ describe('AdminLoansStore derived signals', () => {
     expect(store.loanedBookIds()).toEqual(new Set(['book-1']));
   });
 
-  it('filteredLoans filters by the active statusFilter, defaulting to LOANED', () => {
+  it('filteredLoans filters by the active statusFilter, defaulting to ALL', () => {
     const store = setup({
       loanApi: {
         getAll: () =>
@@ -213,10 +213,10 @@ describe('AdminLoansStore derived signals', () => {
     });
     store.load();
 
-    expect(store.filteredLoans().map((l) => l.id)).toEqual(['r1']);
-
-    store.setStatusFilter('ALL');
     expect(store.filteredLoans()).toHaveLength(2);
+
+    store.setStatusFilter('LOANED');
+    expect(store.filteredLoans().map((l) => l.id)).toEqual(['r1']);
   });
 });
 

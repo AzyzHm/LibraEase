@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { registerBook, modifyBook, removeBook, queryBooks } from '../services/BookService';
-import { BookDoesNotExistError } from '../utils/LibraryErrors';
+import { BookDoesNotExistError, BookHasLoanHistoryError } from '../utils/LibraryErrors';
 
 async function getAllBooks(req: Request, res: Response) {
   const { page = 1, limit = 25 } = req.query;
@@ -44,6 +44,8 @@ async function deleteBook(req: Request, res: Response) {
   } catch (error: unknown) {
     if (error instanceof BookDoesNotExistError) {
       res.status(404).json({ message: 'Cannot delete a book that does not exist', error });
+    } else if (error instanceof BookHasLoanHistoryError) {
+      res.status(409).json({ message: error.message, error: error.message });
     } else {
       res.status(500).json({ message: 'Unable to delete book at this time', error });
     }

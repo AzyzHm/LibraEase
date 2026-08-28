@@ -29,6 +29,6 @@ Please include as much of the following as you can:
 
 This policy covers the code in this repository both `Server/` (the Express/Supabase API) and `Web/` (the Angular client). Vulnerabilities in third-party dependencies should generally be reported to the maintainers of that dependency directly, but feel free to also flag them here (via email, not a public issue) if you believe LibraEase's usage of that dependency makes it exploitable.
 
-Non-security bugs, feature requests, and general questions should go through the normal [issue tracker](../../issues) instead see [CONTRIBUTING.md](CONTRIBUTING.md).
+Non-security bugs, feature requests, and general questions should go through the normal [issue tracker](../../issues) instead, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Thank you for taking the time to report responsibly.

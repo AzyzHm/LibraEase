@@ -35,11 +35,10 @@ Web/
 │   │   ├── core/
 │   │   │   ├── api/           # HttpClient wrappers, one per backend resource
 │   │   │   ├── guards/         # route guards (auth, staff-only, guest-only)
-│   │   │   ├── interceptors/   # attaches credentials and the CSRF token, handles 401s
+│   │   │   ├── interceptors/   # attaches credentials and CSRF header, handles 401s
 │   │   │   ├── layout/          # shell, navbar, footer
 │   │   │   ├── models/          # TS interfaces matching backend request/response shapes
-│   │   │   ├── state/            # signal-based stores, one per feature area
-│   │   │   └── utils/            # CSRF token helper
+│   │   │   └── state/            # signal-based stores, one per feature area
 │   │   ├── features/
 │   │   │   ├── admin/            # admin shell + users/books/loans/cards management
 │   │   │   ├── auth/              # login, register
@@ -68,7 +67,7 @@ Web/
 ### Prerequisites
 
 - Node.js 18 or later
-- A running instance of [`Server`](../../Server) (see its own `docs/README.md`), or at least a reachable API base URL
+- A running instance of [`Server`](../../Server) (see its own `README.md`), or at least a reachable API base URL
 
 ### Setup
 
@@ -142,8 +141,9 @@ The base URL for every API class comes from `environment.apiBaseUrl`, there's no
 
 ## Authentication
 
-- Sessions are cookie-based, not a token held by the frontend. On login, the backend sets an httpOnly session cookie, `AuthStore` only holds the user object in memory (a signal), it never sees or stores a token.
-- `authInterceptor` (a functional `HttpInterceptorFn`) sends every request with `withCredentials: true` so the session cookie goes along automatically, and attaches an `X-CSRF-Token` header (read via `src/app/core/utils/csrf.util.ts`) on any non-safe method (anything but `GET`/`HEAD`/`OPTIONS`). It also globally handles 401 responses: on any 401 other than a call to `/auth/me`, it logs the user out and redirects to `/login` with the current URL as `returnUrl`, `/auth/me` is excluded because it's the session-check call used to restore state on load, and a 401 there just means "not logged in," not "session expired."
+- Sessions are cookie-based, not a token held by the frontend. On login, the backend sets an httpOnly session cookie, `AuthStore` only holds the user object in memory (a signal), it never sees or stores that cookie's value.
+- The backend also issues a separate, readable CSRF cookie and echoes its value in the JSON body of `/auth/login` and `/auth/me` as `csrfToken`. `AuthStore` stores that value in a `csrfToken` signal. Reading it from there rather than from `document.cookie` matters because frontend and backend sit on different domains in production, a page can't read a cookie set by a different origin.
+- `authInterceptor` (a functional `HttpInterceptorFn`) sends every request with `withCredentials: true` so the session cookie goes along automatically, and reads the CSRF token from `AuthStore` to attach it as an `X-CSRF-Token` header on any non-safe method (anything but `GET`/`HEAD`/`OPTIONS`). It also globally handles 401 responses: on any 401 other than a call to `/auth/me`, it logs the user out and redirects to `/login` with the current URL as `returnUrl`, `/auth/me` is excluded because it's the session-check call used to restore state on load, and a 401 there just means "not logged in," not "session expired."
 - Because there's no client-held token, session state isn't restored from `localStorage` on page load, `AuthStore.restoreSession()` calls `/auth/me` instead, and the backend answers based on the cookie. `restoring` is a signal the app can check while that call is in flight.
 - Role checks in the UI (`isAdmin`, `isPatron`, `isStaff` computed signals on `AuthStore`) mirror the backend's role model (`ADMIN` / `EMPLOYEE` / `PATRON`) but are for UI gating only. The backend re-checks authorization on every request regardless of what the frontend shows or hides.
 
@@ -179,3 +179,7 @@ npm run e2e:ui                 # Playwright UI mode, for debugging
 - **E2E tests** (`tests/e2e/`) are Playwright specs that run against a real dev server and a real backend, covering full user flows (login, browsing the catalog, admin CRUD, route guards). These require a running `Server` instance, see the backend docs for the seed-admin credentials needed to exercise admin-only flows.
 
 Jest is configured to run against `environment.ts` (the non-production environment file) in every case, since Angular's build-time file replacement doesn't apply to the Jest test runner.
+
+## Known Quirks
+
+- The CSRF token is never read from `document.cookie`. Frontend and backend live on different domains in production (a `vercel.app` origin talking to an `onrender.com` origin), so a cookie the backend sets isn't readable from frontend JavaScript there even though it works fine in local dev on `localhost`. The backend works around this by also returning the token in the `/auth/login` and `/auth/me` response bodies, see [Authentication](#authentication).

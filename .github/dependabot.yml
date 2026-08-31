@@ -21,9 +21,17 @@ updates:
   - package-ecosystem: "npm"
     directory: "/Web"
     schedule:
-      interval: "weekly"
-      day: "monday"
-    open-pull-requests-limit: 10
+      interval: "monthly"
+    groups:
+      angular:
+        patterns:
+          - "@angular/*"
+          - "@angular-devkit/*"
+          - "zone.js"
+        update-types:
+          - "minor"
+          - "patch"
+    open-pull-requests-limit: 5
     labels:
       - "dependencies"
       - "web"

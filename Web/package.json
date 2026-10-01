@@ -54,7 +54,7 @@
     "@angular/compiler-cli": "^20.3.0",
     "@playwright/test": "^1.48.0",
     "@tailwindcss/postcss": "^4.3.3",
-    "@testing-library/angular": "^18.1.1",
+    "@testing-library/angular": "^19.5.0",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/user-event": "^14.6.4",
     "@types/jest": "^30.0.0",
